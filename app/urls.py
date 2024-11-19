@@ -15,8 +15,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import path, include
+
+
+def redirect_to_health(request):
+    return redirect('/jaws-api/health')
+
 
 urlpatterns = [
+    path('', redirect_to_health),
     path('admin/', admin.site.urls),
+
+    path('jaws-api/health', include('health_check.urls')),
+
+    path('jaws-api/user-management/', include('user_management.urls'))
 ]
