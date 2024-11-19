@@ -58,3 +58,9 @@ Execute the migrations to create the necessary tables in the database:
     python manage.py migrate
 
 Django will now map the models in your project to the PostgreSQL database and create the corresponding tables.
+
+### **PyCharm IDE configuration**
+
+![img.png](img.png)
+
+![img_2.png](img_2.png)
