@@ -43,6 +43,9 @@ Add this configuration to a .env file like this:
    DATABASE_NAME=USER
    DATABASE_ENGINE=django.db.backends.postgresql
 
+For docker set at 
+   DATABASE_HOST=host.docker.internal 
+
 
 ### **Step 3: Migrate Django Models to PostgreSQL**
 **1. Generate Migration Files**
