@@ -1,4 +1,5 @@
 from user_management.contract.repository.user_repository import UserRepository
+from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.models import User
 
 
@@ -7,7 +8,10 @@ class UserRepositoryImpl(UserRepository):
         """
         Retrieve all users from the database.
         """
-        return User.objects.all()
+        users = User.objects.all()
+        if not users or len(users) == 0:
+            return []
+        return UserSerializer(users, many=True).data
 
     def get_by_id(self, obj_id):
         """
