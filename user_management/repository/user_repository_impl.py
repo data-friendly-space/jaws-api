@@ -1,9 +1,22 @@
+from django.contrib.auth.hashers import make_password
+
 from user_management.contract.repository.user_repository import UserRepository
 from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.models import User
 
 
 class UserRepositoryImpl(UserRepository):
+    def sign_up(self, name, lastname, email, password):
+        return User.objects.create(
+            lastname=lastname,
+            name=name,
+            email=email,
+            password=make_password(password)
+        )
+
+    def get_user_by_email(self, email):
+        return User.objects.filter(email=email).first()
+
     def get_all(self):
         """
         Retrieve all users from the database.
