@@ -4,6 +4,7 @@ from user_management.interfaces.controllers.get_users_controller import get_user
 from user_management.interfaces.controllers.refresh_token_controller import refresh_token_controller
 from user_management.interfaces.controllers.sign_in_controller import sign_in_controller
 from user_management.interfaces.controllers.sign_up_controller import sign_up_controller
+from user_management.interfaces.controllers.verify_token_controller import verify_token_controller
 
 urlpatterns = [
     path('users', get_users_controller, name='users'),
@@ -12,4 +13,6 @@ urlpatterns = [
     path('sign-up', sign_up_controller, name='sign_up'),
 
     path('token-refresh', refresh_token_controller, name='token_refresh'),
+
+    path('session-verify', verify_token_controller, name='session-verify'),
 ]
