@@ -3,20 +3,21 @@ from rest_framework import serializers
 from user_management.models import User
 
 
-class UserTO(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=255)
-    lastname = serializers.CharField(max_length=255)
+class UserSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    lastname = serializers.CharField()
     email = serializers.EmailField()
-    country = serializers.CharField(max_length=255)
-    profile_image = serializers.URLField(allow_null=True, required=False)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer to transform User model to UserTO format.
-    """
+    country = serializers.CharField()
+    position = serializers.JSONField()
+    affiliation = serializers.JSONField()
+    organization = serializers.JSONField()
+    uiConfiguration = serializers.JSONField()
+    profileImage = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ["id", "name", "lastname", "email", "country", "profile_image"]
+        fields = [
+            'name', 'lastname', 'email', 'country',
+            'profileImage', 'position', 'affiliation',
+            'organization', 'uiConfiguration'
+        ]

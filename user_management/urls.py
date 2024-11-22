@@ -1,4 +1,5 @@
 from django.urls import path
+
 from user_management.interfaces.controllers.create_user_controller import create_user_controller
 from user_management.interfaces.controllers.get_users_controller import get_users_controller
 from user_management.interfaces.controllers.refresh_token_controller import refresh_token_controller

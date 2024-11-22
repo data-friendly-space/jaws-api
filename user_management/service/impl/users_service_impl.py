@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from user_management.interfaces.controllers.helpers.api_response import api_response
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
+from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.models import User
 from user_management.repository.user_repository_impl import UserRepositoryImpl
 from user_management.service.users_service import UsersService
@@ -26,7 +27,7 @@ class UsersServiceImpl(UsersService):
         self.get_user_by_email_uc = GetUserByEmailUC.get_instance()
 
     def get_users(self):
-        return self.get_users_uc.exec(UserRepositoryImpl())
+        return UserSerializer(self.get_users_uc.exec(UserRepositoryImpl()), many=True).data
 
     def sign_up(self, name, lastname, email, password):
 
@@ -39,11 +40,11 @@ class UsersServiceImpl(UsersService):
         return api_response("User successfully created", status.HTTP_201_CREATED)
 
     def sign_in(self, email, password):
-        user = self.get_user_by_email_uc.exec(UserRepositoryImpl(), email)
-        if not user or not check_password(password, user.password):
+        userTO = self.get_user_by_email_uc.exec(UserRepositoryImpl(), email)
+        if not userTO or not check_password(password, userTO.password):
             raise ValueError("Incorrect email or password")
         try:
-            return api_response("User authenticated", UserTokenSerializer(user).data, status.HTTP_200_OK)
+            return api_response("User authenticated", UserTokenSerializer(userTO).data, status.HTTP_200_OK)
         except ValueError as e:
             return api_response(str(e), None, status.HTTP_401_UNAUTHORIZED)
 
