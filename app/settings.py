@@ -17,9 +17,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from health_checks.middlewares import IgnoreHealthCheckLogFilter
+from user_management.middlewares.ignore_session_verify_logs import IgnoreSessionVerifyLogFilter
 
 load_dotenv()
 logging.getLogger("django.server").addFilter(IgnoreHealthCheckLogFilter())
+logging.getLogger("django.server").addFilter(IgnoreSessionVerifyLogFilter())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

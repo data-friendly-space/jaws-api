@@ -85,7 +85,7 @@ class UsersServiceImpl(UsersService):
         try:
             # Validate the token and get the user (if valid)
             jwt_auth.get_validated_token(token)
-            return api_response("Is authenticated", {'is_authenticated': True}, status.HTTP_200_OK)
+            return api_response("Is authenticated", {'isAuthenticated': True}, status.HTTP_200_OK)
         except (InvalidToken, TokenError):
             # Token is invalid or expired
-            return api_response("Session expired", {'is_authenticated': False}, status.HTTP_401_UNAUTHORIZED)
+            return api_response("Session expired", {'isAuthenticated': False}, status.HTTP_401_UNAUTHORIZED)
