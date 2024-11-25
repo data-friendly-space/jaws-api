@@ -17,3 +17,6 @@ class UsersService(ABC):
     @abstractmethod
     def refresh_token(self, refresh_token):
         pass
+    @abstractmethod
+    def verify_token(self, auth_header):
+        pass
