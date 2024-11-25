@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from user_management.contract.to.user_to import UserTO
+from user_management.interfaces.serializers.user_serializer import UserSerializer
+
 
 class TokenSerializer(serializers.Serializer):
     refresh = serializers.CharField(read_only=True)
@@ -8,16 +11,16 @@ class TokenSerializer(serializers.Serializer):
 
 
 class UserTokenSerializer(serializers.Serializer):
-    user_id = serializers.IntegerField(read_only=True)
-    email = serializers.EmailField(read_only=True)
+    user = UserTO  # Replaced user_id and email with user object
     tokens = TokenSerializer(read_only=True)
 
     def to_representation(self, instance):
+        # Create the refresh token based on the user instance
         refresh = RefreshToken.for_user(instance)
 
+        # Return the structured response with user details and tokens
         return {
-            "user_id": instance.id,
-            "email": instance.email,
+            "user": UserSerializer(instance).data,  # Serialize the user using UserTO_
             "tokens": {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
