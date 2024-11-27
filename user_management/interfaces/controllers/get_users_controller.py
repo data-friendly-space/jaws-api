@@ -2,7 +2,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 from user_management.interfaces.controllers.helpers.api_response import api_response
-from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 

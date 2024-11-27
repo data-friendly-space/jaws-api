@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy all source code into the image
 COPY . .
 
+#Make migrations
+# RUN python3 manage.py migrate
+
 # Expose the application port
 EXPOSE 8000
 

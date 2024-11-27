@@ -1,3 +1,4 @@
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
 from user_management.models.affiliation import Affiliation
@@ -8,7 +9,18 @@ from user_management.models.user_workspace_role import UserWorkspaceRole
 from user_management.models.workspace import Workspace
 
 
-class User(models.Model):
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("Email is required")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser):
     name = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
@@ -23,6 +35,11 @@ class User(models.Model):
         through=UserWorkspaceRole,
         related_name='users'
     )
+    is_active = models.BooleanField(default=True)
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name', 'lastname']
 
     def __str__(self):
         return f"{self.name} {self.lastname}"

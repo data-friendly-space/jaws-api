@@ -67,3 +67,12 @@ Django will now map the models in your project to the PostgreSQL database and cr
 ![img.png](img.png)
 
 ![img_2.png](img_2.png)
+
+## Run with docker compose
+In order to set up de development environment using docker compose run the following commands
+**1. Create the services**
+    `docker compose -f docker-compose-dev.yml up --build -d`
+    It will create 2 services. A postgres database and the API. After
+**2. Run the migrations inside the api container**
+    `docker exec jaws-api python3 manage.py migrate`
+    With that command python will create all the database schema up-to-date
