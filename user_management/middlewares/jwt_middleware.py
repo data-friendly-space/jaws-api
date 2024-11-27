@@ -2,6 +2,8 @@ from django.http import JsonResponse
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import AccessToken
 
+from user_management.models import User
+
 
 class JWTMiddleware:
     def __init__(self, get_response):
@@ -22,7 +24,7 @@ class JWTMiddleware:
                         return JsonResponse({'detail': 'Invalid token prefix.'}, status=401)
 
                     decoded_token = AccessToken(token)
-                    request.user = decoded_token['user_id']
+                    request.user = User.objects.get(id=decoded_token['user_id'])
 
                 except (TokenError, InvalidToken) as e:
                     return JsonResponse({'detail': 'Invalid token.', 'error': str(e)}, status=401)
