@@ -3,6 +3,9 @@
 import os
 import sys
 
+from debugger import initialize_debugger_if_needed
+
+initialize_debugger_if_needed()
 
 def main():
     """Run administrative tasks."""

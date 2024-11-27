@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_management',
     'health_checks',
+    'analysis',
     'corsheaders'
 ]
 
