@@ -12,6 +12,9 @@ def get_analysis_by_id_controller(request, id):
     """
     service = AnalysisServiceImpl()
     try:
-        return api_response("Some Analysis", service.get_analysis_by_id(id), status.HTTP_200_OK)
+        analysis = service.get_analysis_by_id(id)
+        if not analysis:
+            return api_response("Not found", analysis, status.HTTP_400_BAD_REQUEST) #TODO: Remove when the exception handling is done
+        return api_response("Success", analysis, status.HTTP_200_OK)
     except Exception as e:
         return api_response(str(e), [], status.HTTP_500_INTERNAL_SERVER_ERROR)

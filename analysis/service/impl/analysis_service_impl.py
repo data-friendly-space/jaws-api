@@ -14,16 +14,14 @@ class AnalysisServiceImpl(AnalysisService):
 
     def create_analysis(self, scope):
         if scope["disaggregations"]:
-            disaggregations = Disaggregation.objects.filter(
-                pk__in=scope["disaggregations"]
-            )
+            disaggregations = self.get_disaggregations(scope["disaggregations"])
         else:
             disaggregations = []
-        sectors = Sector.objects.filter(pk__in=scope["sectors"])
+        sectors = self.get_sectors(scope["sectors"])
         new_id = uuid.uuid4()
         creator_id = "123" #TODO: Fill with the current user id
         workspace_id = "456" #TODO: Fill with the corrseponding workspace id
-        self.__validate_scope_fields(scope, sectors, disaggregations)
+        self.validate_scope_fields(scope, sectors, disaggregations)
         data={
             "id": new_id,
             "title": scope["title"],
@@ -39,17 +37,15 @@ class AnalysisServiceImpl(AnalysisService):
             disaggregations,
             sectors
         )).data
-        
+
 
     def put_analysis_scope(self, scope, analysis_id):
         if scope["disaggregations"]:
-            disaggregations = Disaggregation.objects.filter(
-                pk__in=scope["disaggregations"]
-            )
+            disaggregations = self.get_disaggregations(scope["disaggregations"])
         else:
             disaggregations = []
-        sectors = Sector.objects.filter(pk__in=scope["sectors"])
-        self.__validate_scope_fields(scope, disaggregations, sectors)
+        sectors = self.get_sectors(scope["sectors"])
+        self.validate_scope_fields(scope, sectors, disaggregations)
         return AnalysisSerializer(self.put_analysis_scope_uc.exec(
             self.repository,
             data=scope,
@@ -57,16 +53,30 @@ class AnalysisServiceImpl(AnalysisService):
             sectors=sectors,
             analysis_id=analysis_id)).data
 
-    def __validate_scope_fields(self, scope, sectors, disaggregations=None):     
+    def validate_scope_fields(self, scope, sectors, disaggregations=None):     
         if not all(scope.get(key) for key in ["title", "objetives", "end_date"]) or not sectors:
-            print("some fields are empty", flush=True)
             # TODO: raise BadRequestException
+            raise Exception
+
         if scope["start_date"] and scope["start_date"] >= scope["end_date"]:
-            print("start_date > end_date", flush=True)
             # TODO: raise BadRequestException
+            raise Exception
+
+    def get_disaggregations(self, disaggregations):
+        return Disaggregation.objects.filter(
+                pk__in=disaggregations
+            )
+
+    def get_sectors(self, sectors):
+        return Sector.objects.filter(pk__in=sectors)
+
 
     def get_analysis(self):
         return AnalysisSerializer(self.get_analysis_uc.exec(self.repository), many=True).data
 
     def get_analysis_by_id(self, id):
-        return AnalysisSerializer(self.get_analysis_by_id_uc.exec(AnalysisRepositoryImpl(), id)).data
+        analysis = self.get_analysis_by_id_uc.exec(AnalysisRepositoryImpl(), id)
+        if not analysis:
+            # TODO: raise NotFoundException
+            return None
+        return AnalysisSerializer(analysis).data
