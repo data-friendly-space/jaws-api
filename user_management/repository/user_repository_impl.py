@@ -1,5 +1,6 @@
 from django.contrib.auth.hashers import make_password
 
+from app.query_options import QueryOptions
 from user_management.contract.repository.user_repository import UserRepository
 from user_management.contract.to.user_to import UserTO
 from user_management.models import User
@@ -18,13 +19,15 @@ class UserRepositoryImpl(UserRepository):
         user = User.objects.filter(email=email).first()
         return UserTO.from_model(user)
 
-    def get_all(self):
+    def get_all(self, query_options: QueryOptions):
         """
         Retrieve all users from the database.
         """
-        users = User.objects.all()
-        if not users or len(users) == 0:
+        users_query = User.objects.all()
+        if not users_query or not users_query.exists() or len(users_query) == 0:
+            # TODO: Raise NotFoundException
             return []
+        users = query_options.filter_and_exec_queryset(users_query)
         return UserTO.fromModels(users)
 
     def get_by_id(self, obj_id):
