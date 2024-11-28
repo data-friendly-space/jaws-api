@@ -79,7 +79,7 @@ class QueryOptions(serializers.Serializer):
                 self.search_terms,
                 self.search_fields,
                 self.search_operators):
-                search_filter |= Q(**{f'{ficleareld}__{operator}': term})
+                search_filter |= Q(**{f'{field}__{operator}': term})
             queryset = queryset.filter(search_filter)
 
         if self.order_by:
