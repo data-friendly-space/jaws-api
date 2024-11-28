@@ -1,3 +1,4 @@
+'''This module contains the query options'''
 import ast
 from django.core.paginator import Paginator
 from django.db.models import Q, QuerySet
@@ -5,6 +6,7 @@ from rest_framework import serializers
 
 
 class QueryOptions(serializers.Serializer):
+    '''Class for handling the querying, ordering and pagination'''
     page_number = serializers.IntegerField(required=False)
     page_size = serializers.IntegerField(required=False)
     search_terms = serializers.ListField(child=serializers.CharField(), required=False)
@@ -12,7 +14,12 @@ class QueryOptions(serializers.Serializer):
     search_operators = serializers.ListField(child=serializers.CharField(), required=False)
     order_by = serializers.DictField(child=serializers.CharField(), required=False)
 
-    def __init__(self, page_number=None, page_size=None, search_terms=None, search_fields=None, search_operators=None,
+    def __init__(self, 
+                 page_number=None,
+                 page_size=None,
+                 search_terms=None,
+                 search_fields=None,
+                 search_operators=None,
                  order_by=None):
         super().__init__()
         self.page_number = page_number
@@ -23,6 +30,7 @@ class QueryOptions(serializers.Serializer):
         self.order_by = order_by
 
     def to_dict(self):
+        '''Return a dict of the query options'''
         return {
             'page_number': self.page_number,
             'page_size': self.page_size,
@@ -34,6 +42,7 @@ class QueryOptions(serializers.Serializer):
 
     @classmethod
     def from_dict(cls, data):
+        '''Creates a QueryOption from a dict'''
         return cls(
             page_number=data.get('page_number'),
             page_size=data.get('page_size'),
@@ -45,6 +54,7 @@ class QueryOptions(serializers.Serializer):
 
     @classmethod
     def from_request(cls, request):
+        '''Creates a query option from a request'''
         order_by = request.query_params.get('order_by')
         if order_by:
             order_by = ast.literal_eval(order_by)
@@ -59,13 +69,17 @@ class QueryOptions(serializers.Serializer):
         )
 
     def filter_and_exec_queryset(self, queryset: QuerySet) -> list:
+        '''Filter, order and paginate the response'''
         if not queryset:
             return list()
 
         if self.search_terms and self.search_fields and self.search_operators:
             search_filter = Q()
-            for term, field, operator in zip(self.search_terms, self.search_fields, self.search_operators):
-                search_filter |= Q(**{f'{field}__{operator}': term})
+            for term, field, operator in zip(
+                self.search_terms,
+                self.search_fields,
+                self.search_operators):
+                search_filter |= Q(**{f'{ficleareld}__{operator}': term})
             queryset = queryset.filter(search_filter)
 
         if self.order_by:

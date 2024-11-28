@@ -1,4 +1,4 @@
-from requests import Response
+'''This module contains the controller for putting the scope of an analysis'''
 from rest_framework.decorators import api_view
 from rest_framework import status
 
@@ -8,9 +8,7 @@ from app.core.api_response import api_response
 
 @api_view(["PUT"])
 def put_analysis_scope_controller(request, id):
-    """
-    Update the analysis's scope
-    """
+    """Update the analysis's scope"""
     service = AnalysisServiceImpl()
     if request.data.get("startDate"):
         request.data["startDate"] = request.data["startDate"].split("T")[0]

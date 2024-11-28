@@ -1,3 +1,4 @@
+'''This module contain the create analysis controller'''
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -7,9 +8,7 @@ from app.core.api_response import api_response
 
 @api_view(["POST"])
 def create_analysis_controller(request):
-    """
-    Create a new analysis
-    """
+    """Create a new analysis"""
     service = AnalysisServiceImpl()
     if request.data.get("startDate"):
         request.data["startDate"] = request.data["startDate"].split("T")[0]
