@@ -9,24 +9,23 @@ class QueryOptions(serializers.Serializer):
     '''Class for handling the querying, ordering and pagination'''
     page_number = serializers.IntegerField(required=False)
     page_size = serializers.IntegerField(required=False)
-    search_terms = serializers.ListField(child=serializers.CharField(), required=False)
+    search_term = serializers.CharField(required=False)
     search_fields = serializers.ListField(child=serializers.CharField(), required=False)
-    search_operators = serializers.ListField(child=serializers.CharField(), required=False)
     order_by = serializers.DictField(child=serializers.CharField(), required=False)
 
-    def __init__(self, 
+    def __init__(self,
                  page_number=None,
                  page_size=None,
-                 search_terms=None,
+                 search_term=None,
+                 search_class=None,
                  search_fields=None,
-                 search_operators=None,
                  order_by=None):
         super().__init__()
         self.page_number = page_number
         self.page_size = page_size
-        self.search_terms = search_terms
+        self.search_term = search_term
+        self.search_class = search_class
         self.search_fields = search_fields
-        self.search_operators = search_operators
         self.order_by = order_by
 
     def to_dict(self):
@@ -34,9 +33,8 @@ class QueryOptions(serializers.Serializer):
         return {
             'page_number': self.page_number,
             'page_size': self.page_size,
-            'search_terms': self.search_terms,
+            'search_term': self.search_term,
             'search_fields': self.search_fields,
-            'search_operators': self.search_operators,
             'order_by': self.order_by
         }
 
@@ -46,9 +44,8 @@ class QueryOptions(serializers.Serializer):
         return cls(
             page_number=data.get('page_number'),
             page_size=data.get('page_size'),
-            search_terms=data.get('search_terms'),
+            search_term=data.get('search_term'),
             search_fields=data.get('search_fields'),
-            search_operators=data.get('search_operators'),
             order_by=data.get('order_by')
         )
 
@@ -62,9 +59,8 @@ class QueryOptions(serializers.Serializer):
         return cls(
             page_number=request.query_params.get('page_number'),
             page_size=request.query_params.get('page_size'),
-            search_terms=request.query_params.getlist('search_terms'),
+            search_term=request.query_params.get('search_term'),
             search_fields=request.query_params.getlist('search_fields'),
-            search_operators=request.query_params.getlist('search_operators'),
             order_by=order_by
         )
 
@@ -73,13 +69,10 @@ class QueryOptions(serializers.Serializer):
         if not queryset:
             return list()
 
-        if self.search_terms and self.search_fields and self.search_operators:
+        if self.search_term and self.search_fields:
             search_filter = Q()
-            for term, field, operator in zip(
-                self.search_terms,
-                self.search_fields,
-                self.search_operators):
-                search_filter |= Q(**{f'{field}__{operator}': term})
+            for field in self.search_fields:
+                search_filter |= Q(**{f'{field}__icontains': self.search_term})
             queryset = queryset.filter(search_filter)
 
         if self.order_by:
