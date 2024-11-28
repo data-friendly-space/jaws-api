@@ -6,6 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from app.query_options import QueryOptions
 from user_management.interfaces.controllers.helpers.api_response import api_response
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.interfaces.serializers.user_serializer import UserSerializer
@@ -26,8 +27,8 @@ class UsersServiceImpl(UsersService):
         self.sign_up_uc = SignUpUC.get_instance()
         self.get_user_by_email_uc = GetUserByEmailUC.get_instance()
 
-    def get_users(self):
-        return UserSerializer(self.get_users_uc.exec(UserRepositoryImpl()), many=True).data
+    def get_users(self, query_options: QueryOptions):
+        return UserSerializer(self.get_users_uc.exec(UserRepositoryImpl(), query_options), many=True).data
 
     def sign_up(self, name, lastname, email, password):
 

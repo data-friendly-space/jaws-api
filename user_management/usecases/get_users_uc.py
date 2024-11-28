@@ -13,5 +13,5 @@ class GetUsersUC:
             GetUsersUC()
         return GetUsersUC._instance
 
-    def exec(self, repository):
-        return repository.get_all()
+    def exec(self, repository, query_options):
+        return repository.get_all(query_options)
