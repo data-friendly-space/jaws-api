@@ -1,8 +1,9 @@
+'''This module contains the disaggregation DTO'''
 from analysis.models.disaggregation import Disaggregation
 
 
 class DisaggregationTO:
-
+    '''Disaggregation DTO'''
     def __init__(
             self,
             id: str,
@@ -13,16 +14,17 @@ class DisaggregationTO:
 
     @classmethod
     def from_model(cls, instance: Disaggregation):
-        if instance is None:  # Handle case when instance is None
-            return None
         """Transforms Position instance into a PositionTO representation."""
+        if instance is None:
+            return None
         return cls(
             id=instance.id,
             name=instance.name
         )
-    
+
     @classmethod
     def from_models(cls, disaggregations):
-        if disaggregations is None or disaggregations.count() <= 0:  # Handle case when instance is None
+        '''Create a disaggregation dto based on a database model'''
+        if disaggregations is None or disaggregations.count() <= 0:
             return None
         return [cls.from_model(disaggregation) for disaggregation in disaggregations.all()]

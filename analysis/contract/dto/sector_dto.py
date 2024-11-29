@@ -1,8 +1,9 @@
+'''This module contains the sector DTO'''
 from analysis.models.sector import Sector
 
 
 class SectorTO:
-
+    '''Sector DTO'''
     def __init__(
             self,
             id: str,
@@ -13,16 +14,17 @@ class SectorTO:
 
     @classmethod
     def from_model(cls, instance: Sector):
-        if instance is None:  # Handle case when instance is None
+        """Transforms Sector instance into a Sector DTO representation."""
+        if instance is None:
             return None
-        """Transforms Position instance into a PositionTO representation."""
         return cls(
             id=instance.id,
             name=instance.name
         )
-    
+
     @classmethod
     def from_models(cls, sectors):
+        '''Creatre a sector DTO based on a database model'''
         if sectors is None or sectors.count() <= 0:
             return None
         return [cls.from_model(sector) for sector in sectors.all()]

@@ -1,3 +1,4 @@
+'''This module contains the tests for the views'''
 from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,7 +10,7 @@ from user_management.models.user import User
 
 
 class AnalysisTestCase(TestCase):
-
+    '''TestCase for analysis module'''
     @classmethod
     def setUpTestData(cls):
         pass
@@ -28,10 +29,12 @@ class AnalysisTestCase(TestCase):
         self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {self.access_token}'
 
     def test_get_analyses(self):
+        '''Test if the get analysis work as expected'''
         response = self.client.get(reverse("get_analyses"))
         self.assertEqual(response.status_code, 200)
 
     def test_get_analysis_by_id(self):
+        '''Test if get analysis by id work as expected'''
         Analysis.objects.create(
             id="test",
             title="test analysis",
@@ -44,6 +47,7 @@ class AnalysisTestCase(TestCase):
         self.assertEqual(response.data["payload"]["id"], "test")
 
     def test_get_analysis_by_id_not_found(self):
+        '''Test if get analysis by id with an invalid id throw 400'''
         response = self.client.get(reverse("get_analysis", args=["test"]))
         self.assertEqual(response.status_code, 400)
 

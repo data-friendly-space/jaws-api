@@ -1,3 +1,4 @@
+'''This module contains the analysis model'''
 from django.db import models
 
 from analysis.models.analysis_framework import AnalysisFramework
@@ -6,6 +7,7 @@ from analysis.models.sector import Sector
 
 
 class Analysis(models.Model):
+    '''Analysis model'''
     id = models.CharField(primary_key=True, max_length=36)
     title = models.CharField(max_length=255)
     analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.SET_NULL, null=True)
