@@ -43,3 +43,6 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return f"{self.name} {self.lastname}"
+
+    class Meta:
+        db_table = 'user'

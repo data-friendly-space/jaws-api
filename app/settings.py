@@ -168,12 +168,31 @@ DATABASES = {
         'OPTIONS': {
             'client_encoding': 'UTF8',
         },
-        'TEST': {
-            'NAME': 'test_USER',
-        }
-    }
+    },
+    'user_management_db': {
+        'ENGINE': os.environ.get('DATABASE_ENGINE'),
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
+    },
+    'analysis_db': {
+        'ENGINE': os.environ.get('DATABASE_ENGINE'),
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
+    },
 }
-
+DATABASE_ROUTERS = ['db_router.DBRouter']
 TEST = {
     'DEPENDENCIES': 'keepdb',
 }

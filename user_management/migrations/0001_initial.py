@@ -23,13 +23,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='AnalysisFramework',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Organization',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -94,7 +87,6 @@ class Migration(migrations.Migration):
                 ('creation_date', models.DateTimeField()),
                 ('last_access_date', models.DateTimeField()),
                 ('country', models.CharField(max_length=100)),
-                ('analysis_framework', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user_management.analysisframework')),
                 ('facilitator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='facilitated_workspaces', to=settings.AUTH_USER_MODEL)),
             ],
         ),
