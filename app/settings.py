@@ -39,6 +39,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
@@ -47,15 +50,9 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "OPTIONS",
 ]
-CORS_ALLOW_HEADERS = [
-    "content-type",
-    "authorization",
-    "x-csrftoken",
-    "accept",
-    "origin",
-    "x-requested-with",
-]
 
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'https://localhost', 'http://localhost:3000']
 # Application definition
 CUSTOM_APPS = [
     'common',
@@ -70,10 +67,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'health_check',  # Required
     'health_check.cache',  # Cache backend health checker
     'health_check.storage',  # Default storage system health check
-    'rest_framework',
     'corsheaders',
 ]
 
@@ -85,7 +82,6 @@ CUSTOM_MIDDLEWARES = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,6 +89,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 MIDDLEWARE += CUSTOM_MIDDLEWARES
@@ -171,9 +168,9 @@ DATABASES = {
     },
     'user_management_db': {
         'ENGINE': os.environ.get('DATABASE_ENGINE'),
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'NAME': os.environ.get('USER_MANAGEMENT_DATABASE_NAME'),
+        'USER': os.environ.get('USER_MANAGEMENT_DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('USER_MANAGEMENT_DATABASE_PASSWORD'),
         'HOST': os.environ.get('DATABASE_HOST'),
         'PORT': os.environ.get('DATABASE_PORT'),
         'OPTIONS': {
@@ -182,9 +179,9 @@ DATABASES = {
     },
     'analysis_db': {
         'ENGINE': os.environ.get('DATABASE_ENGINE'),
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'NAME': os.environ.get('ANALYSIS_DATABASE_NAME'),
+        'USER': os.environ.get('ANALYSIS_DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('ANALYSIS_DATABASE_PASSWORD'),
         'HOST': os.environ.get('DATABASE_HOST'),
         'PORT': os.environ.get('DATABASE_PORT'),
         'OPTIONS': {
