@@ -57,7 +57,12 @@ CORS_ALLOW_HEADERS = [
 ]
 
 # Application definition
-
+CUSTOM_APPS = [
+    'common',
+    'user_management',
+    'health_checks',
+    'analysis',
+]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,10 +74,14 @@ INSTALLED_APPS = [
     'health_check.cache',  # Cache backend health checker
     'health_check.storage',  # Default storage system health check
     'rest_framework',
-    'user_management',
-    'health_checks',
-    'analysis',
-    'corsheaders'
+    'corsheaders',
+]
+
+INSTALLED_APPS += CUSTOM_APPS
+
+CUSTOM_MIDDLEWARES = [
+    'user_management.middlewares.jwt_middleware.JWTMiddleware',
+    'common.middlewares.exception_handler.ExceptionHandler',
 ]
 
 MIDDLEWARE = [
@@ -84,8 +93,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'user_management.middlewares.jwt_middleware.JWTMiddleware',
 ]
+
+MIDDLEWARE += CUSTOM_MIDDLEWARES
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -158,7 +168,14 @@ DATABASES = {
         'OPTIONS': {
             'client_encoding': 'UTF8',
         },
+        'TEST': {
+            'NAME': 'test_USER',
+        }
     }
+}
+
+TEST = {
+    'DEPENDENCIES': 'keepdb',
 }
 
 # Internationalization

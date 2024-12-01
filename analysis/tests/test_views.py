@@ -15,17 +15,7 @@ class AnalysisTestCase(TestCase):
         pass
 
     def setUp(self):
-        user = User.objects.create(
-            name="TestName",
-            lastname="TestLastname",
-            email="test@test.com",
-            password="testpassword"
-        )
-        refresh = RefreshToken.for_user(user)
-        self.client = Client()
-        self.client.force_login(user)
-        self.access_token = str(refresh.access_token)
-        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {self.access_token}'
+        self.client, self.user = create_logged_in_client()
 
     def test_get_analyses(self):
         response = self.client.get(reverse("get_analyses"))
