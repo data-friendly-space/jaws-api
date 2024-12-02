@@ -11,6 +11,7 @@ class JWTMiddleware:
 
     def __call__(self, request):
         excluded_paths = ['/jaws-api/user-management/sign-up',
+                          '/jaws-api/user-management/users',
                           '/jaws-api/user-management/sign-in', '/jaws-api/user-management/token-refresh',
                           '/jaws-api/user-management/session-verify', '/favicon.ico']
 

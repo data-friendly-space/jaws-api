@@ -11,3 +11,6 @@ class UserWorkspaceRole(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.role} in {self.workspace}"
+
+    class Meta:
+        db_table = 'workspace_role'

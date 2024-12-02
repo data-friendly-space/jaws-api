@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from analysis.models.analysis import Analysis
-from app.core.serializer.CamelCaseMixin import CamelCaseMixin
+from common.serializer.CamelCaseMixin import CamelCaseMixin
 
 class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
     """

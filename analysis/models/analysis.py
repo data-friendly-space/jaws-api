@@ -18,3 +18,8 @@ class Analysis(models.Model):
     creator = models.CharField(max_length=36)
     created_on = models.DateTimeField(auto_now_add=True)
     last_change = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'analysis'
+
+

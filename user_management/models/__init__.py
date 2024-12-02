@@ -5,6 +5,5 @@ from user_management.models.affiliation import Affiliation
 from user_management.models.permission import Permission
 from user_management.models.user import User
 from user_management.models.user_workspace_role import UserWorkspaceRole
-from user_management.models.analysis_framework import AnalysisFramework
 from user_management.models.organization import Organization
 from user_management.models.ui_configuration import UiConfiguration

@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_uc import GetAnalysisUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
-from app.core.service.base_service import BaseService
+from common.service.base_service import BaseService
 
 
 class AnalysisService(BaseService):
