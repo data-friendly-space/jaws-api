@@ -12,4 +12,4 @@ class UiConfiguration(models.Model):
         return "UI Configuration"
 
     class Meta:
-        db_table = 'iu_configuration'
+        db_table = 'ui_configuration'

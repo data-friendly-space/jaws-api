@@ -55,7 +55,7 @@ After each generation execute the migrations to create the necessary tables in t
 
     python manage.py makemigrations user_management
     python manage.py migrate --database=user_management_db
-    
+            
     python manage.py makemigrations analysis
     python manage.py migrate --database=analysis_db
 
