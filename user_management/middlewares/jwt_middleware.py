@@ -10,10 +10,11 @@ class JWTMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        excluded_paths = ['/jaws-api/user-management/sign-up',
-                          '/jaws-api/user-management/users',
-                          '/jaws-api/user-management/sign-in', '/jaws-api/user-management/token-refresh',
-                          '/jaws-api/user-management/session-verify', '/favicon.ico']
+        excluded_paths = [
+            '/jaws-api/csrf', '/jaws-api/user-management/sign-up',
+            '/jaws-api/user-management/users',
+            '/jaws-api/user-management/sign-in', '/jaws-api/user-management/token-refresh',
+            '/jaws-api/user-management/session-verify', '/favicon.ico']
 
         if request.path not in excluded_paths:
             auth_header = request.headers.get('Authorization')
