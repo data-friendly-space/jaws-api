@@ -12,6 +12,15 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
+
+    services:
+      db: 
+        image: postgres
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        
     steps:
     - uses: actions/checkout@v4
 
@@ -30,5 +39,10 @@ jobs:
         pylint $(git ls-files '*.py') --fail-under 4 
 
     - name: Run tests
+      env:
+        DATABASE_USERNAME: test_db
+        DATABASE_HOST: test_db
+        DATABASE_PORT: 5432
+        DATABASE_PASSWORD: test_password
       run: |
         python3 manage.py test
