@@ -45,5 +45,6 @@ jobs:
         DATABASE_HOST: db
         DATABASE_PORT: 5432
         DATABASE_PASSWORD: test_password
+        DATABASE_ENGINE: django.db.backends.postgresql
       run: |
         python3 manage.py test
