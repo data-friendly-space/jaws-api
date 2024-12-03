@@ -1,0 +1,48 @@
+[
+    {
+        "name": "${container_name}",
+        "image": "${container_image}",
+        "cpu": ${container_cpu},
+        "memory": ${container_memory},
+        "portMappings": [
+            {
+                "containerPort": ${container_port},
+                "hostPort": ${container_port},
+                "protocol": "tcp"
+            },
+            {
+                "hostPort": 8080,
+                "protocol": "tcp",
+                "containerPort": 8080
+            }
+        ],
+        "essential": true,
+        "environment": [
+            {
+            "name": "API_PORT",
+            "value": "80"
+            },{
+            "name": "API_PREFIX",
+            "value": "/search"
+            },{
+            "name": "NODE_ENV",
+            "value": "development"
+            }
+        ],
+        "mountPoints": [],
+        "volumesFrom": [],
+        "secrets": [
+
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-create-group": "true",
+                "awslogs-group": "${aws_cloudwatch_log_group}",
+                "awslogs-region": "${region}",
+                "awslogs-stream-prefix": "ecs"
+            }
+        },
+        "systemControls": []
+    }    
+]
