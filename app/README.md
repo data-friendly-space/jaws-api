@@ -1,9 +1,8 @@
 # Query filtering
 ### Request
 Send the three items together 
-* Search terms: Represent the value to be used as a filter
+* Search term: Represent the value to be used as a filter
 * Search field: the field that should be used in the query
-* Search operators: the operator to filter the term on the field (i.e: contains, starts_with)
 
 ### View
 ```python
@@ -43,12 +42,12 @@ class SomeData():
 ```
 ## One field
 For custom filter in your queries you should use the QueryOptions object this way
-`/some_endpoint?search_terms=test&search_fields=name&search_operators=contains`
+`/some_endpoint?search_term=test&search_fields=name`
 
 ## Multiple fields
 You can achieve the same by adding more filters. The important thing here is to consider the order. You should keep together every group of filter (term, field and operator)
 
-`/some_endpoint?search_terms=test&search_fields=name&search_operators=contains&search_terms=some_email&search_fields=email&search_operators=starts_with`
+`/some_endpoint?search_fields=name&search_fields=email&search_term=some_email`
 Here we have 2 filters. One filtering the `name` field with the `test` value using `contains`. The other filter uses the `email` field with the `some_email` value using `starts_with`.
 
 # Pagination

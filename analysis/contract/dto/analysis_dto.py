@@ -1,3 +1,4 @@
+'''This module contains the analysis DTO'''
 from typing import Optional
 
 from analysis.contract.dto.disaggregation_dto import DisaggregationTO
@@ -6,6 +7,7 @@ from analysis.models.analysis import Analysis
 
 
 class AnalysisTO:
+    '''Analysis Data Transfer Object'''
     def __init__(
             self,
             id: str,
@@ -52,8 +54,8 @@ class AnalysisTO:
         )
 
     @classmethod
-    def from_models(self, analyses):
+    def from_models(cls, analyses):
         """
         Transform a list of Analysis model instances into a list of AnalysisDTO instances.
         """
-        return [self.from_model(analysis) for analysis in analyses]
+        return [cls.from_model(analysis) for analysis in analyses]
