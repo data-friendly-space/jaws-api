@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 from health_checks.middlewares import IgnoreHealthCheckLogFilter
 from user_management.middlewares.ignore_session_verify_logs import IgnoreSessionVerifyLogFilter
 
-load_dotenv()
+load_dotenv(override=True)
 logging.getLogger("django.server").addFilter(IgnoreHealthCheckLogFilter())
 logging.getLogger("django.server").addFilter(IgnoreSessionVerifyLogFilter())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -127,10 +127,10 @@ TEMPLATES = [
 
 SIMPLE_JWT = {
     # Duration of the access token
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME'))),  # 30min as example
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME', 30))),  # 30min as example
 
     # Duration of the refresh token
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME'))),  # 7 days as example
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME', 7))),  # 7 days as example
 
     # Algorithm used for signing the tokens
     'ALGORITHM': 'HS256',  # Default algorithm (you can switch to RS256 for asymmetric key signing)

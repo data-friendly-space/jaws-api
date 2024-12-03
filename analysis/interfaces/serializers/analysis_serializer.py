@@ -1,3 +1,4 @@
+'''This module contains the analysis serializer'''
 from rest_framework import serializers
 from analysis.models.analysis import Analysis
 from common.serializer.CamelCaseMixin import CamelCaseMixin

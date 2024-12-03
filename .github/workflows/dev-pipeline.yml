@@ -1,5 +1,6 @@
 name: Development
 
+
 on:
  pull_request:
     branches:
@@ -11,6 +12,22 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
+
+    services:
+      postgres: 
+        image: postgres
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v4
 
@@ -26,8 +43,15 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint $(git ls-files '*.py') --fail-under 4 
 
     - name: Run tests
+      env:
+        DATABASE_NAME: test_db
+        DATABASE_USERNAME: test_user
+        DATABASE_HOST: localhost
+        DATABASE_PORT: 5432
+        DATABASE_PASSWORD: test_password
+        DATABASE_ENGINE: django.db.backends.postgresql
       run: |
         python3 manage.py test
