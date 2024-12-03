@@ -47,7 +47,7 @@ jobs:
       env:
         DATABASE_NAME: test_db
         DATABASE_USERNAME: test_user
-        DATABASE_HOST: postgres
+        DATABASE_HOST: localhost
         DATABASE_PORT: 5432
         DATABASE_PASSWORD: test_password
         DATABASE_ENGINE: django.db.backends.postgresql
