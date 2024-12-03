@@ -2,6 +2,7 @@
 variable "aws_region" {
   description = "Default AWS Region"
   type        = string
+  default     = "us-east-1"
 }
 
 variable "aws_profile" {
@@ -63,72 +64,72 @@ variable "zone_name" {
 ##------------------- SERVICES VARIABLES ----------------##   
 
 
-##------------------- price-ai-service VARIABLES ----------------##
-variable "price_ai_service_cluster_name" {
-  description = "The price-ai cluster name"
+##------------------- jaws-service VARIABLES ----------------##
+variable "jaws_service_cluster_name" {
+  description = "The jaws cluster name"
   type        = string
 }
 
-variable "ecs_price_ai_service_task_family" {
+variable "ecs_jaws_service_task_family" {
   description = "ECS task family"
   type        = string
 }
 
-variable "ecs_price_ai_service_container_name" {
+variable "ecs_jaws_service_container_name" {
   description = "Value of container name"
   type        = string
 }
 
-variable "ecs_price_ai_service_container_image" {
+variable "ecs_jaws_service_container_image" {
   description = "Value of container image"
   type        = string
 }
 
-variable "ecs_price_ai_service_container_port" {
+variable "ecs_jaws_service_container_port" {
   description = "Container port number"
   type        = number
 }
 
-variable "ecs_price_ai_service_container_memory" {
+variable "ecs_jaws_service_container_memory" {
   description = "Container memory size"
   type        = number
 }
 
-variable "ecs_price_ai_service_container_cpu" {
+variable "ecs_jaws_service_container_cpu" {
   description = "Container cpu size"
   type        = number
 }
 
-variable "ecs_price_ai_service_desired_count" {
+variable "ecs_jaws_service_desired_count" {
   description = "Desired count value"
   type        = number
 }
 
-variable "price_ai_service_ecs_app_name" {
+variable "jaws_service_ecs_app_name" {
   description = "App name"
   type        = string
 }
 
-variable "price_ai_service_health_check_endpoint" {
+variable "jaws_service_health_check_endpoint" {
   description = "Health check path"
   type        = string
 }
 
-variable "price_ai_service_health_check_interval" {
+variable "jaws_service_health_check_interval" {
   description = "Value of health check interval"
   type        = number
 }
-variable "price_ai_service_health_check_timeout" {
+variable "jaws_service_health_check_timeout" {
   description = "Value of health check timeout"
   type        = number
 }
 
-variable "price_ai_service_ecs_health_check_grace_period" {
+variable "jaws_service_ecs_health_check_grace_period" {
   description = "Service grace period value"
   type        = number
 }
 
-variable "price_ai_service_aws_cloudwatch_retention_days" {
+variable "jaws_service_aws_cloudwatch_retention_days" {
   description = "Cloudwatch retention in days"
   type        = number
 }

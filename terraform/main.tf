@@ -5,9 +5,9 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    key     = "priceai.terraform.tfstate"
+    key     = "jaws.terraform.tfstate"
     region  = "us-east-1"
-    profile = "rxsense"
+    profile = "default"
     encrypt = true
   }
 
@@ -15,7 +15,6 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~>5.0"
-
     }
   }
 }
@@ -46,11 +45,3 @@ module "policy" {
   source = "./modules/policy"
   tags   = var.tags
 }
-
-
-
-
-
-
-
-
