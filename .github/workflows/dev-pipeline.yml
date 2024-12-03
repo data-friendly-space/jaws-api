@@ -27,7 +27,7 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint --fail-on 4 --$(git ls-files '*.py')
 
     - name: Run tests
       run: |
