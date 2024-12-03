@@ -4,7 +4,7 @@ class DBRouter:
     """
 
     app_to_db = {
-        'user_management': 'user_management_db',
+        'user_management': 'default',
         'analysis': 'analysis_db',
     }
 
@@ -32,4 +32,8 @@ class DBRouter:
         """
         Ensure that migrations occur only in the designated database.
         """
-        return self.app_to_db.get(app_label) == db
+        # If the app_label exists in app_to_db, only allow migration on the respective database
+        if app_label in self.app_to_db:
+            return db == self.app_to_db[app_label]
+        # For all other apps, use the default database
+        return db == 'default'

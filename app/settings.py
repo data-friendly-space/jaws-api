@@ -51,7 +51,6 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
-
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'https://localhost', 'http://localhost:3000']
 # Application definition
 CUSTOM_APPS = [
@@ -93,6 +92,7 @@ MIDDLEWARE = [
 ]
 
 MIDDLEWARE += CUSTOM_MIDDLEWARES
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -157,20 +157,9 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DATABASE_ENGINE'),
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'PORT': os.environ.get('DATABASE_PORT'),
-        'OPTIONS': {
-            'client_encoding': 'UTF8',
-        },
-    },
-    'user_management_db': {
-        'ENGINE': os.environ.get('DATABASE_ENGINE'),
-        'NAME': os.environ.get('USER_MANAGEMENT_DATABASE_NAME'),
-        'USER': os.environ.get('USER_MANAGEMENT_DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('USER_MANAGEMENT_DATABASE_PASSWORD'),
+        'NAME': os.environ.get('DEFAULT_DATABASE_NAME'),
+        'USER': os.environ.get('DEFAULT_DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DEFAULT_DATABASE_PASSWORD'),
         'HOST': os.environ.get('DATABASE_HOST'),
         'PORT': os.environ.get('DATABASE_PORT'),
         'OPTIONS': {

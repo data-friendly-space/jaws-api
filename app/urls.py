@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
 
+from user_management.interfaces.controllers.csrf_token_controller import csrf_token_controller
+
 
 def redirect_to_health(request):
     return redirect('/jaws-api/health')
@@ -30,6 +32,8 @@ urlpatterns = [
     path('jaws-api/health', include('health_check.urls')),
 
     path('jaws-api/user-management/', include('user_management.urls')),
-    
-    path('jaws-api/analysis/', include('analysis.urls'))
+
+    path('jaws-api/analysis/', include('analysis.urls')),
+
+    path('jaws-api/csrf', csrf_token_controller, name='csrf'),
 ]
