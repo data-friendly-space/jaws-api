@@ -14,14 +14,17 @@ jobs:
         python-version: ["3.12"]
 
     services:
-      db: 
+      postgres: 
         image: postgres
         env:
           POSTGRES_DB: test_db
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
-        ports:
-          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         
     steps:
     - uses: actions/checkout@v4
@@ -40,18 +43,11 @@ jobs:
       run: |
         pylint $(git ls-files '*.py') --fail-under 4 
 
-    - name: Wait for DB
-      run: |
-        until nc -z db 5432; do
-          echo "Waiting for the database to be available..."
-          sleep 2
-        done
-
     - name: Run tests
       env:
         DATABASE_NAME: test_db
         DATABASE_USERNAME: test_user
-        DATABASE_HOST: db
+        DATABASE_HOST: postgres
         DATABASE_PORT: 5432
         DATABASE_PASSWORD: test_password
         DATABASE_ENGINE: django.db.backends.postgresql
