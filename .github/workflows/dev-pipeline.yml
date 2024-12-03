@@ -40,8 +40,9 @@ jobs:
 
     - name: Run tests
       env:
-        DATABASE_USERNAME: test_db
-        DATABASE_HOST: test_db
+        DATABASE_NAME: test_db
+        DATABASE_USERNAME: test_user
+        DATABASE_HOST: db
         DATABASE_PORT: 5432
         DATABASE_PASSWORD: test_password
       run: |
