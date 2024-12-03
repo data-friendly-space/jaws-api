@@ -40,6 +40,13 @@ jobs:
       run: |
         pylint $(git ls-files '*.py') --fail-under 4 
 
+    - name: Wait for DB
+      run: |
+        until nc -z db 5432; do
+          echo "Waiting for the database to be available..."
+          sleep 2
+        done
+
     - name: Run tests
       env:
         DATABASE_NAME: test_db
