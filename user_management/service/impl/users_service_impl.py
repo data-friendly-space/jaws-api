@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.exceptions.exceptions import UnauthorizedException, BadRequestException, InternalServerErrorException
+from common.exceptions.exceptions import UnauthorizedException, BadRequestException
 from common.helpers.api_responses import api_response_success
 from common.helpers.query_options import QueryOptions
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
@@ -28,10 +28,8 @@ class UsersServiceImpl(UsersService):
         self.get_user_by_email_uc = GetUserByEmailUC.get_instance()
 
     def get_users(self, query_options: QueryOptions):
-        return api_response_success("Users retrieved successfully",
-                                    UserSerializer(self.get_users_uc.exec(UserRepositoryImpl(), query_options),
-                                                   many=True).data,
-                                    status.HTTP_200_OK)
+        return UserSerializer(self.get_users_uc.exec(UserRepositoryImpl(), query_options),
+                              many=True).data
 
     def sign_up(self, name, lastname, email, password):
         if not email or not password or not email:
@@ -39,14 +37,13 @@ class UsersServiceImpl(UsersService):
         if self.get_user_by_email_uc.exec(UserRepositoryImpl(), email):
             raise BadRequestException("User already exists", None)
         self.sign_up_uc.exec(UserRepositoryImpl(), name, lastname, email, password)
-        return api_response_success("User successfully created", None, status.HTTP_201_CREATED)
 
     def sign_in(self, email, password):
-        userTO = self.get_user_by_email_uc.exec(UserRepositoryImpl(), email)
-        if not userTO or not check_password(password, userTO.password):
+        user_to = self.get_user_by_email_uc.exec(UserRepositoryImpl(), email)
+        if not user_to or not check_password(password, user_to.password):
             raise BadRequestException("Incorrect email or password")
         try:
-            return api_response_success("User authenticated", UserTokenSerializer(userTO).data, status.HTTP_200_OK)
+            return UserTokenSerializer(user_to).data
         except ValueError as e:
             raise UnauthorizedException(str(e), None)
 
@@ -54,15 +51,10 @@ class UsersServiceImpl(UsersService):
         if not refresh_token:
             raise BadRequestException(
                 "Refresh token is required.", None)
-
         try:
             # Attempt to decode the refresh token and generate a new access token
             token = RefreshToken(refresh_token)
-            new_access_token = str(token.access_token)
-            return api_response_success(
-                "Access granted", {"jwt_access_token": new_access_token},
-                status.HTTP_200_OK
-            )
+            return str(token.access_token)
         except TokenError as e:
             # Handle cases where the refresh token is invalid or expired
             raise UnauthorizedException(
@@ -82,9 +74,7 @@ class UsersServiceImpl(UsersService):
         jwt_auth = JWTAuthentication()
 
         try:
-            # Validate the token and get the user (if valid)
             jwt_auth.get_validated_token(token)
             return api_response_success("Is authenticated", {'isAuthenticated': True}, status.HTTP_200_OK)
         except (InvalidToken, TokenError):
-            # Token is invalid or expired
             raise UnauthorizedException("Session expired", {'is_authenticated': False})

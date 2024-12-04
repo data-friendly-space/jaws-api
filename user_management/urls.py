@@ -9,7 +9,7 @@ from user_management.interfaces.controllers.verify_token_controller import verif
 
 urlpatterns = [
     path('users', get_users_controller, name='get_users'),
-    path("users/create", create_user_controller, name="create_user"),
+    #path("users/create", create_user_controller, name="create_user"),
     path('sign-in', sign_in_controller, name='sign_in'),
     path('sign-up', sign_up_controller, name='sign_up'),
 

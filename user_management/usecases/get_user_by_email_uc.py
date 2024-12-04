@@ -1,5 +1,6 @@
 '''This module contains the get user by id use case'''
 
+
 class GetUserByEmailUC:
     '''Retrieve a user based on a given email'''
     _instance = None
