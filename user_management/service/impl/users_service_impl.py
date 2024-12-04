@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.exceptions.exceptions import UnauthorizedException, BadRequestException
+from common.exceptions.exceptions import UnauthorizedException, BadRequestException, InternalServerErrorException
 from common.helpers.api_responses import api_response_success
 from common.helpers.query_options import QueryOptions
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
@@ -28,14 +28,10 @@ class UsersServiceImpl(UsersService):
         self.get_user_by_email_uc = GetUserByEmailUC.get_instance()
 
     def get_users(self, query_options: QueryOptions):
-        try:
-
-            return api_response_success("Users retrieved successfully",
-                                        UserSerializer(self.get_users_uc.exec(UserRepositoryImpl(), query_options),
-                                                       many=True).data,
-                                        status.HTTP_200_OK)
-        except Exception as e:
-            return api_response_success(str(e), [], status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return api_response_success("Users retrieved successfully",
+                                    UserSerializer(self.get_users_uc.exec(UserRepositoryImpl(), query_options),
+                                                   many=True).data,
+                                    status.HTTP_200_OK)
 
     def sign_up(self, name, lastname, email, password):
         if not email or not password or not email:
