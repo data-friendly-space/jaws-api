@@ -13,5 +13,5 @@ def get_users_controller(request):
     """
     users_service = UsersServiceImpl()
     query_options = QueryOptions.from_request(request)
-    return api_response_success("Users retrieved successfully",
-                                users_service.get_users(query_options).data, status.HTTP_200_OK)
+    return api_response_success("Users retrieved successfully", users_service.get_users(query_options),
+                                status.HTTP_200_OK)

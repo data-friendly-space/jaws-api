@@ -37,11 +37,11 @@ class UsersServiceImpl(UsersService):
         self.sign_up_uc.exec(UserRepositoryImpl(), name, lastname, email, password)
 
     def sign_in(self, email, password):
-        userTO = self.get_user_by_email_uc.exec(UserRepositoryImpl(), email)
-        if not userTO or not check_password(password, userTO.password):
+        user_to = self.get_user_by_email_uc.exec(UserRepositoryImpl(), email)
+        if not user_to or not check_password(password, user_to.password):
             raise BadRequestException("Incorrect email or password")
         try:
-            return UserTokenSerializer(userTO).data
+            return UserTokenSerializer(user_to).data
         except ValueError as e:
             raise UnauthorizedException(str(e), None)
 

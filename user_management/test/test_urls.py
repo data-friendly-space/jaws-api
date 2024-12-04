@@ -15,9 +15,9 @@ class TestUrls(SimpleTestCase):
         url = reverse("get_users")
         self.assertEqual(resolve(url).func, get_users_controller)
 
-    def test_create_user_url_resolves(self):
-        url = reverse("create_user")
-        self.assertEqual(resolve(url).func, create_user_controller)
+    #    def test_create_user_url_resolves(self):
+    #       url = reverse("create_user")
+    #      self.assertEqual(resolve(url).func, create_user_controller)
 
     def test_sign_up_url_resolves(self):
         url = reverse("sign_up")

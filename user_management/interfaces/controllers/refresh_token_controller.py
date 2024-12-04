@@ -20,6 +20,6 @@ def refresh_token_controller(request):
 
     user_service = UsersServiceImpl()
     return api_response_success(
-        "Access granted", user_service.refresh_token(request.data.get('refresh')),
+        "Access granted", {"jwt_access_token": user_service.refresh_token(request.data.get('refresh'))},
         status.HTTP_200_OK
     )

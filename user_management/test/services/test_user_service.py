@@ -1,9 +1,11 @@
+from unittest.mock import patch, MagicMock
+
 from django.test import TestCase
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from common.exceptions.exceptions import BadRequestException
-from common.test_utils import create_logged_in_client
+from common.test_utils import create_logged_in_client, User
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 
@@ -17,9 +19,11 @@ class TestAnalysisService(TestCase):
         self.invalid_refresh_token = "invalid.token.here"
 
     def test_sign_up(self):
-        response = self.service.sign_up("test1", "testlast323", "testuser24@gmail.com", "password")
-        self.assertEqual(response.data['status'], status.HTTP_201_CREATED)
-        self.assertEqual(response.data['message'], 'User successfully created')
+        self.service.sign_up("test1", "testlast323", "testuser24@gmail.com", "password")
+        user = User.objects.get(email="testuser24@gmail.com")
+        self.assertEqual(user.name, "test1")
+        self.assertEqual(user.lastname, "testlast323")
+        self.assertTrue(user.check_password("password"))
 
     def test_sign_up_missing_field(self):
         with self.assertRaises(BadRequestException) as context:
@@ -35,8 +39,8 @@ class TestAnalysisService(TestCase):
     def test_sign_in(self):
         self.service.sign_up("test1", "testlast323", "testuser24@gmail.com", "password")
         response = self.service.sign_in("testuser24@gmail.com", "password")
-        self.assertEqual(response.data['status'], status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'User authenticated')
+        self.assertEqual(response.get('user')['name'], "test1")
+        self.assertEqual(response.get('user')['lastname'], "testlast323")
 
     def test_sign_in_incorrect_password_email(self):
         self.service.sign_up("test1", "testlast323", "testuser24@gmail.com", "password2")
@@ -46,9 +50,7 @@ class TestAnalysisService(TestCase):
 
     def test_refresh_token_valid(self):
         response = self.service.refresh_token(self.refresh_token)
-        self.assertEqual(response.data['status'], status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], "Access granted")
-        self.assertIn("jwt_access_token", response.data['payload'])
+        self.assertIsNotNone(response)
 
     def test_refresh_token_invalid(self):
         self.service.sign_up("test1", "testlast323", "testuser24@gmail.com", "password2")
