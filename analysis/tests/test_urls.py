@@ -1,10 +1,9 @@
-
-
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 from analysis.interfaces.controllers.get_analysis_controller import get_analysis_controller
 from analysis.interfaces.controllers.create_analysis_controller import create_analysis_controller
 from analysis.interfaces.controllers.get_analysis_by_id_controller import get_analysis_by_id_controller
+
 
 class TestUrls(SimpleTestCase):
 

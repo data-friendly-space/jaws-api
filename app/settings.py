@@ -39,6 +39,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
@@ -47,17 +50,15 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "OPTIONS",
 ]
-CORS_ALLOW_HEADERS = [
-    "content-type",
-    "authorization",
-    "x-csrftoken",
-    "accept",
-    "origin",
-    "x-requested-with",
-]
 
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'https://localhost', 'http://localhost:3000']
 # Application definition
-
+CUSTOM_APPS = [
+    'common',
+    'user_management',
+    'health_checks',
+    'analysis',
+]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,18 +66,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'health_check',  # Required
     'health_check.cache',  # Cache backend health checker
     'health_check.storage',  # Default storage system health check
-    'rest_framework',
-    'user_management',
-    'health_checks',
-    'analysis',
-    'corsheaders'
+    'corsheaders',
+]
+
+INSTALLED_APPS += CUSTOM_APPS
+
+CUSTOM_MIDDLEWARES = [
+    'user_management.middlewares.jwt_middleware.JWTMiddleware',
+    'common.middlewares.exception_handler.ExceptionHandler',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -84,8 +88,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'user_management.middlewares.jwt_middleware.JWTMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+MIDDLEWARE += CUSTOM_MIDDLEWARES
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -149,16 +156,31 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DATABASE_ENGINE'),
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'PORT': os.environ.get('DATABASE_PORT'),
+        'ENGINE': os.environ.get('USERS_DATABASE_ENGINE'),
+        'NAME': os.environ.get('USERS_DATABASE_NAME'),
+        'USER': os.environ.get('USERS_DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('USERS_DATABASE_PASSWORD'),
+        'HOST': os.environ.get('USERS_DATABASE_HOST'),
+        'PORT': os.environ.get('USERS_DATABASE_PORT'),
         'OPTIONS': {
             'client_encoding': 'UTF8',
         },
-    }
+    },
+    'analysis_db': {
+        'ENGINE': os.environ.get('ANALYSIS_DATABASE_ENGINE'),
+        'NAME': os.environ.get('ANALYSIS_DATABASE_NAME'),
+        'USER': os.environ.get('ANALYSIS_DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('ANALYSIS_DATABASE_PASSWORD'),
+        'HOST': os.environ.get('ANALYSIS_DATABASE_HOST'),
+        'PORT': os.environ.get('ANALYSIS_DATABASE_PORT'),
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
+    },
+}
+DATABASE_ROUTERS = ['db_router.DBRouter']
+TEST = {
+    'DEPENDENCIES': 'keepdb',
 }
 
 # Internationalization

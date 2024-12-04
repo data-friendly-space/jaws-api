@@ -17,5 +17,8 @@ class Permission(models.Model):
     def __str__(self):
         return f"{self.name} ({self.type})"
 
+    class Meta:
+        db_table = 'permission'
+
 
 Role.permissions = models.ManyToManyField(Permission)

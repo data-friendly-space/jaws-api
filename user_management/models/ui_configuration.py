@@ -12,3 +12,6 @@ class UiConfiguration(models.Model):
 
     def __str__(self):
         return "UI Configuration"
+
+    class Meta:
+        db_table = 'ui_configuration'

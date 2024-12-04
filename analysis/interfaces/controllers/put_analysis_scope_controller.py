@@ -1,9 +1,9 @@
 '''This module contains the controller for putting the scope of an analysis'''
-from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework.decorators import api_view
 
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
-from app.core.api_response import api_response
+from common.helpers.api_responses import api_response_success
 
 
 @api_view(["PUT"])
@@ -23,4 +23,4 @@ def put_analysis_scope_controller(request, id):
         "objetives": request.data.get("objetives"),
         "sectors": request.data.get("sectors"),
     }
-    return api_response("", service.put_analysis_scope(analysis, id), status.HTTP_201_CREATED)
+    return api_response_success("", service.put_analysis_scope(analysis, id), status.HTTP_201_CREATED)
