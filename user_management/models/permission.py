@@ -1,9 +1,11 @@
+'''This module contains the permission model'''
 from django.db import models
 
 from user_management.models import Role
 
 
 class Permission(models.Model):
+    '''Permission model'''
     name = models.CharField(max_length=50, unique=True)
     TYPE_CHOICES = [
         ('read', 'Read'),
@@ -14,6 +16,9 @@ class Permission(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.type})"
+
+    class Meta:
+        db_table = 'permission'
 
 
 Role.permissions = models.ManyToManyField(Permission)

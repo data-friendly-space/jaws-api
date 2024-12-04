@@ -36,28 +36,31 @@ Update the DATABASES configuration to include the details of the PostgreSQL data
 
 Add this configuration to a .env file like this:
    
-   DATABASE_HOST=localhost
-   DATABASE_PORT=5432
-   DATABASE_PASSWORD=root
-   DATABASE_USERNAME=postgres
-   DATABASE_NAME=USER
-   DATABASE_ENGINE=django.db.backends.postgresql
+   USERS_DATABASE_HOST=localhost
+   USERS_DATABASE_PORT=5432
+   USERS_DATABASE_PASSWORD=root
+   USERS_DATABASE_USERNAME=postgres
+   USERS_DATABASE_NAME=USER
+   USERS_DATABASE_ENGINE=django.db.backends.postgresql
+
+   ANALYSIS_DATABASE_HOST=localhost
+   ANALYSIS_DATABASE_PORT=5432
+   ANALYSIS_DATABASE_PASSWORD=root
+   ANALYSIS_DATABASE_USERNAME=postgres
+   ANALYSIS_DATABASE_NAME=ANALYSIS
+   ANALYSIS_DATABASE_ENGINE=django.db.backends.postgresql
 
 For docker set at 
    DATABASE_HOST=host.docker.internal 
 
 
 ### **Step 3: Migrate Django Models to PostgreSQL**
-**1. Generate Migration Files**
-Run the following command to generate migration files for the models in your application:
+**1. Generate Migration Files and Apply the Migrations**:
+FOLLOW THE ORDER,
+Run the following command to generate migration files for the models in your application.
+After each generation execute the migrations to create the necessary tables in the database:
 
     python manage.py makemigrations
-
-
-
-**2. Apply the Migrations**
-Execute the migrations to create the necessary tables in the database:
-
     python manage.py migrate
 
 Django will now map the models in your project to the PostgreSQL database and create the corresponding tables.
