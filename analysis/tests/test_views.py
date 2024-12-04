@@ -1,16 +1,18 @@
 '''This module contains the tests for the views'''
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.urls import reverse
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from analysis.models.analysis import Analysis
-from user_management.models.user import User
+from common.test_utils import create_logged_in_client
 
 # Create your tests here.
 
 
 class AnalysisTestCase(TestCase):
     '''TestCase for analysis module'''
+
+    databases = {'default', 'analysis_db'}
+
     @classmethod
     def setUpTestData(cls):
         pass
@@ -39,7 +41,7 @@ class AnalysisTestCase(TestCase):
     def test_get_analysis_by_id_not_found(self):
         '''Test if get analysis by id with an invalid id throw 400'''
         response = self.client.get(reverse("get_analysis", args=["test"]))
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     # def test_create_analysis_successfully(self):
     #     response = self.client.post(

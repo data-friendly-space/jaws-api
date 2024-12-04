@@ -36,12 +36,19 @@ Update the DATABASES configuration to include the details of the PostgreSQL data
 
 Add this configuration to a .env file like this:
    
-   DATABASE_HOST=localhost
-   DATABASE_PORT=5432
-   DATABASE_PASSWORD=root
-   DATABASE_USERNAME=postgres
-   DATABASE_NAME=USER
-   DATABASE_ENGINE=django.db.backends.postgresql
+   USERS_DATABASE_HOST=localhost
+   USERS_DATABASE_PORT=5432
+   USERS_DATABASE_PASSWORD=root
+   USERS_DATABASE_USERNAME=postgres
+   USERS_DATABASE_NAME=USER
+   USERS_DATABASE_ENGINE=django.db.backends.postgresql
+
+   ANALYSIS_DATABASE_HOST=localhost
+   ANALYSIS_DATABASE_PORT=5432
+   ANALYSIS_DATABASE_PASSWORD=root
+   ANALYSIS_DATABASE_USERNAME=postgres
+   ANALYSIS_DATABASE_NAME=ANALYSIS
+   ANALYSIS_DATABASE_ENGINE=django.db.backends.postgresql
 
 For docker set at 
    DATABASE_HOST=host.docker.internal 
