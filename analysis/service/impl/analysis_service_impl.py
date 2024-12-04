@@ -1,10 +1,14 @@
 import uuid
+
+from rest_framework import status
+
 from analysis.interfaces.serializers.analysis_serializer import AnalysisSerializer
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.service.analysis_service import AnalysisService
-from common.exceptions.exceptions import BadRequestException, NotFoundException
+from common.exceptions.exceptions import BadRequestException, NotFoundException, InternalServerErrorException
+from common.helpers.api_responses import api_response_success
 
 
 class AnalysisServiceImpl(AnalysisService):
@@ -69,7 +73,12 @@ class AnalysisServiceImpl(AnalysisService):
         return Sector.objects.filter(pk__in=sectors)
 
     def get_analysis(self):
-        return AnalysisSerializer(self.get_analysis_uc.exec(self.repository), many=True).data
+        try:
+            api_response_success("Success",
+                                 AnalysisSerializer(self.get_analysis_uc.exec(self.repository), many=True).data,
+                                 status.HTTP_200_OK)
+        except Exception as e:
+            return InternalServerErrorException(str(e), [])
 
     def get_analysis_by_id(self, id):
         analysis = self.get_analysis_by_id_uc.exec(AnalysisRepositoryImpl(), id)
