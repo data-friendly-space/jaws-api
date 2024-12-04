@@ -2,16 +2,18 @@ name: Development
 
 
 on:
- pull_request:
+  pull_request:
     branches:
       - develop
+  push:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: Development
     strategy:
       matrix:
-        python-version: ["3.12"]
+        python-version: ['3.12']
 
     services:
       users-db: 
@@ -43,7 +45,8 @@ jobs:
           - 5433:5432
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Actions
+      uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
