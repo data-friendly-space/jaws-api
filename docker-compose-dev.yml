@@ -1,21 +1,41 @@
 version: '3'
 
 services:
-  db:
+  users-db:
     image: postgres
-    container_name: jaws-db
+    container_name: jaws-users-db
     env_file:
       - .env
     environment:
-      - POSTGRES_USER=${DATABASE_USERNAME}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${USERS_DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${USERS_DATABASE_PASSWORD}
+      - POSTGRES_DB=${USERS_DATABASE_NAME}
     ports:
-      - 5432:${DATABASE_PORT}
+      - 5432:${USERS_DATABASE_PORT}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - users_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${USERS_DATABASE_USERNAME} -d ${USERS_DATABASE_NAME}"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 5s
+
+  analysis-db:
+    image: postgres
+    container_name: jaws-analysis-db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${ANALYSIS_DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${ANALYSIS_DATABASE_PASSWORD}
+      - POSTGRES_DB=${ANALYSIS_DATABASE_NAME}
+    ports:
+      - 5433:${ANALYSIS_DATABASE_PORT}
+    volumes:
+      - analysis_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ANALYSIS_DATABASE_USERNAME} -d ${ANALYSIS_DATABASE_NAME}"]
       interval: 5s
       timeout: 2s
       retries: 10
@@ -32,11 +52,14 @@ services:
       - "8000:8000"
       - "8001:8001" #debugpy
     depends_on:
-      db:
+      users-db:
+        condition: service_healthy
+      analysis-db:
         condition: service_healthy
     volumes:
       - .:/opt/web
 
 
 volumes: 
-  postgres_data:
+  users_data:
+  analysis_data:
