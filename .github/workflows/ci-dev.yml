@@ -59,8 +59,6 @@ jobs:
           python -m pip install --upgrade pip
           pip3 install -r requirements.txt
 
-      - name: Run Build
-        run: npm run check-and-build
       - name: Build, tag, and push API image
         id: build_image_step
         env:
