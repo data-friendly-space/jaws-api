@@ -8,11 +8,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: Development
     strategy:
       matrix:
-        python-version: ["3.12"]
+        python-version: ${{ vars.PYTHON_VERSIONS }}
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Actions
+      uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
