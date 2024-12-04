@@ -1,9 +1,7 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from rest_framework.decorators import api_view
 
+from common.helpers.api_responses import api_response_success
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 
@@ -21,4 +19,7 @@ def refresh_token_controller(request):
     """
 
     user_service = UsersServiceImpl()
-    return user_service.refresh_token(request.data.get('refresh'))
+    return api_response_success(
+        "Access granted", user_service.refresh_token(request.data.get('refresh')),
+        status.HTTP_200_OK
+    )

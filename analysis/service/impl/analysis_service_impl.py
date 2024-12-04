@@ -73,9 +73,7 @@ class AnalysisServiceImpl(AnalysisService):
         return Sector.objects.filter(pk__in=sectors)
 
     def get_analysis(self):
-        return api_response_success("Success",
-                                    AnalysisSerializer(self.get_analysis_uc.exec(self.repository), many=True).data,
-                                    status.HTTP_200_OK)
+        return AnalysisSerializer(self.get_analysis_uc.exec(self.repository), many=True).data
 
     def get_analysis_by_id(self, id):
         analysis = self.get_analysis_by_id_uc.exec(AnalysisRepositoryImpl(), id)
