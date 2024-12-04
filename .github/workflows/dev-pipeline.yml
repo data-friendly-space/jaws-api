@@ -13,7 +13,7 @@ jobs:
     environment: Development
     strategy:
       matrix:
-        python-version: ${{ vars.PYTHON_VERSIONS }}
+        python-version: ['3.12']
 
     services:
       users-db: 
