@@ -12,6 +12,7 @@ def get_analysis_controller(request):
     List all analysis of the user and return them in AnalysisTO format.
     """
     service = AnalysisServiceImpl()
+    
     return api_response_success("Success",
                                 service.get_analysis(),
                                 status.HTTP_200_OK)

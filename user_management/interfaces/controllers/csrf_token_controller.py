@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators import http
+
 from rest_framework.decorators import api_view
 
 
