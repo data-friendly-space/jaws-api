@@ -1,11 +1,13 @@
 from tokenize import TokenError
 
 from django.contrib.auth.hashers import check_password
+from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from common.exceptions.exceptions import UnauthorizedException, BadRequestException
+from common.helpers.api_responses import api_response_success
 from common.helpers.query_options import QueryOptions
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.interfaces.serializers.user_serializer import UserSerializer
@@ -72,7 +74,7 @@ class UsersServiceImpl(UsersService):
         jwt_auth = JWTAuthentication()
 
         try:
-            # Validate the token and get the user (if valid)
             jwt_auth.get_validated_token(token)
             return api_response_success("Is authenticated", {'isAuthenticated': True}, status.HTTP_200_OK)
-
+        except (InvalidToken, TokenError):
+            raise UnauthorizedException("Session expired", {'is_authenticated': False})

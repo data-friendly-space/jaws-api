@@ -5,6 +5,7 @@ from django.urls import reverse
 from analysis.models.analysis import Analysis
 from common.test_utils import create_logged_in_client
 
+
 # Create your tests here.
 
 
