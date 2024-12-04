@@ -64,72 +64,72 @@ variable "zone_name" {
 ##------------------- SERVICES VARIABLES ----------------##   
 
 
-##------------------- jaws-service VARIABLES ----------------##
-variable "jaws_service_cluster_name" {
+##------------------- jaws-api VARIABLES ----------------##
+variable "jaws_api_cluster_name" {
   description = "The jaws cluster name"
   type        = string
 }
 
-variable "ecs_jaws_service_task_family" {
+variable "ecs_jaws_api_task_family" {
   description = "ECS task family"
   type        = string
 }
 
-variable "ecs_jaws_service_container_name" {
+variable "ecs_jaws_api_container_name" {
   description = "Value of container name"
   type        = string
 }
 
-variable "ecs_jaws_service_container_image" {
+variable "ecs_jaws_api_container_image" {
   description = "Value of container image"
   type        = string
 }
 
-variable "ecs_jaws_service_container_port" {
+variable "ecs_jaws_api_container_port" {
   description = "Container port number"
   type        = number
 }
 
-variable "ecs_jaws_service_container_memory" {
+variable "ecs_jaws_api_container_memory" {
   description = "Container memory size"
   type        = number
 }
 
-variable "ecs_jaws_service_container_cpu" {
+variable "ecs_jaws_api_container_cpu" {
   description = "Container cpu size"
   type        = number
 }
 
-variable "ecs_jaws_service_desired_count" {
+variable "ecs_jaws_api_desired_count" {
   description = "Desired count value"
   type        = number
 }
 
-variable "jaws_service_ecs_app_name" {
+variable "jaws_api_ecs_app_name" {
   description = "App name"
   type        = string
 }
 
-variable "jaws_service_health_check_endpoint" {
+variable "jaws_api_health_check_endpoint" {
   description = "Health check path"
   type        = string
 }
 
-variable "jaws_service_health_check_interval" {
+variable "jaws_api_health_check_interval" {
   description = "Value of health check interval"
   type        = number
 }
-variable "jaws_service_health_check_timeout" {
+variable "jaws_api_health_check_timeout" {
   description = "Value of health check timeout"
   type        = number
 }
 
-variable "jaws_service_ecs_health_check_grace_period" {
+variable "jaws_api_ecs_health_check_grace_period" {
   description = "Service grace period value"
   type        = number
 }
 
-variable "jaws_service_aws_cloudwatch_retention_days" {
+variable "jaws_api_aws_cloudwatch_retention_days" {
   description = "Cloudwatch retention in days"
   type        = number
 }

@@ -25,19 +25,19 @@ company_asset_zone_name = ""
 #api_v1_stage_url      = "https://0bvlvjdqme.execute-api.us-west-2.amazonaws.com/v1"
 #api_v2_stage_url      = "https://0bvlvjdqme.execute-api.us-west-2.amazonaws.com/v2"
 
-#-------------------------------jaws-service VARIABLES--------------------------
-jaws_service_cluster_name                  = "jaws"
-jaws_service_ecs_app_name                  = "jaws-service"
-ecs_jaws_service_container_image           = "669246429926.dkr.ecr.us-east-1.amazonaws.com/jaws-dev:1"
-ecs_jaws_service_container_name            = "jaws-service"
-ecs_jaws_service_task_family               = "jaws-service-ecs-app"
-ecs_jaws_service_container_port            = 80
-ecs_jaws_service_container_memory          = 1024
-ecs_jaws_service_container_cpu             = 512
-ecs_jaws_service_desired_count             = 1
-jaws_service_health_check_endpoint         = "/api/health"
-jaws_service_ecs_health_check_grace_period = 120
-jaws_service_health_check_interval         = 15
-jaws_service_health_check_timeout          = 10
-jaws_service_aws_cloudwatch_retention_days  = 7
+#-------------------------------jaws-api VARIABLES--------------------------
+jaws_api_cluster_name                  = "jaws"
+jaws_api_ecs_app_name                  = "jaws-api"
+ecs_jaws_api_container_image           = "669246429926.dkr.ecr.us-east-1.amazonaws.com/jaws-api:latest"
+ecs_jaws_api_container_name            = "jaws-api"
+ecs_jaws_api_task_family               = "jaws-api-ecs-app"
+ecs_jaws_api_container_port            = 80
+ecs_jaws_api_container_memory          = 1024
+ecs_jaws_api_container_cpu             = 512
+ecs_jaws_api_desired_count             = 1
+jaws_api_health_check_endpoint         = "/api/health"
+jaws_api_ecs_health_check_grace_period = 120
+jaws_api_health_check_interval         = 15
+jaws_api_health_check_timeout          = 10
+jaws_api_aws_cloudwatch_retention_days  = 7
 
