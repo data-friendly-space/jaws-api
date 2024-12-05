@@ -79,6 +79,7 @@ jobs:
     steps:
       - name: Checkout Actions
         uses: actions/checkout@v2
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -95,7 +96,7 @@ jobs:
           image: $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
 
       - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.API_BUILD_NAME }}
