@@ -30,20 +30,6 @@ jobs:
         ports:
           - 5432:5432
 
-      analysis-db: 
-        image: postgres
-        env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5433:5432
-
     steps:
     - name: Checkout Actions
       uses: actions/checkout@v4
@@ -64,17 +50,12 @@ jobs:
 
     - name: Run tests
       env:
-        USERS_DATABASE_NAME: test_db
-        USERS_DATABASE_USERNAME: test_user
-        USERS_DATABASE_HOST: localhost
-        USERS_DATABASE_PORT: 5432
-        USERS_DATABASE_PASSWORD: test_password
-        USERS_DATABASE_ENGINE: django.db.backends.postgresql
-        ANALYSIS_DATABASE_NAME: test_db
-        ANALYSIS_DATABASE_USERNAME: test_user
-        ANALYSIS_DATABASE_HOST: localhost
-        ANALYSIS_DATABASE_PORT: 5433
-        ANALYSIS_DATABASE_PASSWORD: test_password
-        ANALYSIS_DATABASE_ENGINE: django.db.backends.postgresql
+        DATABASE_NAME: test_db
+        DATABASE_USERNAME: test_user
+        DATABASE_HOST: localhost
+        DATABASE_PORT: 5432
+        DATABASE_PASSWORD: test_password
+        DATABASE_ENGINE: django.db.backends.postgresql
+
       run: |
         python3 manage.py test
