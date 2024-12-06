@@ -156,29 +156,18 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('USERS_DATABASE_ENGINE'),
-        'NAME': os.environ.get('USERS_DATABASE_NAME'),
-        'USER': os.environ.get('USERS_DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('USERS_DATABASE_PASSWORD'),
-        'HOST': os.environ.get('USERS_DATABASE_HOST'),
-        'PORT': os.environ.get('USERS_DATABASE_PORT'),
-        'OPTIONS': {
-            'client_encoding': 'UTF8',
-        },
-    },
-    'analysis_db': {
-        'ENGINE': os.environ.get('ANALYSIS_DATABASE_ENGINE'),
-        'NAME': os.environ.get('ANALYSIS_DATABASE_NAME'),
-        'USER': os.environ.get('ANALYSIS_DATABASE_USERNAME'),
-        'PASSWORD': os.environ.get('ANALYSIS_DATABASE_PASSWORD'),
-        'HOST': os.environ.get('ANALYSIS_DATABASE_HOST'),
-        'PORT': os.environ.get('ANALYSIS_DATABASE_PORT'),
+        'ENGINE': os.environ.get('DATABASE_ENGINE'),
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
         'OPTIONS': {
             'client_encoding': 'UTF8',
         },
     },
 }
-DATABASE_ROUTERS = ['db_router.DBRouter']
+
 TEST = {
     'DEPENDENCIES': 'keepdb',
 }
