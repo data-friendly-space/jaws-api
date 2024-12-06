@@ -18,7 +18,7 @@ availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
 it_public_subnets  = ["subnet-0c9afffe03d980eb3", "subnet-0ae19062beb00ca2a", "subnet-0c70a29289e1ceae1"]
 it_public_subnet   = "subnet-0c9afffe03d980eb3"
 
-zone_name = "jawsdev.com"
+zone_name               = "jawsdev.com"
 company_asset_zone_name = ""
 #domain_name           = "*.my.stoneridge.app"
 #api_default_stage_url = "https://0bvlvjdqme.execute-api.us-west-2.amazonaws.com"
@@ -28,6 +28,7 @@ company_asset_zone_name = ""
 #-------------------------------jaws-api VARIABLES--------------------------
 jaws_api_cluster_name                  = "jaws"
 jaws_api_ecs_app_name                  = "jaws-api"
+jaws_s3_datasets_name                  = "jaws-datasets"
 ecs_jaws_api_container_image           = "669246429926.dkr.ecr.us-east-1.amazonaws.com/jaws-api:latest"
 ecs_jaws_api_container_name            = "jaws-api"
 ecs_jaws_api_task_family               = "jaws-api-ecs-app"
@@ -39,5 +40,5 @@ jaws_api_health_check_endpoint         = "/api/health"
 jaws_api_ecs_health_check_grace_period = 120
 jaws_api_health_check_interval         = 15
 jaws_api_health_check_timeout          = 10
-jaws_api_aws_cloudwatch_retention_days  = 7
+jaws_api_aws_cloudwatch_retention_days = 7
 
