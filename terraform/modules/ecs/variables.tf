@@ -108,10 +108,10 @@ variable "aws_cloudwatch_retention_days" {
 variable "deployment_circuit_breaker_value" {
   description = "Bolean Value"
   type        = bool
-  default     = false 
+  default     = false
 }
 
 variable "ecs_execution_role_arn" {
   description = "Gets outputs from ecs_role in policy module"
-  type        = string 
+  type        = string
 }

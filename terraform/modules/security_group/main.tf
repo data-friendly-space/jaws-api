@@ -1,7 +1,7 @@
 resource "aws_security_group" "alb" {
-  name   = "${var.app_name}-sg"
+  name        = "${var.app_name}-sg"
   description = "Security group for loadbalancer to services on ECS"
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
     protocol    = -1

@@ -1,5 +1,5 @@
 resource "aws_resourcegroups_group" "resource_group" {
-  name = "${var.app_name}"
+  name = var.app_name
 
   resource_query {
     query = jsonencode({
