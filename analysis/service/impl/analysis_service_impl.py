@@ -31,8 +31,8 @@ class AnalysisServiceImpl(AnalysisService):
             "id": new_id,
             "title": scope["title"],
             "objetives": scope["objetives"],
-            "start_date": scope["startDate"],
-            "end_date": scope["endDate"],
+            "start_date": scope["start_date"],
+            "end_date": scope["end_date"],
             "creator": creator_id,
             "workspace_id": workspace_id
         }
