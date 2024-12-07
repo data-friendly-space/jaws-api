@@ -12,7 +12,6 @@ from common.test_utils import create_logged_in_client
 class AnalysisTestCase(TestCase):
     '''TestCase for analysis module'''
 
-    databases = {'default', 'analysis_db'}
 
     @classmethod
     def setUpTestData(cls):

@@ -8,7 +8,6 @@ from common.exceptions.exceptions import BadRequestException
 
 class TestAnalysisService(TestCase):
 
-    databases = {'analysis_db'}
 
     def setUp(self):
         self.service = AnalysisServiceImpl()
