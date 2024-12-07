@@ -35,7 +35,7 @@ class TestUrls(SimpleTestCase):
 
     def test_update_analysis_url_resolves(self):
         """Test that the url for updating an analysis works"""
-        url = reverse("put_analysis")
+        url = reverse("put_analysis", args=["some-id"])
         self.assertEqual(resolve(url).func, put_analysis_scope_controller)
 
     def test_load_administrative_divisions_resolves(self):
