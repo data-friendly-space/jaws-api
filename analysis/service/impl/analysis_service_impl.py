@@ -30,7 +30,7 @@ class AnalysisServiceImpl(AnalysisService):
         new_id = uuid.uuid4()
         creator_id = "123"  # TODO: Fill with the current user id
         workspace_id = "456"  # TODO: Fill with the corrseponding workspace id
-        self.validate_scope_fields(scope, sectors, disaggregations)
+        self.validate_scope_fields(scope, sectors)
         data = {
             "id": new_id,
             "title": scope["title"],
@@ -52,7 +52,7 @@ class AnalysisServiceImpl(AnalysisService):
         else:
             disaggregations = []
         sectors = self.get_sectors(scope["sectors"])
-        self.validate_scope_fields(scope, sectors, disaggregations)
+        self.validate_scope_fields(scope, sectors)
         return AnalysisSerializer(
             self.put_analysis_scope_uc.exec(
                 self.repository,
