@@ -2,9 +2,10 @@
 from rest_framework import serializers
 
 from analysis.models.administrative_division import AdministrativeDivision
+from common.serializer.CamelCaseMixin import CamelCaseMixin
 
 
-class AdministrativeDivisionSerializer(serializers.ModelSerializer):
+class AdministrativeDivisionSerializer(CamelCaseMixin, serializers.ModelSerializer):
     """
     Serializer to transform Analysis model to AnalysisTO format.
     """
