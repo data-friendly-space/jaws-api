@@ -21,6 +21,7 @@ from analysis.interfaces.controllers.get_analysis_by_id_controller import (
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
     put_analysis_scope_controller,
 )
+from analysis.interfaces.controllers.remove_location_controller import remove_location_controller
 
 
 class TestUrls(SimpleTestCase):
@@ -60,3 +61,9 @@ class TestUrls(SimpleTestCase):
         """Test that the url for adding a location works"""
         url = reverse("add_location", args=['some-analysis-id', 'some-p-code'])
         self.assertEqual(resolve(url).func, add_location_controller)
+
+
+    def test_remove_location_resolves(self):
+        """Test that the url for removing a location works"""
+        url = reverse("remove_location", args=["some-analysis-id", "some-p-code"])
+        self.assertEqual(resolve(url).func, remove_location_controller)
