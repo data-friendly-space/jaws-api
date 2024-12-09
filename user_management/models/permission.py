@@ -1,9 +1,9 @@
-'''This module contains the permission model'''
+"""This module contains the permission model"""
 from django.db import models
 
 
 class Permission(models.Model):
-    '''Permission model'''
+    """Permission model"""
     name = models.CharField(max_length=50, unique=True)
     TYPE_CHOICES = [
         ('read', 'Read'),

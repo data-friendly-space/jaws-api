@@ -1,6 +1,9 @@
 """This module contains the implementation of analysis repository"""
-from analysis.contract.dto.analysis_to import AnalysisTO
+"""This module contains the implementation of analysis repository"""
+from analysis.contract.dto.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 
 class AnalysisRepositoryImpl(AnalysisRepository):
@@ -61,3 +64,29 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         analysis.disaggregations.set(disaggregations)
         analysis.sectors.set(sectors)
         return AnalysisTO.from_model(analysis)
+
+    def get_administrative_divisions(self, parent_p_code):
+        """
+        Retrieves every administrative division within the parent p_code.
+        If parent p_code is None, retrieve all the level 0 administrative divisions
+        """
+        administrative_divisions = None
+        if not parent_p_code:
+            administrative_divisions = AdministrativeDivision.objects.filter(admin_level = 0).all()
+        else:
+            administrative_divisions = AdministrativeDivision.objects.filter(parent_p_code = parent_p_code).all()
+        return AdministrativeDivisionTO.from_models(administrative_divisions)
+
+    def get_administrative_division(self, p_code):
+        """Retrieves a specific administrative division by id"""
+        administrative_division = AdministrativeDivision.objects.filter(p_code = p_code).first()
+        return AdministrativeDivisionTO.from_model(administrative_division, include_hierarchy=True)
+
+    def add_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+        """Add a new administrative division into a analysis"""
+        analysis.locations.add(administrative_division)
+        return AdministrativeDivisionTO.from_model(administrative_division, include_hierarchy=True)
+
+    def remove_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+        """Add a new administrative division into a analysis"""
+        analysis.locations.remove(administrative_division)

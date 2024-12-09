@@ -1,9 +1,9 @@
-'''This module contains the role model'''
+"""This module contains the role model"""
 from django.db import models
 
 
 class Role(models.Model):
-    '''Role model'''
+    """Role model"""
     role = models.CharField(max_length=50, unique=True)
     permissions = models.ManyToManyField('user_management.Permission', through="RolePermission")
 

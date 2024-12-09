@@ -1,10 +1,9 @@
-'''This module contains the disaggregation Transfer Object'''
+"""This module contains the disaggregation Transfer Object"""
 from analysis.models.disaggregation import Disaggregation
 
 
 class DisaggregationTO:
-    '''Disaggregation TO'''
-
+    """Disaggregation TO"""
     def __init__(
             self,
             id: str,
@@ -25,7 +24,7 @@ class DisaggregationTO:
 
     @classmethod
     def from_models(cls, disaggregations):
-        '''Create a disaggregation dto based on a database model'''
+        """Create a disaggregation to based on a database model"""
         if disaggregations is None or disaggregations.count() <= 0:
             return None
         return [cls.from_model(disaggregation) for disaggregation in disaggregations.all()]

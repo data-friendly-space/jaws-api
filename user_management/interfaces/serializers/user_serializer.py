@@ -21,7 +21,7 @@ class UserSerializer(serializers.Serializer):
     profileImage = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
-        '''Base class'''
+        """Base class"""
         model = User
         fields = [
             'id', 'name', 'lastname', 'email', 'country',

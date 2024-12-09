@@ -1,9 +1,11 @@
+"""This module contains the base repository"""
 from abc import abstractmethod, ABC
 
 from common.helpers.query_options import QueryOptions
 
 
 class BaseRepository(ABC):
+    """Base repository"""
     @abstractmethod
     def get_all(self,query_options: QueryOptions):
         """

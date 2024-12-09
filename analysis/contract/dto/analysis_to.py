@@ -10,23 +10,23 @@ from analysis.models.analysis import Analysis
 
 class AnalysisTO:
     '''Analysis Data Transfer Object'''
-
     def __init__(
             self,
             id: str,
             title: str,
-            objectives: str,
+            objetives: str,
+            created_on: str,
+            end_date: str,
             sectors: Optional[dict],
-            workspace_id: str,
-            last_change: Optional[datetime] = None,
-            end_date: Optional[date] = None,
-            created_on: Optional[datetime] = None,
+            workspace_id: Optional[dict],
+            last_change: Optional[dict],
             disaggregations: Optional[dict] = None,
-            start_date: Optional[date] = None,
-            creator: Optional[str] = None
+            start_date: Optional[str] = None,
+            creator: Optional[str] = None,
+            locations: Optional[str] = None
     ):
         self.id = id
-        self.objectives = objectives
+        self.objetives = objetives
         self.title = title
         self.created_on = created_on
         self.start_date = start_date
@@ -36,16 +36,17 @@ class AnalysisTO:
         self.workspace_id = workspace_id
         self.last_change = last_change
         self.creator = creator
+        self.locations = locations
 
     @classmethod
     def from_model(cls, instance: Analysis):
-        """Transforms Analysis instance into a AnalysisTO representation."""
+        """Transforms Analysis instance into a AnalysisDTO representation."""
         if instance is None:
             return None
         return cls(
             id=instance.id,
             title=instance.title,
-            objectives=instance.objectives,
+            objetives=instance.objetives,
             creator=instance.creator,
             workspace_id=instance.workspace_id,
             start_date=instance.start_date,
@@ -54,6 +55,7 @@ class AnalysisTO:
             created_on=instance.created_on,
             disaggregations=DisaggregationTO.from_models(instance.disaggregations),
             sectors=SectorTO.from_models(instance.sectors),
+            locations=AdministrativeDivisionTO.from_models(instance.locations, include_hierarchy=True)
         )
 
     @classmethod

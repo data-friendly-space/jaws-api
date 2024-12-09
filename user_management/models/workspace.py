@@ -1,4 +1,4 @@
-'''This module contains the workspace model'''
+"""This module contains the workspace model"""
 from django.db import models
 
 from analysis.models.analysis import Analysis
@@ -6,7 +6,7 @@ from analysis.models.analysis_framework import AnalysisFramework
 
 
 class Workspace(models.Model):
-    '''Model for the workspace'''
+    """Model for the workspace"""
     title = models.CharField(max_length=200)
     creation_date = models.DateTimeField()
     last_access_date = models.DateTimeField()

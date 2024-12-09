@@ -133,3 +133,8 @@ variable "jaws_api_aws_cloudwatch_retention_days" {
   description = "Cloudwatch retention in days"
   type        = number
 }
+
+variable "jaws_s3_datasets_name" {
+  description = "Name of the bucket where the datasets will be stored"
+  type        = string
+}

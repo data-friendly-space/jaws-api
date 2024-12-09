@@ -11,6 +11,6 @@ def create_analysis_controller(request):
     """Create a new analysis"""
     service = AnalysisServiceImpl()
     if request.data.get("startDate"):
-        request.data["startDate"] = request.data["startDate"].split("T")[0]
-    request.data["endDate"] = request.data["endDate"].split("T")[0]
+        request.data["start_date"] = request.data["startDate"].split("T")[0]
+    request.data["end_date"] = request.data["endDate"].split("T")[0]
     return api_response_success("Success", service.create_analysis(request.data), status.HTTP_201_CREATED)
