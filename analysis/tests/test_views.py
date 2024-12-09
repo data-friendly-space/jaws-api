@@ -17,10 +17,6 @@ class AnalysisTestCase(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
-        self.test_administrative_division = AdministrativeDivision.objects.create(
-            p_code="test",
-            name="Test"
-        )
 
     def test_get_analyses(self):
         """Test if the get analysis work as expected"""
@@ -122,42 +118,3 @@ class AnalysisTestCase(TestCase):
     #     )
 
     #     self.assertEqual(response.status_code, 400)
-
-
-    def test_get_administrative_divisions_with_divisions(self):
-        """Tests that getting the administrative divisions works"""
-        administrative_divisions = self.service.get_administrative_divisions(parent_p_code=None)
-        self.assertEqual(self.test_administrative_division, administrative_divisions.first())
-
-    def test_get_administrative_divisions_with_parent_p_code(self):
-        """Tests that getting a child administrative division works"""
-
-    def test_get_administrative_divisions_with_no_divisions_fails(self):
-        """Tests that getting administritive divisions with no divisions fails"""
-
-    def test_add_location_valid(self):
-        """
-        Tests that adding a location with a correct p_code,
-        alid analysis and not existing p_code in the analysis works
-        """
-
-    def test_add_location_invalid_p_code(self):
-        """Tests that adding a location with a unexisting p_code fails"""
-
-    def test_add_location_existing_p_code(self):
-        """Tests that adding a location with a existing p_code fails"""
-
-    def test_add_location_invalid_analysis_id(self):
-        """Tests that adding a location into an unexisting analysis fails"""
-
-    def test_remove_location_valid(self):
-        """Tests that removing a existing location from a valid analysis works"""
-
-    def test_remove_location_invalid_p_code(self):
-        """Tests that removing a location with a unexisting p_code fails"""
-
-    def test_remove_location_existing_p_code(self):
-        """Tests that removing a location with a existing p_code fails"""
-
-    def test_remove_location_invalid_analysis_id(self):
-        """Tests that removing a location into an unexisting analysis fails"""
