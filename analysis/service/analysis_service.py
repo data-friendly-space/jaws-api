@@ -1,8 +1,9 @@
 """Contains the abstract class of analysis service"""
 from abc import abstractmethod
 
+from analysis.use_cases.add_location_uc import AddLocationUC
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
-from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionsUC
+from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionByIdUC, GetAdministrativeDivisionsUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_uc import GetAnalysisUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
@@ -17,6 +18,8 @@ class AnalysisService(BaseService):
         self.get_analysis_uc = GetAnalysisUC.get_instance()
         self.get_analysis_by_id_uc = GetAnalysisByIdUC.get_instance()
         self.get_administrative_divisions_uc = GetAdministrativeDivisionsUC.get_instance()
+        self.get_administrative_division_by_id_uc = GetAdministrativeDivisionByIdUC.get_instance()
+        self.add_location_uc = AddLocationUC.get_instance()
 
     @abstractmethod
     def put_analysis_scope(self, scope, analysis_id):
@@ -41,4 +44,10 @@ class AnalysisService(BaseService):
         """
         Retrieves all the administrative divisions within the parent code.
         If the parent code is null, retireves all the level 0 administrative divisions
+        """
+
+    @abstractmethod
+    def add_location(self, analysis_id, p_code):
+        """
+        Add a new location if it is not present yet into a specific analysis
         """

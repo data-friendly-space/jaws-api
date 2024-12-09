@@ -1,8 +1,14 @@
 """Tests of the urls within analysis"""
+
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 from analysis.command.load_administrative_divisions import load_administrative_divisions
-from analysis.interfaces.controllers.get_administrative_division_controller import get_administrative_division_controller
+from analysis.interfaces.controllers.add_location_controller import (
+    add_location_controller,
+)
+from analysis.interfaces.controllers.get_administrative_division_controller import (
+    get_administrative_division_controller,
+)
 from analysis.interfaces.controllers.get_analysis_controller import (
     get_analysis_controller,
 )
@@ -12,12 +18,14 @@ from analysis.interfaces.controllers.create_analysis_controller import (
 from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
-from analysis.interfaces.controllers.put_analysis_scope_controller import put_analysis_scope_controller
-from analysis.models.administrative_division import AdministrativeDivision
+from analysis.interfaces.controllers.put_analysis_scope_controller import (
+    put_analysis_scope_controller,
+)
 
 
 class TestUrls(SimpleTestCase):
     """Contains the tests of each url's controller"""
+
     def test_get_analyses_url_resolves(self):
         """Test that get analysis url works"""
         url = reverse("get_analyses")
@@ -47,3 +55,8 @@ class TestUrls(SimpleTestCase):
         """Test that the url for getting the administrative divisions works"""
         url = reverse("get_administrative_divisions")
         self.assertEqual(resolve(url).func, get_administrative_division_controller)
+
+    def test_add_location_resolves(self):
+        """Test that the url for adding a location works"""
+        url = reverse("add_location", args=['some-analysis-id', 'some-p-code'])
+        self.assertEqual(resolve(url).func, add_location_controller)

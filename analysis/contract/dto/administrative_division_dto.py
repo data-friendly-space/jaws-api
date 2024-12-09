@@ -1,30 +1,41 @@
-'''This module contains the analysis DTO'''
+"""This module contains the analysis DTO"""
+
 from analysis.models.administrative_division import AdministrativeDivision
 
 
 class AdministrativeDivisionTO:
-    '''Administrative Division Data Transfer Object'''
-    def __init__(
-            self,
-            p_code: str,
-            name: str
-    ):
+    """Administrative Division Data Transfer Object"""
+
+    def __init__(self, p_code: str, name: str, hierarchy=None):
         self.p_code = p_code
         self.name = name
+        self.hierarchy = hierarchy
 
     @classmethod
-    def from_model(cls, instance: AdministrativeDivision):
+    def from_model(cls, instance: AdministrativeDivision, include_hierarchy=False):
         """Transforms Analysis instance into a AnalysisDTO representation."""
         if instance is None:
             return None
-        return cls(
-            p_code=instance.p_code,
-            name=instance.name,
-        )
+        if not include_hierarchy:
+            return cls(
+                p_code=instance.p_code,
+                name=instance.name,
+            )
+        hierarchy = instance.get_hierarchy()
+        hierarchy_data = [
+            {"pCode": loc.p_code, "name": loc.name, "adminLevel": loc.admin_level}
+            for loc in hierarchy
+        ]
+        return cls(p_code=instance.p_code, name=instance.name, hierarchy=hierarchy_data)
 
     @classmethod
-    def from_models(cls, analyses):
+    def from_models(cls, administrative_divisions, include_hierarchy=False):
         """
         Transform a list of Administrative Division model into a list of AdministrativeDivisionTO.
         """
-        return [cls.from_model(analysis) for analysis in analyses]
+        if administrative_divisions is None or administrative_divisions.count() <= 0:
+            return None
+        return [
+            cls.from_model(administrative_division, include_hierarchy)
+            for administrative_division in administrative_divisions.all()
+        ]

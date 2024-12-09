@@ -18,6 +18,7 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
     last_change = serializers.DateTimeField()
     disaggregations = serializers.SerializerMethodField()
     sectors = serializers.SerializerMethodField()
+    locations = serializers.SerializerMethodField()
 
     class Meta:
         """from where it takes the fields"""
@@ -26,7 +27,7 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
                     'id', 'title', 'start_date', 'end_date',
                     'objetives', 'workspace_id', 'creator',
                     'created_on', 'last_change', 'disaggregations', 
-                    'sectors'
+                    'sectors', 'locations'
                 ]
 
     def get_disaggregations(self, obj):
@@ -38,3 +39,19 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
         '''serialize sectors]'''
         if obj.sectors:
             return [sector.id for sector in obj.sectors]
+
+    def get_locations(self, obj):
+        '''Serialize locations with hierarchy'''
+        locations_data = []
+        if not obj.locations:
+            return locations_data
+        for location in obj.locations:
+            locations_data.append({
+                'name': location.name,
+                'pCode': location.p_code,
+                'hierarchy': [{
+                    'adminLevel': loc['adminLevel'],
+                    'name': loc['name'],
+                    'pCode': loc['pCode']
+                } for loc in location.hierarchy ]})
+        return locations_data

@@ -42,3 +42,12 @@ class AdministrativeDivision(models.Model):
     def __str__(self):
         '''Return the Administrative Division as string'''
         return f"{self.name} ({self.p_code})"
+
+    def get_hierarchy(self):
+        '''Recursively fetch all parent divisions'''
+        hierarchy = []
+        current = self
+        while current:
+            hierarchy.append(current)
+            current = current.parent_p_code
+        return hierarchy[::-1]

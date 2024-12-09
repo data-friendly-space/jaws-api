@@ -75,3 +75,12 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         else:
             administrative_divisions = AdministrativeDivision.objects.filter(parent_p_code = parent_p_code).all()
         return AdministrativeDivisionTO.from_models(administrative_divisions)
+
+    def get_administrative_division(self, p_code):
+        """Retrieves a specific administrative division by id"""
+        administrative_division = AdministrativeDivision.objects.filter(p_code = p_code).first()
+        return AdministrativeDivisionTO.from_model(administrative_division)
+
+    def add_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+        """Add a new administrative division into a analysis"""
+        analysis.locations.add(administrative_division)

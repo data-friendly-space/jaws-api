@@ -7,6 +7,8 @@ from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
 from analysis.interfaces.serializers.analysis_serializer import AnalysisSerializer
+from analysis.models.administrative_division import AdministrativeDivision
+from analysis.models.analysis import Analysis
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
@@ -89,7 +91,7 @@ class AnalysisServiceImpl(AnalysisService):
 
     def get_analysis_by_id(self, analysis_id):
         analysis = self.get_analysis_by_id_uc.exec(
-            AnalysisRepositoryImpl(), analysis_id
+            self.repository, analysis_id
         )
         if not analysis:
             raise NotFoundException("Analysis not found")
@@ -97,10 +99,22 @@ class AnalysisServiceImpl(AnalysisService):
 
     def get_administrative_divisions(self, parent_p_code):
         administrative_divisions = self.get_administrative_divisions_uc.exec(
-            AnalysisRepositoryImpl(), parent_p_code
+            self.repository, parent_p_code
         )
         if not administrative_divisions:
             raise NotFoundException("Administrative divisions not found")
         return AdministrativeDivisionSerializer(
             administrative_divisions, many=True
         ).data
+
+    def add_location(self, analysis_id, p_code):
+        administrative_division = AdministrativeDivision.objects.filter(p_code=p_code).first()
+        if not administrative_division:
+            raise NotFoundException("Administrative division not found")
+        existing_analysis = Analysis.objects.filter(id=analysis_id).first()
+        if not existing_analysis:
+            raise NotFoundException("Analysis not found")
+        if existing_analysis.locations.filter(p_code=p_code).exists():
+            raise BadRequestException("The location is already in the analysis")
+        self.add_location_uc.exec(self.repository, existing_analysis, administrative_division)
+        return AdministrativeDivisionSerializer(administrative_division).data
