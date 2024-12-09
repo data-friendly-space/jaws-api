@@ -31,11 +31,11 @@ resource "aws_alb_listener" "alb" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
+    type = "forward"
     forward {
       target_group {
-          arn    = aws_alb_target_group.alb.arn
-          weight = var.listerner_alb_tg_weight
+        arn    = aws_alb_target_group.alb.arn
+        weight = var.listerner_alb_tg_weight
       }
     }
   }

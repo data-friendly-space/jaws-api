@@ -1,14 +1,14 @@
 data "template_file" "container_definition_env" {
-  template = "${file("./environments/${var.environment}/${var.ecs_app_name}/container_definition.tftpl")}"
+  template = file("./environments/${var.environment}/${var.ecs_app_name}/container_definition.tftpl")
 
   vars = {
-    container_name            = var.container_name
-    container_image           = var.container_image
-    container_memory          = var.container_memory
-    container_cpu             = var.container_cpu
-    container_port            = var.container_port
-    aws_cloudwatch_log_group  = var.aws_cloudwatch_log_group
-    region                    = var.region
+    container_name           = var.container_name
+    container_image          = var.container_image
+    container_memory         = var.container_memory
+    container_cpu            = var.container_cpu
+    container_port           = var.container_port
+    aws_cloudwatch_log_group = var.aws_cloudwatch_log_group
+    region                   = var.region
   }
 }
 
@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "task_definition" {
 }
 
 resource "aws_ecs_service" "service" {
-  name                               = "${var.ecs_app_name}"
+  name                               = var.ecs_app_name
   cluster                            = var.cluster_id #aws_ecs_cluster.cluster.id
   task_definition                    = aws_ecs_task_definition.task_definition.arn
   health_check_grace_period_seconds  = var.ecs_health_check_grace_period
@@ -48,7 +48,7 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = var.aws_alb_target_group_arn
-    container_name   = "${var.container_name}"
+    container_name   = var.container_name
     container_port   = var.container_port
   }
 

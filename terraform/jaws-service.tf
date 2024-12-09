@@ -73,3 +73,12 @@ module "jaws_api_resource_group" {
   environment = var.environment
   tags        = var.tags
 }
+
+module "jaws_s3_datasets" {
+  source = "./modules/s3"
+
+  app_name         = var.jaws_api_ecs_app_name
+  environment      = var.environment
+  tags             = var.tags
+  s3_datasets_name = var.jaws_s3_datasets_name
+}

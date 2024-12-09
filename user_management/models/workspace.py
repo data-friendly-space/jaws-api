@@ -12,7 +12,7 @@ class Workspace(models.Model):
     facilitator = models.ForeignKey("user_management.User", on_delete=models.CASCADE,
                                     related_name="facilitated_workspaces")
     country = models.CharField(max_length=100)
-    analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE)
+    analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.title)
