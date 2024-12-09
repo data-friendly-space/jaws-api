@@ -79,11 +79,12 @@ class AnalysisRepositoryImpl(AnalysisRepository):
     def get_administrative_division(self, p_code):
         """Retrieves a specific administrative division by id"""
         administrative_division = AdministrativeDivision.objects.filter(p_code = p_code).first()
-        return AdministrativeDivisionTO.from_model(administrative_division)
+        return AdministrativeDivisionTO.from_model(administrative_division, include_hierarchy=True)
 
     def add_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
         """Add a new administrative division into a analysis"""
         analysis.locations.add(administrative_division)
+        return AdministrativeDivisionTO.from_model(administrative_division, include_hierarchy=True)
 
     def remove_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
         """Add a new administrative division into a analysis"""

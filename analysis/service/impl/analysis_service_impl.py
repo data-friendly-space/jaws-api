@@ -116,8 +116,8 @@ class AnalysisServiceImpl(AnalysisService):
             raise NotFoundException("Analysis not found")
         if existing_analysis.locations.filter(p_code=p_code).exists():
             raise BadRequestException("The location is already in the analysis")
-        self.add_location_uc.exec(self.repository, existing_analysis, administrative_division)
-        return AdministrativeDivisionSerializer(administrative_division).data
+        administrative_division_to = self.add_location_uc.exec(self.repository, existing_analysis, administrative_division)
+        return AdministrativeDivisionSerializer(administrative_division_to).data
 
     def remove_location(self, analysis_id, p_code):
         administrative_division = AdministrativeDivision.objects.filter(p_code=p_code).first()
