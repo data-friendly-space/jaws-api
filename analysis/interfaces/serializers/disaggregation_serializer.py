@@ -1,4 +1,4 @@
-'''This module contains the disaggregation serializer'''
+"""This module contains the disaggregation serializer"""
 from rest_framework import serializers
 
 from analysis.models.disaggregation import Disaggregation
@@ -11,6 +11,6 @@ class DisaggregationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(max_length=36, read_only=True)
 
     class Meta:
-        '''Base class'''
+        """Base class"""
         model = Disaggregation
         fields = ['id']

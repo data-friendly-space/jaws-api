@@ -1,4 +1,4 @@
-'''This module contains the analysis DTO'''
+"""This module contains the analysis DTO"""
 from typing import Optional
 
 from analysis.contract.dto.administrative_division_dto import AdministrativeDivisionTO
@@ -8,7 +8,7 @@ from analysis.models.analysis import Analysis
 
 
 class AnalysisTO:
-    '''Analysis Data Transfer Object'''
+    """Analysis Data Transfer Object"""
     def __init__(
             self,
             id: str,

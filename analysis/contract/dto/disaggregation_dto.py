@@ -1,9 +1,9 @@
-'''This module contains the disaggregation DTO'''
+"""This module contains the disaggregation DTO"""
 from analysis.models.disaggregation import Disaggregation
 
 
 class DisaggregationTO:
-    '''Disaggregation DTO'''
+    """Disaggregation DTO"""
     def __init__(
             self,
             id: str,
@@ -24,7 +24,7 @@ class DisaggregationTO:
 
     @classmethod
     def from_models(cls, disaggregations):
-        '''Create a disaggregation dto based on a database model'''
+        """Create a disaggregation dto based on a database model"""
         if disaggregations is None or disaggregations.count() <= 0:
             return None
         return [cls.from_model(disaggregation) for disaggregation in disaggregations.all()]

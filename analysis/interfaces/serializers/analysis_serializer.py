@@ -1,4 +1,4 @@
-'''This module contains the analysis serializer'''
+"""This module contains the analysis serializer"""
 from rest_framework import serializers
 from analysis.models.analysis import Analysis
 from common.serializer.CamelCaseMixin import CamelCaseMixin
@@ -31,17 +31,17 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
                 ]
 
     def get_disaggregations(self, obj):
-        '''serialize disaggregations'''
+        """serialize disaggregations"""
         if obj.disaggregations:
             return [disaggregation.id for disaggregation in obj.disaggregations]
 
     def get_sectors(self, obj):
-        '''serialize sectors]'''
+        """serialize sectors]"""
         if obj.sectors:
             return [sector.id for sector in obj.sectors]
 
     def get_locations(self, obj):
-        '''Serialize locations with hierarchy'''
+        """Serialize locations with hierarchy"""
         locations_data = []
         if not obj.locations:
             return locations_data

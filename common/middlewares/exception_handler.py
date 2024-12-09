@@ -1,4 +1,4 @@
-'''Module for handling the exceptions'''
+"""Module for handling the exceptions"""
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
@@ -14,9 +14,9 @@ from common.helpers.api_responses import api_response_error
 
 
 class ExceptionHandler(MiddlewareMixin):
-    '''Handles the exceptions to avoid handling it within the app'''
+    """Handles the exceptions to avoid handling it within the app"""
     def process_exception(self, _request, exception):
-        '''Process the exception and return a proper response'''
+        """Process the exception and return a proper response"""
         if isinstance(exception, BadRequestException):
             response = api_response_error(
                 exception.message, exception.errors, status.HTTP_400_BAD_REQUEST
@@ -59,7 +59,7 @@ class ExceptionHandler(MiddlewareMixin):
 
     @staticmethod
     def render_response(response):
-        '''Renders the response'''
+        """Renders the response"""
         response.accepted_renderer = JSONRenderer()
         response.accepted_media_type = "application/json"
         response.renderer_context = {}

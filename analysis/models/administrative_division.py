@@ -1,9 +1,9 @@
-'''AdministrativeDivision model module'''
+"""AdministrativeDivision model module"""
 from django.db import models
 
 
 class AdministrativeDivision(models.Model):
-    '''AdministrativeDivision model'''
+    """AdministrativeDivision model"""
     ADMIN_LEVEL_CHOICES = [
         (0, 'Country'),
         (1, 'Province/State'),
@@ -33,18 +33,18 @@ class AdministrativeDivision(models.Model):
     valid_from_date = models.DateField(verbose_name="Valid From Date", null=True)
 
     class Meta:
-        '''Table metadata'''
+        """Table metadata"""
         db_table = "administrative_division"
         verbose_name = "Administrative Division"
         verbose_name_plural = "Administrative Divisions"
         ordering = ['country_code', 'admin_level', 'p_code']
 
     def __str__(self):
-        '''Return the Administrative Division as string'''
+        """Return the Administrative Division as string"""
         return f"{self.name} ({self.p_code})"
 
     def get_hierarchy(self):
-        '''Recursively fetch all parent divisions'''
+        """Recursively fetch all parent divisions"""
         hierarchy = []
         current = self
         while current:

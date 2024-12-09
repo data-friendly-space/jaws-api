@@ -1,9 +1,9 @@
-'''Tests Administrative Division model'''
+"""Tests Administrative Division model"""
 from django.test import TestCase
 from ...models.administrative_division import AdministrativeDivision
 
 class AdministrativeDivisionModelTest(TestCase):
-    '''Wraps all the tests for the administrative division model'''
+    """Wraps all the tests for the administrative division model"""
     def setUp(self):
         self.parent_division = AdministrativeDivision.objects.create(
             country_code="AFG",
@@ -14,7 +14,7 @@ class AdministrativeDivisionModelTest(TestCase):
         )
 
     def test_create_division_success(self):
-        '''Tests that creating a division succesfully works well'''
+        """Tests that creating a division succesfully works well"""
         division = AdministrativeDivision.objects.create(
             country_code="AFG",
             admin_level=2,
@@ -28,7 +28,7 @@ class AdministrativeDivisionModelTest(TestCase):
         self.assertEqual(division.admin_level, 2)
 
     def test_parent_relationship(self):
-        '''Tests that the parent relationship of a administrative division is well connected'''
+        """Tests that the parent relationship of a administrative division is well connected"""
         child_division = AdministrativeDivision.objects.create(
             country_code="AFG",
             admin_level=2,
@@ -41,7 +41,7 @@ class AdministrativeDivisionModelTest(TestCase):
         self.assertIn(child_division, self.parent_division.subdivisions.all())
 
     def test_unique_p_code(self):
-        '''Tests that a p-code cannot be duplicated'''
+        """Tests that a p-code cannot be duplicated"""
         with self.assertRaises(Exception):
             AdministrativeDivision.objects.create(
                 country_code="AFG",
@@ -52,7 +52,7 @@ class AdministrativeDivisionModelTest(TestCase):
             )
 
     def test_str_representation(self):
-        '''Tests that the str method works return the name and the code'''
+        """Tests that the str method works return the name and the code"""
         division = AdministrativeDivision.objects.create(
             country_code="AFG",
             admin_level=2,
@@ -63,7 +63,7 @@ class AdministrativeDivisionModelTest(TestCase):
         self.assertEqual(str(division), "Valid Format (AF0101)")
 
     def test_ordering(self):
-        '''Tests that the ordering works as expected'''
+        """Tests that the ordering works as expected"""
         division1 = AdministrativeDivision.objects.create(
             country_code="AFG",
             admin_level=2,

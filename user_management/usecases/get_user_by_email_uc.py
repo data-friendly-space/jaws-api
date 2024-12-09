@@ -1,8 +1,8 @@
-'''This module contains the get user by id use case'''
+"""This module contains the get user by id use case"""
 
 
 class GetUserByEmailUC:
-    '''Retrieve a user based on a given email'''
+    """Retrieve a user based on a given email"""
     _instance = None
 
     def __init__(self):
@@ -13,11 +13,11 @@ class GetUserByEmailUC:
 
     @staticmethod
     def get_instance():
-        '''Retrieve a single instance of the class'''
+        """Retrieve a single instance of the class"""
         if GetUserByEmailUC._instance is None:
             GetUserByEmailUC()
         return GetUserByEmailUC._instance
 
     def exec(self, repository, email):
-        '''Execute the use case'''
+        """Execute the use case"""
         return repository.get_user_by_email(email)

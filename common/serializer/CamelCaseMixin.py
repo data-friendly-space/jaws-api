@@ -1,4 +1,4 @@
-'''Here are the conviersion from camelCase into snake_case and vice versa'''
+"""Here are the conviersion from camelCase into snake_case and vice versa"""
 import re
 
 CAMEL_REGEX = re.compile('(?<=.)_(\\w)')
@@ -11,15 +11,15 @@ def match_snake(match):
     return f'_{match.group(1).lower()}'
 
 def to_camelcase(text):
-    '''Transform the input into camelCase'''
+    """Transform the input into camelCase"""
     return CAMEL_REGEX.sub(match_upper, text)
 
 def to_snake_case(text):
-    '''Transform the input into snake_case'''
+    """Transform the input into snake_case"""
     return SNAKE_REGEX.sub(match_snake, text)
 
 def to_camelcase_data(data):
-    '''Transform the data to camelCase'''
+    """Transform the data to camelCase"""
     if isinstance(data, dict):
         return {to_camelcase(k): to_camelcase_data(v) for k, v in data.items()}
     elif isinstance(data, list):
@@ -28,7 +28,7 @@ def to_camelcase_data(data):
         return data
 
 def to_snake_case_data(data):
-    '''Transform the data to snake_case'''
+    """Transform the data to snake_case"""
     if isinstance(data, dict):
         return {to_snake_case(k): to_snake_case_data(v) for k, v in data.items()}
     elif isinstance(data, list):
@@ -37,7 +37,7 @@ def to_snake_case_data(data):
         return data
 
 class CamelCaseMixin:
-    '''Converts to camelCase'''
+    """Converts to camelCase"""
     def to_representation(self, *args, **kwargs):
         return to_camelcase_data(super().to_representation(*args, **kwargs))
 

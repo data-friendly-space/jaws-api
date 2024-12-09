@@ -1,4 +1,4 @@
-'''This module contains the implementation of analysis repository'''
+"""This module contains the implementation of analysis repository"""
 from analysis.contract.dto.administrative_division_dto import AdministrativeDivisionTO
 from analysis.contract.dto.analysis_dto import AnalysisTO
 from analysis.contract.repository.analysis_repository import AnalysisRepository
@@ -6,7 +6,7 @@ from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 
 class AnalysisRepositoryImpl(AnalysisRepository):
-    '''Implementation of analysis repository'''
+    """Implementation of analysis repository"""
     def get_all(self):
         """
         Retrieve all users from the database.

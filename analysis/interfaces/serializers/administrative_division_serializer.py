@@ -1,4 +1,4 @@
-'''This module contains the disaggregation serializer'''
+"""This module contains the disaggregation serializer"""
 from rest_framework import serializers
 
 from analysis.models.administrative_division import AdministrativeDivision
@@ -13,6 +13,6 @@ class AdministrativeDivisionSerializer(CamelCaseMixin, serializers.ModelSerializ
     name = serializers.CharField()
 
     class Meta:
-        '''Base class'''
+        """Base class"""
         model = AdministrativeDivision
         fields = ['p_code', 'name']
