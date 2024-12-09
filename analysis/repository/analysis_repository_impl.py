@@ -84,3 +84,7 @@ class AnalysisRepositoryImpl(AnalysisRepository):
     def add_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
         """Add a new administrative division into a analysis"""
         analysis.locations.add(administrative_division)
+
+    def remove_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+        """Add a new administrative division into a analysis"""
+        analysis.locations.remove(administrative_division)

@@ -19,6 +19,7 @@ from analysis.interfaces.controllers.get_analysis_controller import (
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
     put_analysis_scope_controller,
 )
+from analysis.interfaces.controllers.remove_location_controller import remove_location_controller
 
 urlpatterns = [
     path("", get_analysis_controller, name="get_analyses"),
@@ -37,6 +38,11 @@ urlpatterns = [
         "<slug:analysis_id>/add-location/<slug:p_code>",
         add_location_controller,
         name="add_location"
+    ),
+    path(
+        "<slug:analysis_id>/remove-location/<slug:p_code>",
+        remove_location_controller,
+        name="remove_location"
     ),
     path("<slug:id>", get_analysis_by_id_controller, name="get_analysis"),
     path("<slug:id>/update", put_analysis_scope_controller, name="put_analysis"),

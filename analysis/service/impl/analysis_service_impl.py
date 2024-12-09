@@ -118,3 +118,14 @@ class AnalysisServiceImpl(AnalysisService):
             raise BadRequestException("The location is already in the analysis")
         self.add_location_uc.exec(self.repository, existing_analysis, administrative_division)
         return AdministrativeDivisionSerializer(administrative_division).data
+
+    def remove_location(self, analysis_id, p_code):
+        administrative_division = AdministrativeDivision.objects.filter(p_code=p_code).first()
+        if not administrative_division:
+            raise NotFoundException("Administrative division not found")
+        existing_analysis = Analysis.objects.filter(id=analysis_id).first()
+        if not existing_analysis:
+            raise NotFoundException("Analysis not found")
+        if not existing_analysis.locations.filter(p_code=p_code).exists():
+            raise BadRequestException("The location is not present in the analysis")
+        self.remove_location_uc.exec(self.repository, existing_analysis, administrative_division)
