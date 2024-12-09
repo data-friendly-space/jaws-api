@@ -1,13 +1,14 @@
-'''This module contains the analysis DTO'''
+"""This module contains the analysis DTO"""
 from typing import Optional
 
+from analysis.contract.dto.administrative_division_dto import AdministrativeDivisionTO
 from analysis.contract.dto.disaggregation_dto import DisaggregationTO
 from analysis.contract.dto.sector_dto import SectorTO
 from analysis.models.analysis import Analysis
 
 
 class AnalysisTO:
-    '''Analysis Data Transfer Object'''
+    """Analysis Data Transfer Object"""
     def __init__(
             self,
             id: str,
@@ -20,7 +21,8 @@ class AnalysisTO:
             last_change: Optional[dict],
             disaggregations: Optional[dict] = None,
             start_date: Optional[str] = None,
-            creator: Optional[str] = None
+            creator: Optional[str] = None,
+            locations: Optional[str] = None
     ):
         self.id = id
         self.objetives = objetives
@@ -33,6 +35,7 @@ class AnalysisTO:
         self.workspace_id = workspace_id
         self.last_change = last_change
         self.creator = creator
+        self.locations = locations
 
     @classmethod
     def from_model(cls, instance: Analysis):
@@ -51,6 +54,7 @@ class AnalysisTO:
             created_on=instance.created_on,
             disaggregations=DisaggregationTO.from_models(instance.disaggregations),
             sectors=SectorTO.from_models(instance.sectors),
+            locations=AdministrativeDivisionTO.from_models(instance.locations, include_hierarchy=True)
         )
 
     @classmethod

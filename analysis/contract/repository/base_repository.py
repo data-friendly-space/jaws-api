@@ -1,9 +1,9 @@
-'''This module contains the base repository'''
+"""This module contains the base repository"""
 from abc import abstractmethod, ABC
 
 
 class BaseRepository(ABC):
-    '''Base repository'''
+    """Base repository"""
     @abstractmethod
     def get_all(self):
         """

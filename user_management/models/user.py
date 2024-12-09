@@ -1,4 +1,4 @@
-'''This module contains the user model'''
+"""This module contains the user model"""
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
@@ -11,9 +11,9 @@ from user_management.models.workspace import Workspace
 
 
 class CustomUserManager(BaseUserManager):
-    '''Handles the user management'''
+    """Handles the user management"""
     def create_user(self, email, password=None, **extra_fields):
-        '''Normalize and validate data before creating a user'''
+        """Normalize and validate data before creating a user"""
         if not email:
             raise ValueError("Email is required")
         email = self.normalize_email(email)
@@ -24,7 +24,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    '''User model'''
+    """User model"""
     name = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     email = models.EmailField(unique=True)

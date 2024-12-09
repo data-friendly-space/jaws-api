@@ -1,4 +1,4 @@
-'''This module contains the controller for putting the scope of an analysis'''
+"""This module contains the controller for putting the scope of an analysis"""
 from rest_framework import status
 from rest_framework.decorators import api_view
 
