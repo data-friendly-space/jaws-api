@@ -13,7 +13,7 @@ class AdministrativeDivisionSerializer(CamelCaseMixin, serializers.ModelSerializ
 
     p_code = serializers.CharField()
     name = serializers.CharField()
-    hierarchy = serializers.SerializerMethodField()
+    hierarchy = serializers.SerializerMethodField(allow_null=True)
 
     class Meta:
         """Base class"""
@@ -23,16 +23,19 @@ class AdministrativeDivisionSerializer(CamelCaseMixin, serializers.ModelSerializ
 
     def get_hierarchy(self, obj):
         """Serialize locations with hierarchy"""
-        if not obj.hierarchy:
-            return None
-        return [
-            {
-                "adminLevel": loc["adminLevel"],
-                "name": loc["name"],
-                "pCode": loc["pCode"],
-            }
-            for loc in obj.hierarchy
-        ]
+        try:
+            if not obj.hierarchy:
+                return
+            return [
+                {
+                    "adminLevel": loc["adminLevel"],
+                    "name": loc["name"],
+                    "pCode": loc["pCode"],
+                }
+                for loc in obj.hierarchy
+            ]
+        except AttributeError:
+            return
 
 
     def to_representation(self, instance):

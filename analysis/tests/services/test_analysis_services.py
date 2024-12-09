@@ -1,7 +1,11 @@
 """Contains the tests for analysis service"""
+
 from django.test import TestCase
 
-from analysis.interfaces.serializers.administrative_division_serializer import AdministrativeDivisionSerializer
+from analysis.contract.dto.administrative_division_dto import AdministrativeDivisionTO
+from analysis.interfaces.serializers.administrative_division_serializer import (
+    AdministrativeDivisionSerializer,
+)
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from analysis.models.disaggregation import Disaggregation
@@ -13,28 +17,20 @@ from common.exceptions.exceptions import BadRequestException, NotFoundException
 class TestAnalysisService(TestCase):
     """Class that tests the analysis service"""
 
-
     def setUp(self):
         self.service = AnalysisServiceImpl()
-        self.test_sector = Sector.objects.create(
-            id="test-sector-1",
-            name="Sector test"
-        )
+        self.test_sector = Sector.objects.create(id="test-sector-1", name="Sector test")
         self.test_disaggregation = Disaggregation.objects.create(
-            id="test-disaggregation-1",
-            name="Disaggregation test"
+            id="test-disaggregation-1", name="Disaggregation test"
         )
-        self.test_administrative_division_level_0 = AdministrativeDivision.objects.create(
-            p_code="test",
-            name="Test",
-            admin_level=0
+        self.test_administrative_division_level_0 = (
+            AdministrativeDivision.objects.create(
+                p_code="test", name="Test", admin_level=0
+            )
         )
         self.test_analysis = Analysis.objects.create(
-            id="test-analysis",
-            title="Test",
-            end_date="2024-11-11"
+            id="test-analysis", title="Test", end_date="2024-11-11"
         )
-
 
     def test_validate_scope_fields_invalid_date(self):
         """Test that an invalid date is not valid"""
@@ -47,14 +43,14 @@ class TestAnalysisService(TestCase):
 
         with self.assertRaises(BadRequestException) as context:
             self.service.validate_scope_fields(scope, [self.test_sector])
-        self.assertEqual(str(context.exception), 'Start date must be before end date')
+        self.assertEqual(str(context.exception), "Start date must be before end date")
 
     def test_validate_scope_fields_no_data(self):
         """Tests that a scope with no data is invalid"""
         scope = {}
         with self.assertRaises(BadRequestException) as context:
             self.service.validate_scope_fields(scope, [])
-        self.assertEqual(str(context.exception), 'Missing field')
+        self.assertEqual(str(context.exception), "Missing field")
 
     def test_get_sectors_with_valid_sectors(self):
         """Tests that get sectors with valid sectors works"""
@@ -68,25 +64,31 @@ class TestAnalysisService(TestCase):
 
     def test_get_administrative_divisions_with_divisions(self):
         """Tests that getting the administrative divisions works"""
-        administrative_divisions = self.service.get_administrative_divisions(parent_p_code=None)
+        administrative_divisions = self.service.get_administrative_divisions(
+            parent_p_code=None
+        )
         self.assertEqual(
-            AdministrativeDivisionSerializer(self.test_administrative_division_level_0).data,
-            administrative_divisions[0])
+            AdministrativeDivisionSerializer(
+                self.test_administrative_division_level_0
+            ).data,
+            administrative_divisions[0],
+        )
 
     def test_get_administrative_divisions_with_parent_p_code(self):
         """Tests that getting a child administrative division works"""
         administrative_division_level_1 = AdministrativeDivision.objects.create(
             name="test level 1",
             p_code="test-lvl-1",
-            parent_p_code = self.test_administrative_division_level_0,
-            admin_level=1
+            parent_p_code=self.test_administrative_division_level_0,
+            admin_level=1,
         )
         administrative_divisions = self.service.get_administrative_divisions(
-            parent_p_code=self.test_administrative_division_level_0.p_code)
+            parent_p_code=self.test_administrative_division_level_0.p_code
+        )
         self.assertEqual(
             AdministrativeDivisionSerializer(administrative_division_level_1).data,
-            administrative_divisions[0])
-
+            administrative_divisions[0],
+        )
 
     def test_get_administrative_divisions_with_no_divisions_fails(self):
         """Tests that getting administritive divisions with no divisions fails"""
@@ -104,7 +106,12 @@ class TestAnalysisService(TestCase):
         response = self.service.add_location(valid_analysis_id, valid_p_code)
         self.assertEqual(
             response,
-            AdministrativeDivisionSerializer(self.test_administrative_division_level_0).data)
+            AdministrativeDivisionSerializer(
+                AdministrativeDivisionTO.from_model(
+                    self.test_administrative_division_level_0, include_hierarchy=True
+                )
+            ).data,
+        )
 
     def test_add_location_invalid_p_code(self):
         """Tests that adding a location with a unexisting p_code fails"""
@@ -120,7 +127,6 @@ class TestAnalysisService(TestCase):
         self.test_analysis.locations.add(self.test_administrative_division_level_0)
         with self.assertRaises(BadRequestException):
             self.service.add_location(valid_analysis_id, existing_p_code)
-
 
     def test_add_location_invalid_analysis_id(self):
         """Tests that adding a location into an unexisting analysis fails"""
@@ -138,7 +144,8 @@ class TestAnalysisService(TestCase):
         self.service.remove_location(valid_analysis_id, valid_p_code)
         self.assertNotIn(
             self.test_administrative_division_level_0,
-            self.test_analysis.locations.all())
+            self.test_analysis.locations.all(),
+        )
 
     def test_remove_location_invalid_p_code(self):
         """Tests that removing a location with a unexisting p_code fails"""
@@ -151,9 +158,7 @@ class TestAnalysisService(TestCase):
     def test_remove_location_unexisting_p_code(self):
         """Tests that removing a location with an unexisting p_code fails"""
         unexisting_p_code = AdministrativeDivision.objects.create(
-            name="existing",
-            p_code = "existing",
-            admin_level = 0
+            name="existing", p_code="existing", admin_level=0
         ).p_code
         valid_analysis_id = self.test_analysis.id
 
