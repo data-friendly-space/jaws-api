@@ -1,3 +1,4 @@
+'''This module contains the User Transfer Object'''
 from typing import Optional
 
 from user_management.contract.to.affiliattion_to import AffiliationTO
@@ -36,9 +37,9 @@ class UserTO:
 
     @classmethod
     def from_model(cls, instance: User):
+        """Transforms User instance into a UserTO representation."""
         if instance is None:  # Handle case when instance is None
             return None
-        """Transforms User instance into a UserTO representation."""
         return cls(
             id=instance.id,
             name=instance.name,
@@ -54,7 +55,7 @@ class UserTO:
         )
 
     @classmethod
-    def fromModels(self, users):
+    def from_models(self, users):
         """
         Transform a list of User model instances into a list of UserTO instances.
         """

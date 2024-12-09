@@ -1,3 +1,4 @@
+'''This module contains the Position Transfer Object'''
 from user_management.models import Position
 
 
@@ -13,9 +14,9 @@ class PositionTO:
 
     @classmethod
     def from_model(cls, instance: Position):
+        """Transforms Position instance into a PositionTO representation."""
         if instance is None:  # Handle case when instance is None
             return None
-        """Transforms Position instance into a PositionTO representation."""
         return cls(
             id=instance.id,
             name=instance.name

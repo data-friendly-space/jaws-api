@@ -1,9 +1,10 @@
-'''This module contains the disaggregation DTO'''
+'''This module contains the disaggregation Transfer Object'''
 from analysis.models.disaggregation import Disaggregation
 
 
 class DisaggregationTO:
-    '''Disaggregation DTO'''
+    '''Disaggregation TO'''
+
     def __init__(
             self,
             id: str,
@@ -14,7 +15,7 @@ class DisaggregationTO:
 
     @classmethod
     def from_model(cls, instance: Disaggregation):
-        """Transforms Position instance into a PositionTO representation."""
+        """Transforms Position instance into a DisaggregationTO representation."""
         if instance is None:
             return None
         return cls(

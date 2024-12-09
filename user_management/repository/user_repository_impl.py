@@ -1,5 +1,6 @@
 from django.contrib.auth.hashers import make_password
 
+from common.exceptions.exceptions import NotFoundException
 from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.user_repository import UserRepository
 from user_management.contract.to.user_to import UserTO
@@ -25,8 +26,7 @@ class UserRepositoryImpl(UserRepository):
         """
         users_query = User.objects.all()
         if not users_query or not users_query.exists() or len(users_query) == 0:
-            # TODO: Raise NotFoundException
-            return []
+            raise NotFoundException("No users found")
         users = query_options.filter_and_exec_queryset(users_query)
         return UserTO.fromModels(users)
 
@@ -34,34 +34,24 @@ class UserRepositoryImpl(UserRepository):
         """
         Retrieve a single user by ID.
         """
-        try:
-            return User.objects.get(id=obj_id)
-        except User.DoesNotExist:
-            return None
+        return User.objects.get(id=obj_id)
 
     def delete_by_id(self, obj_id):
         """
         Delete a user by ID.
         """
-        try:
-            user = User.objects.get(id=obj_id)
-            user.delete()
-            return True
-        except User.DoesNotExist:
-            return False
+        user = User.objects.get(id=obj_id)
+        return user.delete()
 
     def update(self, obj_id, data):
         """
         Update a user by ID.
         """
-        try:
-            user = User.objects.get(id=obj_id)
-            for field, value in data.items():
-                setattr(user, field, value)
-            user.save()
-            return user
-        except User.DoesNotExist:
-            return None
+        user = User.objects.get(id=obj_id)
+        for field, value in data.items():
+            setattr(user, field, value)
+        user.save()
+        return user
 
     def create(self, data):
         """

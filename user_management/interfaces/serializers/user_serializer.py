@@ -1,4 +1,4 @@
-'''This module contains the user serializer'''
+"""This module contains the user serializer"""
 from rest_framework import serializers
 
 from user_management.interfaces.serializers.affiliation_serializer import AffiliationTO
@@ -8,7 +8,7 @@ from user_management.models import User
 
 
 class UserSerializer(serializers.Serializer):
-    '''Serialize the user model into a DTO'''
+    """Serialize the user model into a TO"""
     id = serializers.CharField(max_length=36)
     name = serializers.CharField()
     lastname = serializers.CharField()

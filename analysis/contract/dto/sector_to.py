@@ -1,4 +1,4 @@
-'''This module contains the sector DTO'''
+'''This module contains the disaggregation Transfer Object'''
 from analysis.models.sector import Sector
 
 
@@ -14,7 +14,7 @@ class SectorTO:
 
     @classmethod
     def from_model(cls, instance: Sector):
-        """Transforms Sector instance into a Sector DTO representation."""
+        """Transforms Sector instance into a Sector TO representation."""
         if instance is None:
             return None
         return cls(
@@ -24,7 +24,7 @@ class SectorTO:
 
     @classmethod
     def from_models(cls, sectors):
-        '''Creatre a sector DTO based on a database model'''
+        '''Creatre a sector TO based on a database model'''
         if sectors is None or sectors.count() <= 0:
             return None
         return [cls.from_model(sector) for sector in sectors.all()]

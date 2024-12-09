@@ -1,6 +1,7 @@
 '''This module contains the workspace model'''
 from django.db import models
 
+from analysis.models.analysis import Analysis
 from analysis.models.analysis_framework import AnalysisFramework
 
 
@@ -12,7 +13,7 @@ class Workspace(models.Model):
     facilitator = models.ForeignKey("user_management.User", on_delete=models.CASCADE,
                                     related_name="facilitated_workspaces")
     country = models.CharField(max_length=100)
-    analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE, null=True)
+    analysis = models.ManyToManyField(Analysis)
 
     def __str__(self):
         return str(self.title)

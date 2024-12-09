@@ -1,11 +1,9 @@
 from rest_framework import serializers
 
-from user_management.models import Role
+from user_management.models import UiConfiguration
 
 
-class RoleTO(serializers.ModelSerializer):
+class UiConfigurationTO(serializers.ModelSerializer):
     class Meta:
-        model = Role
-        fields = ['id', 'name']
-
-
+        model = UiConfiguration
+        fields = ['color']

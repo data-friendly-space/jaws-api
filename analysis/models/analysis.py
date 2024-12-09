@@ -15,7 +15,7 @@ class Analysis(models.Model):
     end_date = models.DateField()
     disaggregations = models.ManyToManyField(Disaggregation, blank=True)
     sectors = models.ManyToManyField(Sector)
-    objetives = models.CharField(max_length=400)
+    objectives = models.CharField(max_length=400)
     workspace_id = models.CharField(max_length=36)
     creator = models.CharField(max_length=36)
     created_on = models.DateTimeField(auto_now_add=True)

@@ -1,9 +1,11 @@
 from abc import abstractmethod, ABC
 
+from common.helpers.query_options import QueryOptions
+
 
 class BaseRepository(ABC):
     @abstractmethod
-    def get_all(self):
+    def get_all(self,query_options: QueryOptions):
         """
         Retrieve all records from the database.
         """
@@ -14,22 +16,22 @@ class BaseRepository(ABC):
         """
         Retrieve a single record by ID.
         """
+        pass
 
-    pass
-
+    @abstractmethod
     def delete_by_id(self, obj_id):
         """
         Delete a record by ID.
         """
+        pass
 
-    pass
-
+    @abstractmethod
     def update(self, obj_id, data):
         """
         Update a record by ID.
         """
 
-    pass
+        pass
 
     @abstractmethod
     def create(self, data):

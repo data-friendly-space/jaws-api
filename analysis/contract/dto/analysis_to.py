@@ -1,29 +1,32 @@
-'''This module contains the analysis DTO'''
+'''This module contains the Analysis Transfer Object'''
+from _pydatetime import date
+from datetime import datetime
 from typing import Optional
 
-from analysis.contract.dto.disaggregation_dto import DisaggregationTO
-from analysis.contract.dto.sector_dto import SectorTO
+from analysis.contract.dto.disaggregation_to import DisaggregationTO
+from analysis.contract.dto.sector_to import SectorTO
 from analysis.models.analysis import Analysis
 
 
 class AnalysisTO:
     '''Analysis Data Transfer Object'''
+
     def __init__(
             self,
             id: str,
             title: str,
-            objetives: str,
-            created_on: str,
-            end_date: str,
+            objectives: str,
             sectors: Optional[dict],
-            workspace_id: Optional[dict],
-            last_change: Optional[dict],
+            workspace_id: str,
+            last_change: Optional[datetime] = None,
+            end_date: Optional[date] = None,
+            created_on: Optional[datetime] = None,
             disaggregations: Optional[dict] = None,
-            start_date: Optional[str] = None,
+            start_date: Optional[date] = None,
             creator: Optional[str] = None
     ):
         self.id = id
-        self.objetives = objetives
+        self.objectives = objectives
         self.title = title
         self.created_on = created_on
         self.start_date = start_date
@@ -36,13 +39,13 @@ class AnalysisTO:
 
     @classmethod
     def from_model(cls, instance: Analysis):
-        """Transforms Analysis instance into a AnalysisDTO representation."""
+        """Transforms Analysis instance into a AnalysisTO representation."""
         if instance is None:
             return None
         return cls(
             id=instance.id,
             title=instance.title,
-            objetives=instance.objetives,
+            objectives=instance.objectives,
             creator=instance.creator,
             workspace_id=instance.workspace_id,
             start_date=instance.start_date,
@@ -56,6 +59,7 @@ class AnalysisTO:
     @classmethod
     def from_models(cls, analyses):
         """
-        Transform a list of Analysis model instances into a list of AnalysisDTO instances.
+        Transform a list of Analysis model instances into a list of AnalysisTO instances.
         """
+
         return [cls.from_model(analysis) for analysis in analyses]
