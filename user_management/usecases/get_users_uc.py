@@ -1,6 +1,6 @@
-'''This module contains the get users use case'''
+"""This module contains the get users use case"""
 class GetUsersUC:
-    '''Retrieves the users'''
+    """Retrieves the users"""
     _instance = None
 
     def __init__(self):
@@ -11,11 +11,11 @@ class GetUsersUC:
 
     @staticmethod
     def get_instance():
-        '''Return a single instance of the class'''
+        """Return a single instance of the class"""
         if GetUsersUC._instance is None:
             GetUsersUC()
         return GetUsersUC._instance
 
     def exec(self, repository, query_options):
-        '''Execute the use case'''
+        """Execute the use case"""
         return repository.get_all(query_options)
