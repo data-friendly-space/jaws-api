@@ -1,8 +1,8 @@
 """This module contains the query options"""
 import ast
-from typing import List, Optional
+from typing import List, Optional, Type
 from django.core.paginator import Paginator
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Model
 from rest_framework import serializers
 
 
@@ -61,17 +61,29 @@ class QueryOptions(serializers.Serializer):
             page_number=request.query_params.get('page_number'),
             page_size=request.query_params.get('page_size'),
             search_term=request.query_params.get('search_term'),
-            search_fields=request.query_params.getlist('search_fields'),
             order_by=order_by
         )
+
+    def get_queryable_fields(self, model: Type[Model]) -> List[str]:
+        """
+        Get fields of the model that can be queried (non-relational fields).
+        """
+        return [
+            field.name
+            for field in model._meta.get_fields(include_parents=True)
+            if not (field.is_relation or field.many_to_one or field.many_to_many)
+        ]
 
     def filter_and_exec_queryset(
             self,
             queryset: QuerySet,
+            model: Type[Model],
             exclude_fields: Optional[List[str]] = None) -> list:
         """Filter, order and paginate the response"""
         if not queryset:
             return list()
+
+        self.search_fields = self.get_queryable_fields(model)
 
         if exclude_fields:
             self.search_fields = [
