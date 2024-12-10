@@ -24,10 +24,8 @@ class UserRepositoryImpl(UserRepository):
         Retrieve all users from the database.
         """
         users_query = User.objects.all()
-        if not users_query or not users_query.exists() or len(users_query) == 0:
-            # TODO: Raise NotFoundException
-            return []
-        users = query_options.filter_and_exec_queryset(users_query)
+        exclude_fields = ['password']
+        users = query_options.filter_and_exec_queryset(users_query, exclude_fields)
         return UserTO.fromModels(users)
 
     def get_by_id(self, obj_id):
