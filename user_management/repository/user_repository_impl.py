@@ -28,7 +28,7 @@ class UserRepositoryImpl(UserRepository):
         if not users_query or not users_query.exists() or len(users_query) == 0:
             raise NotFoundException("No users found")
         users = query_options.filter_and_exec_queryset(users_query)
-        return UserTO.fromModels(users)
+        return UserTO.from_models(users)
 
     def get_by_id(self, obj_id):
         """

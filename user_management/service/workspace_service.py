@@ -1,6 +1,8 @@
 '''This module contains the workspace service'''
 from abc import ABC, abstractmethod
 
+from user_management.contract.io.create_workspace_in import CreateWorkspaceIn
+
 
 class WorkspaceService(ABC):
     '''Workspace service'''
@@ -10,5 +12,9 @@ class WorkspaceService(ABC):
         '''Retrieves the workspaces'''
 
     @abstractmethod
-    def create_workspace(self, template_name, workspace_name, facilitator_email, country):
+    def create_workspace(self, request: CreateWorkspaceIn):
+        '''Create a new workspace'''
+
+    @abstractmethod
+    def get_workspace_users(self, workspace_id):
         '''Create a new workspace'''

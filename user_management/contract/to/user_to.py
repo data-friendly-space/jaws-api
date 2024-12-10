@@ -1,6 +1,7 @@
 '''This module contains the User Transfer Object'''
 from typing import Optional
 
+from common.contract.to.base_to import BaseTO
 from user_management.contract.to.affiliattion_to import AffiliationTO
 from user_management.contract.to.organization_to import OrganizationTO
 from user_management.contract.to.position_to import PositionTO
@@ -8,7 +9,7 @@ from user_management.contract.to.ui_configuration_to import UiConfigurationTO
 from user_management.models import User
 
 
-class UserTO:
+class UserTO(BaseTO):
     def __init__(
             self,
             id: int,
@@ -53,10 +54,3 @@ class UserTO:
             uiConfiguration=UiConfigurationTO.from_model(instance.ui_configuration),
             profileImage=instance.profile_image,
         )
-
-    @classmethod
-    def from_models(self, users):
-        """
-        Transform a list of User model instances into a list of UserTO instances.
-        """
-        return [self.from_model(user) for user in users]

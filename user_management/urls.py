@@ -1,6 +1,7 @@
 """User management URL Configuration"""
 from django.urls import path
 
+from user_management.interfaces.controllers.create_workspace_controller import create_workspace_controller
 from user_management.interfaces.controllers.get_roles_controller import get_roles_controller
 from user_management.interfaces.controllers.get_users_controller import get_users_controller
 from user_management.interfaces.controllers.refresh_token_controller import refresh_token_controller
@@ -19,4 +20,6 @@ urlpatterns = [
     path('token-refresh', refresh_token_controller, name='token_refresh'),
 
     path('session-verify', verify_token_controller, name='session_verify'),
+
+    path('workspaces/create', create_workspace_controller, name='create_workspace_controller'),
 ]

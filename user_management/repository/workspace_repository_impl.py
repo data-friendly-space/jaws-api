@@ -1,7 +1,8 @@
 """This module contains the implementation of Workspace repository"""
 from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.workspace_repository import WorkspaceRepository
-from user_management.models import Workspace
+from user_management.contract.to.workspace_to import WorkspaceTO
+from user_management.models import Workspace, User
 
 
 class WorkspaceRepositoryImpl(WorkspaceRepository):
@@ -28,7 +29,8 @@ class WorkspaceRepositoryImpl(WorkspaceRepository):
 
     def create(self, data):
         """Creates and retrieve new workspace"""
-        return Workspace.objects.create(data)
+        workspace = Workspace.objects.create(**data)
+        return WorkspaceTO.from_model(workspace)
 
     def get_all(self, query_options: QueryOptions):
         """Retrieves all workspaces"""

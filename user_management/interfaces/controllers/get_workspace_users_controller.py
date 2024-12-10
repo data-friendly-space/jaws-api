@@ -8,7 +8,7 @@ from user_management.service.impl.workspace_service_impl import WorkspaceService
 
 
 @api_view(['POST'])
-def create_workspace_controller(request):
+def get_workspace_users_controller(request):
     """
     return WorkspaceTO.
     """

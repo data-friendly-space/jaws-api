@@ -1,4 +1,4 @@
-"""Here are the conviersion from camelCase into snake_case and vice versa"""
+"""Here are the conversion from camelCase into snake_case and vice versa"""
 import re
 
 CAMEL_REGEX = re.compile('(?<=.)_(\\w)')

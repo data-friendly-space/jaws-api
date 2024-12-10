@@ -4,22 +4,15 @@ from rest_framework import serializers
 from user_management.models import Role, Permission
 
 
-class PermissionSerializer(serializers.ModelSerializer):
+class PermissionSerializer(serializers.Serializer):
     """Serializer for the Permission model."""
-
-    class Meta:
-        """Meta class. """
-        model = Permission
-        fields = ['id', 'name', 'type']
+    id = serializers.ReadOnlyField()
+    role = serializers.ReadOnlyField()
+    type = serializers.ReadOnlyField()
 
 
-class RoleSerializer(serializers.ModelSerializer):
+class RoleSerializer(serializers.Serializer):
     """Serializer for the Role model."""
     id = serializers.ReadOnlyField()
     role = serializers.ReadOnlyField()
     permissions = PermissionSerializer(many=True, read_only=True)
-
-    class Meta:
-        """Meta class. """
-        model = Role
-        fields = ['id', 'role', 'permissions']

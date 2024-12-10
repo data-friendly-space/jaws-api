@@ -1,10 +1,14 @@
 """This module contains the Role Transfer Object"""
+from dataclasses import dataclass
+
+from common.contract.to.base_to import BaseTO
 from user_management.contract.to.permission_to import PermissionTO
 from user_management.models import Role
 from typing import Optional
 
 
-class RoleTO:
+@dataclass
+class RoleTO(BaseTO):
     def __init__(
             self,
             id: int,
@@ -16,7 +20,7 @@ class RoleTO:
         self.permissions = permissions
 
     @classmethod
-    def from_model(cls, instance: Role):
+    def from_model(cls, instance: Role) -> 'RoleTO':
         """Transforms Role instance into a RoleTO representation."""
         if instance is None:  # Handle case when instance is None
             return None
@@ -25,12 +29,3 @@ class RoleTO:
             role=instance.role,
             permissions=PermissionTO.from_models(instance.permissions.all())
         )
-
-    @classmethod
-    def from_models(self, roles):
-        """
-        Transform a list of Role model instances into a list of RoleTO instances.
-        """
-        if roles is None or roles.count() <= 0:
-            return None
-        return [self.from_model(role) for role in roles]

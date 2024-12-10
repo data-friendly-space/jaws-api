@@ -2,7 +2,7 @@
 
 import uuid
 
-
+from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
@@ -23,24 +23,25 @@ class AnalysisServiceImpl(AnalysisService):
         self.repository = AnalysisRepositoryImpl()
         super().__init__()
 
-    def create_analysis(self, scope):
-        if scope["disaggregations"]:
-            disaggregations = self.get_disaggregations(scope["disaggregations"])
+    def create_analysis(self, create_analysis_in: CreateAnalysisIn):
+        if not create_analysis_in.is_valid():
+            raise BadRequestException("Create analysis request is not valid: ", create_analysis_in.errors)
+        scope = create_analysis_in.validated_data
+        if scope['disaggregations']:
+            disaggregations = self.get_disaggregations(scope['disaggregations'])
         else:
             disaggregations = []
-        sectors = self.get_sectors(scope["sectors"])
+        sectors = self.get_sectors(scope['sectors'])
         new_id = uuid.uuid4()
-        creator_id = "123"  # TODO: Fill with the current user id
-        workspace_id = "456"  # TODO: Fill with the corrseponding workspace id
         self.validate_scope_fields(scope, sectors)
         data = {
             "id": new_id,
             "title": scope["title"],
-            "objetives": scope["objetives"],
+            "objectives": scope["objectives"],
             "start_date": scope["start_date"],
             "end_date": scope["end_date"],
-            "creator": creator_id,
-            "workspace_id": workspace_id,
+            "creator_id": scope['creator_id'],
+            "workspace_id": scope['workspace_id'],
         }
         return AnalysisSerializer(
             self.create_analysis_uc.exec(
@@ -68,8 +69,8 @@ class AnalysisServiceImpl(AnalysisService):
     def validate_scope_fields(self, scope, sectors):
         """Validate that the scope contains everything needed and the sectors are not empty"""
         if (
-            not all(scope.get(key) for key in ["title", "objetives", "end_date"])
-            or not sectors
+                not all(scope[key] for key in ["title", "objectives", "end_date"])
+                # or not sectors
         ):
             raise BadRequestException("Missing field")
 
@@ -116,7 +117,8 @@ class AnalysisServiceImpl(AnalysisService):
             raise NotFoundException("Analysis not found")
         if existing_analysis.locations.filter(p_code=p_code).exists():
             raise BadRequestException("The location is already in the analysis")
-        administrative_division_to = self.add_location_uc.exec(self.repository, existing_analysis, administrative_division)
+        administrative_division_to = self.add_location_uc.exec(self.repository, existing_analysis,
+                                                               administrative_division)
         return AdministrativeDivisionSerializer(administrative_division_to).data
 
     def remove_location(self, analysis_id, p_code):

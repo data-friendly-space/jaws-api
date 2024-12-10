@@ -2,14 +2,13 @@
 from django.db import models
 
 from analysis.models.analysis import Analysis
-from analysis.models.analysis_framework import AnalysisFramework
 
 
 class Workspace(models.Model):
     """Model for the workspace"""
-    title = models.CharField(max_length=200)
-    creation_date = models.DateTimeField()
-    last_access_date = models.DateTimeField()
+    title = models.CharField(max_length=200, unique=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    last_access_date = models.DateTimeField(null=True)
     facilitator = models.ForeignKey("user_management.User", on_delete=models.CASCADE,
                                     related_name="facilitated_workspaces")
     country = models.CharField(max_length=100)

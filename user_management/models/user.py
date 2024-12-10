@@ -12,6 +12,7 @@ from user_management.models.workspace import Workspace
 
 class CustomUserManager(BaseUserManager):
     """Handles the user management"""
+
     def create_user(self, email, password=None, **extra_fields):
         """Normalize and validate data before creating a user"""
         if not email:

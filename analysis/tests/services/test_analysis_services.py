@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from analysis.contract.dto.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
