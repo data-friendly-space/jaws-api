@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from common.exceptions.exceptions import UnauthorizedException, BadRequestException
+from common.exceptions.exceptions import NotFoundException, UnauthorizedException, BadRequestException
 from common.helpers.api_responses import api_response_success
 from common.helpers.query_options import QueryOptions
 from common.use_case.get_all_uc import GetAllUC as GetUsersUC
@@ -31,8 +31,10 @@ class UsersServiceImpl(UsersService):
 
     def get_users(self, query_options: QueryOptions):
         """Business logic to retrieve all users"""
-        return UserSerializer(self.get_users_uc.exec(UserRepositoryImpl(), query_options),
-                              many=True).data
+        users = self.get_users_uc.exec(UserRepositoryImpl(), query_options)
+        if not users:
+            raise NotFoundException("Users not found")
+        return UserSerializer(users, many=True).data
 
     def sign_up(self, sign_up_in: SignUpIn):
         """Business logic to sign up user"""

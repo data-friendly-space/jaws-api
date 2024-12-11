@@ -7,7 +7,7 @@ from common.helpers.query_options import QueryOptions
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def get_users_controller(request):
     """
     List all users and return them in UserTO format.
@@ -15,8 +15,8 @@ def get_users_controller(request):
     users_service = UsersServiceImpl()
     query_options = QueryOptions.from_request(request)
 
-    return api_response_success("Users retrieved successfully", users_service.get_users(query_options),
-                                status.HTTP_200_OK)
-
-
-
+    return api_response_success(
+        "Users retrieved successfully",
+        users_service.get_users(query_options),
+        status.HTTP_200_OK,
+    )
