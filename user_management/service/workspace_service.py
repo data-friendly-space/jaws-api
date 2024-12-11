@@ -10,11 +10,18 @@ class WorkspaceService(ABC):
     @abstractmethod
     def get_workspaces(self):
         '''Retrieves the workspaces'''
+        pass
 
     @abstractmethod
     def create_workspace(self, request: CreateWorkspaceIn):
         '''Create a new workspace'''
+        pass
 
     @abstractmethod
-    def get_workspace_users(self, workspace_id):
+    def get_workspace_users_by_workspace_id(self, workspace_id: str):
         '''Create a new workspace'''
+        pass
+
+    @abstractmethod
+    def get_workspaces_by_user_id(self, workspace_id):
+        pass

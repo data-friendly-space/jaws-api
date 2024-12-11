@@ -8,15 +8,18 @@ from analysis.models.sector import Sector
 
 class Analysis(models.Model):
     """Analysis model"""
-    id = models.UUIDField(primary_key=True, max_length=36)
-    title = models.CharField(max_length=255,unique=True)
+    workspace = models.ForeignKey(
+        "user_management.Workspace",
+        on_delete=models.CASCADE,
+        related_name="analyses"
+    )
+    title = models.CharField(max_length=255, unique=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField()
     disaggregations = models.ManyToManyField(Disaggregation, blank=True)
     sectors = models.ManyToManyField(Sector)
     objectives = models.CharField(max_length=400)
-    workspace_id = models.CharField(max_length=36)
-    creator_id = models.CharField(max_length=36)
+    creator = models.ForeignKey('user_management.User', on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     last_change = models.DateTimeField(auto_now=True)
     locations = models.ManyToManyField(AdministrativeDivision)

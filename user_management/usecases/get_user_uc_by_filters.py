@@ -2,23 +2,23 @@
 from user_management.contract.repository.user_repository import UserRepository
 
 
-class GetUsersUC:
+class GetUserByFiltersUC:
     """Retrieves the users"""
     _instance = None
 
     def __init__(self):
-        if GetUsersUC._instance is not None:
+        if GetUserByFiltersUC._instance is not None:
             raise Exception("This class is a singleton!")
         else:
-            GetUsersUC._instance = self
+            GetUserByFiltersUC._instance = self
 
     @staticmethod
     def get_instance():
         """Return a single instance of the class"""
-        if GetUsersUC._instance is None:
-            GetUsersUC()
-        return GetUsersUC._instance
+        if GetUserByFiltersUC._instance is None:
+            GetUserByFiltersUC()
+        return GetUserByFiltersUC._instance
 
-    def exec(self, repository:UserRepository, query_options):
+    def exec(self, repository: UserRepository, **kwargs):
         """Execute the use case"""
-        return repository.get_all(query_options)
+        return repository.get_user_by_filters(**kwargs)

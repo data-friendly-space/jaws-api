@@ -15,5 +15,5 @@ def create_workspace_controller(request):
     service = WorkspaceServiceImpl()
     create_workspace_in = CreateWorkspaceIn(data=to_snake_case_data(request.data))
 
-    return api_response_success("Users retrieved successfully", service.create_workspace(create_workspace_in),
+    return api_response_success("Organization retrieved successfully", service.create_workspace(create_workspace_in),
                                 status.HTTP_200_OK)

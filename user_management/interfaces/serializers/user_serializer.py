@@ -7,7 +7,7 @@ from user_management.interfaces.serializers.position_serializer import PositionS
 
 
 class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField
+    id = serializers.UUIDField(read_only=True)
     name = serializers.CharField()
     lastname = serializers.CharField()
     email = serializers.EmailField()

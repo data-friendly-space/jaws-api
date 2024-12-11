@@ -1,14 +1,22 @@
 """This module contains the implementation of Workspace repository"""
 from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.workspace_repository import WorkspaceRepository
+from user_management.contract.to.user_workspace_role_to import UserWorkspaceRoleTO
+from user_management.contract.to.user_workspace_to import UserWorkspaceTO
 from user_management.contract.to.workspace_to import WorkspaceTO
-from user_management.models import Workspace, User
+from user_management.models import Workspace, UserWorkspaceRole
 
 
 class WorkspaceRepositoryImpl(WorkspaceRepository):
-    def get_workspace_users(self, workspace_id):
-        """Get workspace users by workspace id"""
-        pass
+
+    def get_user_workspaces_by_filters(self, **kwargs):
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        workspace_users = UserWorkspaceRole.objects.filter(**filters)
+        return UserWorkspaceRoleTO.from_models(workspace_users)
+
+    def get_workspace_users_by_workspace_id(self, workspace_id):
+        workspace_users = UserWorkspaceRole.objects.filter(workspace_id=workspace_id)
+        return UserWorkspaceTO.from_models(workspace_users)
 
     def delete_by_id(self, obj_id):
         """Delete workspace by id"""
@@ -34,4 +42,4 @@ class WorkspaceRepositoryImpl(WorkspaceRepository):
 
     def get_all(self, query_options: QueryOptions):
         """Retrieves all workspaces"""
-        return Workspace.objects.all()
+        return WorkspaceTO.from_models(Workspace.objects.all())

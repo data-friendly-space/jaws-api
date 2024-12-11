@@ -8,6 +8,11 @@ from user_management.models import User
 
 
 class UserRepositoryImpl(UserRepository):
+    def get_user_by_filters(self, **kwargs):
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        users_found = User.objects.filter(**filters).first()
+        return UserTO.from_model(users_found)
+
     def sign_up(self, name, lastname, email, password):
         return User.objects.create(
             lastname=lastname,

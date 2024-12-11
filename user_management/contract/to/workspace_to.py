@@ -1,21 +1,23 @@
 '''This module contains the Workspace Transfer Object'''
 import datetime
-from typing import Optional, Dict
 from dataclasses import dataclass, asdict
+from typing import Optional, Dict
+
 from analysis.contract.to.analysis_to import AnalysisTO
+from common.contract.to.base_to import BaseTO
 from user_management.contract.to.user_to import UserTO
 from user_management.models import Workspace
 
 
 @dataclass
-class WorkspaceTO:
-    id: int
+class WorkspaceTO(BaseTO):
+    id: str
     title: str
-    creation_date: datetime
-    last_access_date: datetime
-    facilitator: Optional[dict]
+    creationDate: datetime
+    lastAccessDate: datetime
+    facilitator: UserTO
     country: str
-    analysis: Optional[dict] = None
+    analyses: Optional[list[AnalysisTO]]
 
     @classmethod
     def from_model(cls, instance: Workspace):
@@ -25,19 +27,12 @@ class WorkspaceTO:
         return cls(
             id=instance.id,
             title=instance.title,
-            creation_date=instance.creation_date,
-            last_access_date=instance.last_access_date,
+            creationDate=instance.creation_date,
+            lastAccessDate=instance.last_access_date,
             facilitator=UserTO.from_model(instance.facilitator),
             country=instance.country,
-            analysis=AnalysisTO.from_models(instance.analysis.all())
+            analyses=AnalysisTO.from_models(instance.analyses.all())
         )
-
-    @classmethod
-    def from_models(self, users):
-        """
-        Transform a list of Workspace model instances into a list of WorkspaceTO instances.
-        """
-        return [self.from_model(user) for user in users]
 
     def to_dict(self) -> Dict:
         return asdict(self)

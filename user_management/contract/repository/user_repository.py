@@ -20,3 +20,11 @@ class UserRepository(BaseRepository, ABC):
         Retrieve user from the database by email address.
         """
         pass
+
+    @abstractmethod
+    def get_user_by_filters(self, **kwargs):
+        """
+           Get users based on dynamic filters.
+           Accepts any combination of filter arguments.
+           """
+        pass

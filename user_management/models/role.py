@@ -20,6 +20,3 @@ class RolePermission(models.Model):
 
     class Meta:
         db_table = 'role_permission'
-
-
-

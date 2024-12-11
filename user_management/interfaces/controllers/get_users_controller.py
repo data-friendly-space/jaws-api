@@ -17,3 +17,6 @@ def get_users_controller(request):
 
     return api_response_success("Users retrieved successfully", users_service.get_users(query_options),
                                 status.HTTP_200_OK)
+
+
+

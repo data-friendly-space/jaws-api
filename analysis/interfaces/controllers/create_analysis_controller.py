@@ -6,7 +6,6 @@ from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
 from common.helpers.api_responses import api_response_success
 from common.serializer.CamelCaseMixin import to_snake_case_data
-from user_management.models import UserWorkspaceRole
 
 
 @api_view(["POST"])
@@ -15,4 +14,5 @@ def create_analysis_controller(request):
     service = AnalysisServiceImpl()
     create_analysis_in = CreateAnalysisIn(data=to_snake_case_data(request.data))
 
-    return api_response_success("Success", service.create_analysis(create_analysis_in), status.HTTP_201_CREATED)
+    return api_response_success("Success", service.create_analysis(create_analysis_in, request.user.id),
+                                status.HTTP_201_CREATED)

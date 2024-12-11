@@ -1,4 +1,6 @@
 """This module contains the user model"""
+import uuid
+
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
@@ -26,6 +28,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     """User model"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     email = models.EmailField(unique=True)

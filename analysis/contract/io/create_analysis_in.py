@@ -15,5 +15,4 @@ class CreateAnalysisIn(serializers.Serializer):
     objectives = serializers.CharField(max_length=1000)
     start_date = serializers.DateField()
     end_date = serializers.DateField()
-    workspace_id = serializers.CharField(max_length=36)
-    creator_id = serializers.CharField(max_length=36)
+    workspace_id = serializers.CharField()

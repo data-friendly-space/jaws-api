@@ -6,12 +6,11 @@ from user_management.service.impl.workspace_service_impl import WorkspaceService
 
 
 @api_view(['GET'])
-def get_workspace_users_controller(request, workspace_id):
+def get_workspace_by_user_id_controller(request, user_id):
     """
-    return UserWorkspaceTO.
+    return WorkspaceTO.
     """
     service = WorkspaceServiceImpl()
 
-    return api_response_success("Workspace users retrieved successfully",
-                                service.get_workspace_users_by_workspace_id(workspace_id),
+    return api_response_success("Workspaces retrieved successfully", service.get_workspaces_by_user_id(user_id),
                                 status.HTTP_200_OK)

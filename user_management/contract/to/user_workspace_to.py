@@ -2,15 +2,18 @@
 from dataclasses import dataclass, asdict
 from typing import Optional, Dict
 
+from common.contract.to.base_to import BaseTO
 from user_management.contract.to.role_to import RoleTO
+from user_management.contract.to.user_to import UserTO
+from user_management.contract.to.workspace_to import WorkspaceTO
 from user_management.models import UserWorkspaceRole
 
 
 @dataclass
-class WorkspaceTO:
-    id: int
-    workspace: int
-    role: Optional[dict]
+class UserWorkspaceTO(BaseTO):
+    user: UserTO
+    workspace: str
+    role: RoleTO
 
     @classmethod
     def from_model(cls, instance: UserWorkspaceRole):
@@ -18,17 +21,10 @@ class WorkspaceTO:
         if instance is None:  # Handle case when instance is None
             return None
         return cls(
-            id=instance.id,
-            workspace=instance.workspace_id,
-            role=RoleTO.from_models(instance.role),
+            user=UserTO.from_model(instance.user),
+            workspace=instance.workspace.id,
+            role=RoleTO.from_model(instance.role),
         )
-
-    @classmethod
-    def from_models(self, workspaces):
-        """
-        Transform a list of Workspace model instances into a list of WorkspaceTO instances.
-        """
-        return [self.from_model(workspace) for workspace in workspaces]
 
     def to_dict(self) -> Dict:
         return asdict(self)

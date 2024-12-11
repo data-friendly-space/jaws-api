@@ -13,17 +13,41 @@ from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.service.analysis_service import AnalysisService
+from analysis.use_cases.add_location_uc import AddLocationUC
+from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
+from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionsUC, \
+    GetAdministrativeDivisionByIdUC
+from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
+from analysis.use_cases.get_analysis_uc import GetAnalysisUC
+from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
+from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
+from user_management.repository.user_repository_impl import UserRepositoryImpl
+from user_management.usecases.get_user_uc_by_filters import GetUserByFiltersUC
 
 
 class AnalysisServiceImpl(AnalysisService):
     """Implementation of AnalysisService. Contains the business logic"""
 
     def __init__(self):
+        self.create_analysis_uc = CreateAnalysisUC.get_instance()
+        self.put_analysis_scope_uc = PutAnalysisScopeUC.get_instance()
+        self.get_analysis_uc = GetAnalysisUC.get_instance()
+        self.get_analysis_by_id_uc = GetAnalysisByIdUC.get_instance()
+        self.get_administrative_divisions_uc = (
+            GetAdministrativeDivisionsUC.get_instance()
+        )
+        self.get_administrative_division_by_id_uc = (
+            GetAdministrativeDivisionByIdUC.get_instance()
+        )
+        self.add_location_uc = AddLocationUC.get_instance()
+        self.remove_location_uc = RemoveLocationUC.get_instance()
+        self.get_user_by_filter_uc = GetUserByFiltersUC.get_instance()
         self.repository = AnalysisRepositoryImpl()
-        super().__init__()
+        self.user_repository = UserRepositoryImpl()
 
-    def create_analysis(self, create_analysis_in: CreateAnalysisIn):
+    def create_analysis(self, create_analysis_in: CreateAnalysisIn,creator_id):
+        if not self.get_user_by_filter_uc.exec(self.user_repository,id=creator_id): raise BadRequestException("Analysis creator doens't exists")
         if not create_analysis_in.is_valid():
             raise BadRequestException("Create analysis request is not valid: ", create_analysis_in.errors)
         scope = create_analysis_in.validated_data
@@ -32,15 +56,13 @@ class AnalysisServiceImpl(AnalysisService):
         else:
             disaggregations = []
         sectors = self.get_sectors(scope['sectors'])
-        new_id = uuid.uuid4()
         self.validate_scope_fields(scope, sectors)
         data = {
-            "id": new_id,
             "title": scope["title"],
             "objectives": scope["objectives"],
             "start_date": scope["start_date"],
             "end_date": scope["end_date"],
-            "creator_id": scope['creator_id'],
+            "creator_id": creator_id,
             "workspace_id": scope['workspace_id'],
         }
         return AnalysisSerializer(

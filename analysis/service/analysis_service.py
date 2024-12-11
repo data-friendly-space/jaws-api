@@ -18,20 +18,6 @@ from common.service.base_service import BaseService
 class AnalysisService(BaseService):
     """Definition of the analysis service"""
 
-    def __init__(self):
-        self.create_analysis_uc = CreateAnalysisUC.get_instance()
-        self.put_analysis_scope_uc = PutAnalysisScopeUC.get_instance()
-        self.get_analysis_uc = GetAnalysisUC.get_instance()
-        self.get_analysis_by_id_uc = GetAnalysisByIdUC.get_instance()
-        self.get_administrative_divisions_uc = (
-            GetAdministrativeDivisionsUC.get_instance()
-        )
-        self.get_administrative_division_by_id_uc = (
-            GetAdministrativeDivisionByIdUC.get_instance()
-        )
-        self.add_location_uc = AddLocationUC.get_instance()
-        self.remove_location_uc = RemoveLocationUC.get_instance()
-
     @abstractmethod
     def put_analysis_scope(self, scope, analysis_id):
         """Update an analysis scope with the given scope and the analysis id"""
@@ -45,7 +31,7 @@ class AnalysisService(BaseService):
         """Retrieve an analysis based on a specific id"""
 
     @abstractmethod
-    def create_analysis(self, scope):
+    def create_analysis(self, scope,creator_id):
         """Create a new analysis with the given scope"""
 
     @abstractmethod
