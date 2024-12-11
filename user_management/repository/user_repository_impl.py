@@ -1,6 +1,5 @@
 from django.contrib.auth.hashers import make_password
 
-from common.exceptions.exceptions import NotFoundException
 from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.user_repository import UserRepository
 from user_management.contract.to.user_to import UserTO
@@ -32,7 +31,7 @@ class UserRepositoryImpl(UserRepository):
         users = query_options.filter_and_exec_queryset(
             users_query, model=User, exclude_fields=exclude_fields
         )
-        return UserTO.fromModels(users)
+        return UserTO.from_models(users)
 
     def get_by_id(self, obj_id):
         try:
