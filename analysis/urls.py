@@ -2,7 +2,6 @@
 
 from django.urls import path
 
-from analysis.command.load_administrative_divisions import load_administrative_divisions
 from analysis.interfaces.controllers.add_location_controller import add_location_controller
 from analysis.interfaces.controllers.create_analysis_controller import (
     create_analysis_controller,
@@ -24,11 +23,6 @@ from analysis.interfaces.controllers.remove_location_controller import remove_lo
 urlpatterns = [
     path("", get_analysis_controller, name="get_analyses"),
     path("create", create_analysis_controller, name="create_analysis"),
-    path(
-        "load-administrative-divisions",
-        load_administrative_divisions,
-        name="load_administrative_divisions",
-    ),
     path(
         "administrative-divisions",
         get_administrative_division_controller,
