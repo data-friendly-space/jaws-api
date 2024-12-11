@@ -1,6 +1,6 @@
 #-------------------------------COMMON VARIABLES--------------------------
 aws_region  = "us-east-1"
-aws_profile = "default"
+aws_profile = "841162704359_ExternalDeveloper"
 environment = "development"
 tags = {
   "Project"     = "jaws"
@@ -10,13 +10,13 @@ tags = {
 
 #-------------------------------NETWORK VARIABLES--------------------------
 vpc_cidr_block = "172.31.0.0/16"
-vpc_id         = "vpc-0fb5296d13dac730f"
+vpc_id         = "vpc-07dd783259aae3728"
 vpc_name       = ""
 #api_gateway_name        = "msa-api-gateway"
 #api_gateway_description = "MyStoneridge API Gateway"
 availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
-it_public_subnets  = ["subnet-0c9afffe03d980eb3", "subnet-0ae19062beb00ca2a", "subnet-0c70a29289e1ceae1"]
-it_public_subnet   = "subnet-0c9afffe03d980eb3"
+it_public_subnets  = ["subnet-017b0144f753b8028", "subnet-0a1fa7026dc5ba396", "subnet-01dd0044f6a1c4bad"]
+it_public_subnet   = "subnet-017b0144f753b8028"
 
 zone_name               = "jawsdev.com"
 company_asset_zone_name = ""
