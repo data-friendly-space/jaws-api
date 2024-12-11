@@ -12,6 +12,7 @@ from common.helpers.query_options import QueryOptions
 from common.use_case.get_all_uc import GetAllUC as GetUsersUC
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
+from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.repository.user_repository_impl import UserRepositoryImpl
 from user_management.service.users_service import UsersService
@@ -51,7 +52,7 @@ class UsersServiceImpl(UsersService):
         if not user_to or not check_password(data['password'], user_to.password):
             raise BadRequestException("Incorrect email or password")
         try:
-            return user_to.to_dict()
+            return UserTokenSerializer(user_to).data
         except ValueError as e:
             raise UnauthorizedException(str(e), None)
 

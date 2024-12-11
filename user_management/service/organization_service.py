@@ -16,5 +16,11 @@ class OrganizationService(ABC):
         '''Create a new organization'''
 
     @abstractmethod
-    def get_organization_users(self, organization_id):
-        '''Create a new organization'''
+    def get_organization_users_by_organization_id(self, organization_id: str):
+        '''Retrieves the organization users by organization id'''
+        pass
+
+    @abstractmethod
+    def get_organizations_by_user_id(self, user_id):
+        '''Retrieves the organizations by user id'''
+        pass

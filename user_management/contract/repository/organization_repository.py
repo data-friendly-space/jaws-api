@@ -3,12 +3,18 @@ from abc import ABC, abstractmethod
 
 from common.repository.base_repository import BaseRepository
 from user_management.contract.to.organization_to import OrganizationTO
+from user_management.contract.to.user_organization_role_to import UserOrganizationRoleTO
+from user_management.contract.to.user_organization_to import UserOrganizationTO
 
 
 class OrganizationRepository(BaseRepository, ABC):
     """Organization repository"""
 
     @abstractmethod
-    def get_organizations_by_filters(self, **kwargs) -> list[OrganizationTO | None]:
-        """Retrieve organizations with users and its respective role by filters"""
+    def get_user_organizations_by_filters(self, **kwargs) -> list[UserOrganizationRoleTO | None]:
+        """Retrieve organization with users and its respective role by filters"""
+        pass
+
+    @abstractmethod
+    def get_organization_users_by_organization_id(self, organization_id: str) -> list[UserOrganizationTO | None]:
         pass

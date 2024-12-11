@@ -2,7 +2,6 @@
 from dataclasses import dataclass, asdict
 from typing import Optional, Dict
 
-from user_management.contract.to.organization_to import OrganizationTO
 from user_management.contract.to.role_to import RoleTO
 from user_management.contract.to.user_to import UserTO
 from user_management.models.user_organization_role import UserOrganizationRole
@@ -11,7 +10,7 @@ from user_management.models.user_organization_role import UserOrganizationRole
 @dataclass
 class UserOrganizationTO:
     user: UserTO
-    organization: OrganizationTO
+    organization_id: str
     role: RoleTO
 
     @classmethod
@@ -21,7 +20,7 @@ class UserOrganizationTO:
             return None
         return cls(
             user=UserTO.from_model(instance.user),
-            organization=OrganizationTO.from_model(instance.organization),
+            organization_id=instance.organization.id,
             role=RoleTO.from_model(instance.role),
         )
 

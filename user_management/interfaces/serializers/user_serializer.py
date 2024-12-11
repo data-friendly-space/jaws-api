@@ -1,19 +1,24 @@
 """This module contains the user serializer"""
 from rest_framework import serializers
 
-from user_management.interfaces.serializers.affiliation_serializer import AffiliationSerializer
-from user_management.interfaces.serializers.organization_serializer import OrganizationSerializer
-from user_management.interfaces.serializers.position_serializer import PositionSerializer
+from user_management.models import User
 
 
 class UserSerializer(serializers.Serializer):
-    id = serializers.UUIDField(read_only=True)
+    """Serialize the user model into a DTO"""
+    id = serializers.CharField(max_length=36)
     name = serializers.CharField()
     lastname = serializers.CharField()
     email = serializers.EmailField()
-    country = serializers.CharField(allow_null=True, allow_blank=True)
-    position = PositionSerializer(allow_null=True)
-    affiliation = AffiliationSerializer(allow_null=True)
-    organization = OrganizationSerializer(allow_null=True)
-    uiConfiguration = serializers.JSONField(required=False, allow_null=True)
+    country = serializers.CharField()
+    uiConfiguration = serializers.JSONField()
     profileImage = serializers.CharField(required=False, allow_null=True)
+
+    class Meta:
+        """Base class"""
+        model = User
+        fields = [
+            'id', 'name', 'lastname', 'email', 'country',
+            'profileImage', 'position', 'affiliation',
+            'organization', 'uiConfiguration'
+        ]

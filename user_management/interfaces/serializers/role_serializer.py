@@ -1,8 +1,6 @@
 """This module contains the role serializer"""
 from rest_framework import serializers
 
-from user_management.models import Role, Permission
-
 
 class PermissionSerializer(serializers.Serializer):
     """Serializer for the Permission model."""
