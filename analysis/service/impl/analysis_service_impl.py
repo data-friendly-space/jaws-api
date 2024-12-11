@@ -1,6 +1,5 @@
 """Contains the implementation of AnalysisService"""
 
-import uuid
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
@@ -95,7 +94,7 @@ class AnalysisServiceImpl(AnalysisService):
         """Validate that the scope contains everything needed and the sectors are not empty"""
         if (
                 not all(scope[key] for key in ["title", "objectives", "end_date"])
-                # or not sectors
+                or not sectors
         ):
             raise BadRequestException("Missing field")
 
