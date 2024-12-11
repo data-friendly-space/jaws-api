@@ -47,9 +47,12 @@ class AnalysisServiceImpl(AnalysisService):
         self.user_repository = UserRepositoryImpl()
 
     def create_analysis(self, create_analysis_in: CreateAnalysisIn,creator_id):
-        if not self.get_user_by_filter_uc.exec(self.user_repository,id=creator_id): raise BadRequestException("Analysis creator doens't exists")
+        if not self.get_user_by_filter_uc.exec(self.user_repository,id=creator_id):
+            raise BadRequestException("Analysis creator doens't exists")
         if not create_analysis_in.is_valid():
-            raise BadRequestException("Create analysis request is not valid: ", create_analysis_in.errors)
+            raise BadRequestException(
+                "Create analysis request is not valid: ",
+                create_analysis_in.errors)
         scope = create_analysis_in.validated_data
         if scope['disaggregations']:
             disaggregations = self.get_disaggregations(scope['disaggregations'])

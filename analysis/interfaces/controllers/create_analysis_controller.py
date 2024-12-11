@@ -1,4 +1,5 @@
 """This module contain the creation analysis controller"""
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -14,5 +15,8 @@ def create_analysis_controller(request):
     service = AnalysisServiceImpl()
     create_analysis_in = CreateAnalysisIn(data=to_snake_case_data(request.data))
 
-    return api_response_success("Success", service.create_analysis(create_analysis_in, request.user.id),
-                                status.HTTP_201_CREATED)
+    return api_response_success(
+        "Success",
+        service.create_analysis(create_analysis_in, request.user.id),
+        status.HTTP_201_CREATED,
+    )
