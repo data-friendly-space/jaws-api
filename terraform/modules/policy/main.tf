@@ -4,8 +4,6 @@ data "aws_iam_role" "ecs_execution_role" {
 
 resource "aws_iam_role_policy_attachment" "policy_list_attachment" {
   for_each = toset([
-    "arn:aws:iam::aws:policy/AmazonCognitoDeveloperAuthenticatedIdentities",
-    "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
     "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
   ])
