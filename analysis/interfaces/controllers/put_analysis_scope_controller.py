@@ -3,7 +3,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from analysis.contract.io.update_analysis import UpdateAnalysisIn
+from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
 from common.helpers.api_responses import api_response_success

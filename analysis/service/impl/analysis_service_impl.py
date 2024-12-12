@@ -2,7 +2,7 @@
 
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
-from analysis.contract.io.update_analysis import UpdateAnalysisIn
+from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
