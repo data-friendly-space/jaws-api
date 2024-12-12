@@ -7,11 +7,11 @@ class UpdateAnalysisIn(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     disaggregations = serializers.ListField(
         child=serializers.CharField(),
-        allow_empty=True
+        allow_empty=True,
+        required=False
     )
     sectors = serializers.ListField(
-        child=serializers.CharField(),
-        allow_empty=True
+        child=serializers.CharField()
     )
     objectives = serializers.CharField(max_length=1000)
     start_date = serializers.DateField()
