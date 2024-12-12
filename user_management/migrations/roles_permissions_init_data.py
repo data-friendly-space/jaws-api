@@ -5,16 +5,16 @@ from user_management.models import Permission, Role
 
 def create_roles_and_permissions(apps, schema_editor):
     permissions_data = [
-        {"name": "USER_MANAGEMENT", "type": "all"},
-        {"name": "TEAMS", "type": "all"},
-        {"name": "PERMISSIONS", "type": "all"},
-        {"name": "CREATE_WORKSPACE", "type": "write"},
-        {"name": "INVITE_FACILITATORS_TO_WORKSPACE", "type": "write"},
-        {"name": "INVITE_MEMBERS_TO_WORKSPACE", "type": "write"},
-        {"name": "INVITE_SAME_ROLE_TO_WORKSPACE", "type": "write"},
-        {"name": "CREATE_NEW_ANALYSIS", "type": "write"},
-        {"name": "ACCESS_DESIGN_STEP", "type": "read"},
-        {"name": "ACCESS_DATA_COLLATION_STEP", "type": "read"},
+        {"alias": "User management", "name": "USER_MANAGEMENT", "type": "all"},
+        {"alias": "Teams", "name": "TEAMS", "type": "all"},
+        {"alias": "Permissions", "name": "PERMISSIONS", "type": "all"},
+        {"alias": "Create workspaces", "name": "CREATE_WORKSPACE", "type": "write"},
+        {"alias": "Invite facilitators to workspace", "name": "INVITE_FACILITATORS_TO_WORKSPACE", "type": "write"},
+        {"alias": "Invite members to workspace", "name": "INVITE_MEMBERS_TO_WORKSPACE", "type": "write"},
+        {"alias": "Invite same role to workspace", "name": "INVITE_SAME_ROLE_TO_WORKSPACE", "type": "write"},
+        {"alias": "Create", "name": "CREATE_NEW_ANALYSIS", "type": "write"},
+        {"alias": "Access design step", "name": "ACCESS_DESIGN_STEP", "type": "read"},
+        {"alias": "Access data collation step", "name": "ACCESS_DATA_COLLATION_STEP", "type": "read"},
     ]
 
     permissions = {}
@@ -23,12 +23,12 @@ def create_roles_and_permissions(apps, schema_editor):
         permissions[perm_data["name"]] = permission
 
     roles_data = [
-        "ADMIN",
-        "FACILITATOR",
-        "DATA_MANAGER",
-        "ANALYST",
-        "EXPERT",
-        "VISITOR",
+        {"alias": "Admin", "role": "ADMIN"},
+        {"alias": "Facilitator", "role": "FACILITATOR"},
+        {"alias": "Data Manager", "role": "DATA_MANAGER"},
+        {"alias": "Analyst", "role": "ANALYST"},
+        {"alias": "Expert", "role": "EXPERT"},
+        {"alias": "Visitor", "role": "VISITOR"},
     ]
 
     role_permissions_map = {
@@ -56,16 +56,20 @@ def create_roles_and_permissions(apps, schema_editor):
         "VISITOR": [],
     }
 
-    for role_name in roles_data:
-        role, created = Role.objects.get_or_create(role=role_name)
-        role.permissions.add(*role_permissions_map[role_name])
+    for role_data in roles_data:
+        role, created = Role.objects.get_or_create(**role_data)
+        role.permissions.add(*role_permissions_map[role_data.get("name")])
         print(role)
         role.save()
+
+
+def undo_roles(apps, schema_editor):
+    Role.objects.all().delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [('user_management', '0001_initial'), ]
 
     operations = [
-        migrations.RunPython(create_roles_and_permissions),
+        migrations.RunPython(create_roles_and_permissions, undo_roles),
     ]

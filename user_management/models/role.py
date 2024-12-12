@@ -6,7 +6,7 @@ class Role(models.Model):
     """Role model"""
     role = models.CharField(max_length=50, unique=True)
     permissions = models.ManyToManyField('user_management.Permission', through="RolePermission")
-
+    alias = models.CharField(max_length=65, unique=True)
     def __str__(self):
         return str(self.role)
 
