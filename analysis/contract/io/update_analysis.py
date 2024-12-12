@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 
-class CreateAnalysisIn(serializers.Serializer):
+class UpdateAnalysisIn(serializers.Serializer):
     """Request input for an analysis creation"""
     title = serializers.CharField(max_length=255)
     disaggregations = serializers.ListField(
@@ -16,4 +16,3 @@ class CreateAnalysisIn(serializers.Serializer):
     objectives = serializers.CharField(max_length=1000)
     start_date = serializers.DateField()
     end_date = serializers.DateField()
-    workspace_id = serializers.CharField()

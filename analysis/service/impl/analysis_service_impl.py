@@ -2,6 +2,7 @@
 
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
+from analysis.contract.io.update_analysis import UpdateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
@@ -45,14 +46,14 @@ class AnalysisServiceImpl(AnalysisService):
         self.repository = AnalysisRepositoryImpl()
         self.user_repository = UserRepositoryImpl()
 
-    def create_analysis(self, create_analysis_in: CreateAnalysisIn,creator_id):
+    def create_analysis(self, analysis: CreateAnalysisIn, creator_id):
         if not self.get_user_by_filter_uc.exec(self.user_repository,id=creator_id):
             raise BadRequestException("Analysis creator doens't exists")
-        if not create_analysis_in.is_valid():
+        if not analysis.is_valid():
             raise BadRequestException(
                 "Create analysis request is not valid: ",
-                create_analysis_in.errors)
-        scope = create_analysis_in.validated_data
+                analysis.errors)
+        scope = analysis.validated_data
         if scope['disaggregations']:
             disaggregations = self.get_disaggregations(scope['disaggregations'])
         else:
@@ -67,28 +68,42 @@ class AnalysisServiceImpl(AnalysisService):
             "creator_id": creator_id,
             "workspace_id": scope['workspace_id'],
         }
-        return AnalysisSerializer(
-            self.create_analysis_uc.exec(
+        new_analysis = self.create_analysis_uc.exec(
                 self.repository, data, disaggregations, sectors
             )
-        ).data
+        return AnalysisSerializer(new_analysis).data
 
-    def put_analysis_scope(self, scope, analysis_id):
+    def put_analysis_scope(self, analysis: UpdateAnalysisIn, analysis_id, user_id):
+        self.get_analysis_by_id(analysis_id)
+
+        # TODO: validate that the current user has permission to update the analysis
+
+        if not analysis.is_valid():
+            raise BadRequestException("Invalid request", analysis.errors)
+        
+        scope = analysis.validated_data
         if scope["disaggregations"]:
             disaggregations = self.get_disaggregations(scope["disaggregations"])
         else:
             disaggregations = []
         sectors = self.get_sectors(scope["sectors"])
         self.validate_scope_fields(scope, sectors)
-        return AnalysisSerializer(
-            self.put_analysis_scope_uc.exec(
+
+        data = {
+            "title": scope["title"],
+            "objectives": scope["objectives"],
+            "start_date": scope["start_date"],
+            "end_date": scope["end_date"],
+        }
+
+        analysis_updated = self.put_analysis_scope_uc.exec(
                 self.repository,
-                data=scope,
+                data=data,
                 disaggregations=disaggregations,
                 sectors=sectors,
                 analysis_id=analysis_id,
             )
-        ).data
+        return AnalysisSerializer(analysis_updated).data
 
     def validate_scope_fields(self, scope, sectors):
         """Validate that the scope contains everything needed and the sectors are not empty"""

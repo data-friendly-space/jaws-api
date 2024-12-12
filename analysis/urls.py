@@ -39,5 +39,5 @@ urlpatterns = [
         name="remove_location"
     ),
     path("<slug:id>", get_analysis_by_id_controller, name="get_analysis"),
-    path("<slug:id>/update", put_analysis_scope_controller, name="put_analysis"),
+    path("<slug:analysis_id>/update", put_analysis_scope_controller, name="put_analysis"),
 ]
