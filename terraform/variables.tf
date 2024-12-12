@@ -83,6 +83,7 @@ variable "ecs_jaws_api_container_name" {
 variable "ecs_jaws_api_container_image" {
   description = "Value of container image"
   type        = string
+  default     = "jaws-api:latest"
 }
 
 variable "ecs_jaws_api_container_port" {
@@ -136,5 +137,10 @@ variable "jaws_api_aws_cloudwatch_retention_days" {
 
 variable "jaws_s3_datasets_name" {
   description = "Name of the bucket where the datasets will be stored"
+  type        = string
+}
+
+variable "jaws_ecr_name" {
+  description = "Name of the ECR"
   type        = string
 }

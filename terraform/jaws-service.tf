@@ -30,6 +30,7 @@ module "ecs_jaws_api" {
   aws_cloudwatch_log_group      = module.ecs_jaws_api.aws_cloudwatch_log_group_name
   aws_cloudwatch_retention_days = var.jaws_api_aws_cloudwatch_retention_days
   ecs_execution_role_arn        = module.policy.ecs_execution_role_arn
+  ecr_url                       = module.jaws_ecr.ecr_repository_url
 }
 
 module "jaws_api_security_group" {
@@ -81,4 +82,12 @@ module "jaws_s3_datasets" {
   environment      = var.environment
   tags             = var.tags
   s3_datasets_name = var.jaws_s3_datasets_name
+}
+
+module "jaws_ecr" {
+  source = "./modules/ecr"
+
+  environment = var.environment
+  tags        = var.tags
+  ecr_name    = var.jaws_ecr_name
 }

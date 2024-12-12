@@ -2,6 +2,7 @@ data "template_file" "container_definition_env" {
   template = file("./environments/${var.environment}/${var.ecs_app_name}/container_definition.tftpl")
 
   vars = {
+    ecr_url                  = var.ecr_url
     container_name           = var.container_name
     container_image          = var.container_image
     container_memory         = var.container_memory

@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "jaws-datasets-s3" {
   })
 }
 
-resource "aws_s3_bucket_acl" "jaws-datasets-s3-acl"{
+resource "aws_s3_bucket_acl" "jaws-datasets-s3-acl" {
   bucket = aws_s3_bucket.jaws-datasets-s3.id
   acl    = "public-read"
 }

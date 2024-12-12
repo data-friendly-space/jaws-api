@@ -115,3 +115,8 @@ variable "ecs_execution_role_arn" {
   description = "Gets outputs from ecs_role in policy module"
   type        = string
 }
+
+variable "ecr_url" {
+  description = "The ECR's URL"
+  type        = string
+}
