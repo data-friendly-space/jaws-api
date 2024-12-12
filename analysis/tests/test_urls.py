@@ -2,7 +2,6 @@
 
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from analysis.command.load_administrative_divisions import load_administrative_divisions
 from analysis.interfaces.controllers.add_location_controller import (
     add_location_controller,
 )
@@ -46,11 +45,6 @@ class TestUrls(SimpleTestCase):
         """Test that the url for updating an analysis works"""
         url = reverse("put_analysis", args=["some-id"])
         self.assertEqual(resolve(url).func, put_analysis_scope_controller)
-
-    def test_load_administrative_divisions_resolves(self):
-        """Test that the url for loading divisions works"""
-        url = reverse("load_administrative_divisions")
-        self.assertEqual(resolve(url).func, load_administrative_divisions)
 
     def test_get_administrative_divisions_resolves(self):
         """Test that the url for getting the administrative divisions works"""

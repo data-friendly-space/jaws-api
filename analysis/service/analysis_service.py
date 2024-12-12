@@ -2,16 +2,6 @@
 
 from abc import abstractmethod
 
-from analysis.use_cases.add_location_uc import AddLocationUC
-from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
-from analysis.use_cases.get_administrative_divisions_uc import (
-    GetAdministrativeDivisionByIdUC,
-    GetAdministrativeDivisionsUC,
-)
-from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
-from analysis.use_cases.get_analysis_uc import GetAnalysisUC
-from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
-from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.service.base_service import BaseService
 
 
@@ -19,8 +9,11 @@ class AnalysisService(BaseService):
     """Definition of the analysis service"""
 
     @abstractmethod
-    def put_analysis_scope(self, scope, analysis_id):
-        """Update an analysis scope with the given scope and the analysis id"""
+    def put_analysis_scope(self, analysis, analysis_id, user_id):
+        """
+        Update an analysis scope with the given scope and the analysis id.
+        Validate that the user has the required permissions
+        """
 
     @abstractmethod
     def get_analysis(self):
@@ -31,7 +24,7 @@ class AnalysisService(BaseService):
         """Retrieve an analysis based on a specific id"""
 
     @abstractmethod
-    def create_analysis(self, scope,creator_id):
+    def create_analysis(self, analysis, creator_id):
         """Create a new analysis with the given scope"""
 
     @abstractmethod

@@ -3,10 +3,6 @@
 import csv
 from datetime import datetime
 
-from rest_framework.decorators import api_view
-
-from common.helpers.api_responses import api_response_error, api_response_success
-
 from ..models.administrative_division import AdministrativeDivision
 
 
@@ -39,9 +35,7 @@ def create_finish_message(
     """
     return message
 
-
-@api_view(["POST"])
-def load_administrative_divisions(request):
+def add_administrative_divisions():
     """Loads the administrative divisions of the csv path passed as parameter"""
     with open("global_pcodes(1).csv", newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -110,6 +104,7 @@ def load_administrative_divisions(request):
                 rows_duplicated,
                 rows_parent_not_found,
             )
+            print(message, flush=True)
         except Exception as e:
             message = create_finish_message(
                 f"Load interrumped by the following error: {str(e)}",
@@ -118,7 +113,4 @@ def load_administrative_divisions(request):
                 rows_duplicated,
                 rows_parent_not_found,
             )
-            return api_response_error("Error", message, 500)
-    return api_response_success(
-        "Success", message, 201
-    )
+            print(message, flush=True)
