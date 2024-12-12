@@ -1,7 +1,5 @@
 """This module contains the implementation of analysis repository"""
 from analysis.contract.to.analysis_to import AnalysisTO
-
-"""This module contains the implementation of analysis repository"""
 from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
 from analysis.contract.repository.analysis_repository import AnalysisRepository
 from analysis.models.administrative_division import AdministrativeDivision

@@ -1,26 +1,24 @@
 """This module contains the controller for putting the scope of an analysis"""
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 
+from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
+
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
 from common.helpers.api_responses import api_response_success
+from common.serializer.CamelCaseMixin import to_snake_case_data
 
 
 @api_view(["PUT"])
-def put_analysis_scope_controller(request, id):
+def put_analysis_scope_controller(request, analysis_id):
     """Update the analysis's scope"""
     service = AnalysisServiceImpl()
-    if request.data.get("startDate"):
-        request.data["startDate"] = request.data["startDate"].split("T")[0]
-    request.data["endDate"] = request.data["endDate"].split("T")[0]
+    update_analysis_in = UpdateAnalysisIn(data=to_snake_case_data(request.data))
 
-    analysis = {
-        "id": id,
-        "title": request.data.get("title"),
-        "start_date": request.data.get("startDate"),
-        "end_date": request.data.get("endDate"),
-        "disaggregations": request.data.get("disaggregations"),
-        "objetives": request.data.get("objetives"),
-        "sectors": request.data.get("sectors"),
-    }
-    return api_response_success("", service.put_analysis_scope(analysis, id), status.HTTP_201_CREATED)
+    analysis_updated = service.put_analysis_scope(update_analysis_in, analysis_id, request.user.id)
+
+    return api_response_success(
+        data=analysis_updated,
+        status_code=status.HTTP_200_OK,
+    )
