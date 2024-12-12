@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 
 from user_management.contract.io.create_organization_in import CreateOrganizationIn
+from user_management.contract.io.invite_user_organization_in import InviteUserOrganizationIn
 
 
 class OrganizationService(ABC):
@@ -23,4 +24,8 @@ class OrganizationService(ABC):
     @abstractmethod
     def get_organizations_by_user_id(self, user_id):
         '''Retrieves the organizations by user id'''
+        pass
+
+    @abstractmethod
+    def invite_user_to_organization(self, invite_user_in: InviteUserOrganizationIn):
         pass

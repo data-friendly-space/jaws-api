@@ -11,9 +11,15 @@ class WorkspaceRepository(BaseRepository, ABC):
 
     @abstractmethod
     def get_user_workspaces_by_filters(self, **kwargs) -> list[UserWorkspaceRoleTO | None]:
-        """Retrieve workspace with users and its respective role by filters"""
+        """Retrieve workspaces relate to the user"""
         pass
 
     @abstractmethod
     def get_workspace_users_by_workspace_id(self, workspace_id: str) -> list[UserWorkspaceTO | None]:
+        """Retrieve users relate to the workspace"""
+        pass
+
+    @abstractmethod
+    def invite_user_to_workspace(self, data):
+        """Invite user to workspace"""
         pass

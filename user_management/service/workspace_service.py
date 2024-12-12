@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 
 from user_management.contract.io.create_workspace_in import CreateWorkspaceIn
+from user_management.contract.io.invite_user_workspace_in import InviteUserWorkspaceIn
 
 
 class WorkspaceService(ABC):
@@ -13,7 +14,7 @@ class WorkspaceService(ABC):
         pass
 
     @abstractmethod
-    def create_workspace(self, request: CreateWorkspaceIn):
+    def create_workspace(self, request: CreateWorkspaceIn, creator_id: str):
         '''Create a new workspace'''
         pass
 
@@ -25,4 +26,10 @@ class WorkspaceService(ABC):
     @abstractmethod
     def get_workspaces_by_user_id(self, workspace_id):
         '''Retrieves the workspaces by user id'''
-        passF
+        pass
+
+    @abstractmethod
+    def invite_user_to_workspace(self, invite_user_in: InviteUserWorkspaceIn):
+        '''Invite user with role to workspace '''
+        pass
+

@@ -18,6 +18,7 @@ class Workspace(models.Model):
         on_delete=models.CASCADE,
         related_name="organizations",
     )
+    creator = models.ForeignKey('user_management.User', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)

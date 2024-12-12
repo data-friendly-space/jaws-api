@@ -10,8 +10,6 @@ from user_management.models.user_organization_role import UserOrganizationRole
 
 class OrganizationRepositoryImpl(OrganizationRepository):
 
-
-
     def get_user_organizations_by_filters(self, **kwargs):
         filters = {key: value for key, value in kwargs.items() if value is not None}
         organization_users = UserOrganizationRole.objects.filter(**filters)
@@ -46,3 +44,6 @@ class OrganizationRepositoryImpl(OrganizationRepository):
     def get_all(self, query_options: QueryOptions):
         """Retrieves all organizations"""
         return OrganizationTO.from_models(Organization.objects.all())
+
+    def invite_user_to_organization(self, data):
+        UserOrganizationRole.objects.create(data)

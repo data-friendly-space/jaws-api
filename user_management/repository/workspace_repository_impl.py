@@ -43,3 +43,7 @@ class WorkspaceRepositoryImpl(WorkspaceRepository):
     def get_all(self, query_options: QueryOptions):
         """Retrieves all workspaces"""
         return WorkspaceTO.from_models(Workspace.objects.all())
+
+    def invite_user_to_workspace(self, data):
+        """Invite user to workspace"""
+        UserWorkspaceRole.objects.create(data)

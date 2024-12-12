@@ -23,7 +23,7 @@ from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from user_management.repository.user_repository_impl import UserRepositoryImpl
-from user_management.usecases.get_user_uc_by_filters import GetUserByFiltersUC
+from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 
 
 class AnalysisServiceImpl(AnalysisService):

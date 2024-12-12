@@ -43,6 +43,5 @@ class UserTO(BaseTO):
             profileImage=instance.profile_image,
         )
 
-
     def to_dict(self) -> Dict:
         return asdict(self)
