@@ -3,7 +3,7 @@ aws_region  = "us-east-1"
 aws_profile = "841162704359_ExternalDeveloper"
 environment = "development"
 tags = {
-  "Project"     = "jaws"
+  "project"     = "jaws"
   "Environment" = "development"
   "Managedby"   = "Terraform"
 }
