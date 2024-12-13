@@ -22,6 +22,7 @@ from analysis.use_cases.get_analysis_uc import GetAnalysisUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
+from common.helpers.query_options import QueryOptions
 from user_management.repository.user_repository_impl import UserRepositoryImpl
 from user_management.usecases.get_user_uc_by_filters import GetUserByFiltersUC
 
@@ -124,9 +125,11 @@ class AnalysisServiceImpl(AnalysisService):
         """Retrieve the sectors"""
         return Sector.objects.filter(pk__in=sectors)
 
-    def get_analysis(self):
+    def get_analysis(self, workspace_id, query_options: QueryOptions):
+        if not workspace_id:
+            raise BadRequestException("The workspace is required")
         return AnalysisSerializer(
-            self.get_analysis_uc.exec(self.repository), many=True
+            self.get_analysis_uc.exec(self.repository, workspace_id, query_options), many=True
         ).data
 
     def get_analysis_by_id(self, analysis_id):

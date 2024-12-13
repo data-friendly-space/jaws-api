@@ -21,7 +21,6 @@ from analysis.interfaces.controllers.put_analysis_scope_controller import (
 from analysis.interfaces.controllers.remove_location_controller import remove_location_controller
 
 urlpatterns = [
-    path("", get_analysis_controller, name="get_analyses"),
     path("create", create_analysis_controller, name="create_analysis"),
     path(
         "administrative-divisions",

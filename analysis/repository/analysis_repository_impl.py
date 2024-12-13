@@ -4,16 +4,19 @@ from analysis.contract.to.administrative_division_dto import AdministrativeDivis
 from analysis.contract.repository.analysis_repository import AnalysisRepository
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from common.helpers.query_options import QueryOptions
 
 
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
 
-    def get_all(self):
+    def get_all(self, workspace_id, query_options: QueryOptions):
         """
         Retrieve all users from the database.
         """
-        analyses = Analysis.objects.all()
+        analyses = Analysis.objects.filter(workspace_id=workspace_id)
+        if query_options:
+            analyses = query_options.filter_and_exec_queryset(analyses, model=Analysis)
         if not analyses or len(analyses) == 0:
             return []
         return AnalysisTO.from_models(analyses)
