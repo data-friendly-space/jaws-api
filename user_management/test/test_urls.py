@@ -1,6 +1,7 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 
+from analysis.interfaces.controllers.get_analysis_controller import get_analysis_controller
 from user_management.interfaces.controllers.create_user_controller import create_user_controller
 from user_management.interfaces.controllers.get_users_controller import get_users_controller
 from user_management.interfaces.controllers.refresh_token_controller import refresh_token_controller
@@ -35,3 +36,8 @@ class TestUrls(SimpleTestCase):
     def test_session_verify_resolves(self):
         url = reverse("session_verify")
         self.assertEqual(resolve(url).func, verify_token_controller)
+
+    def test_get_analyses_url_resolves(self):
+        """Test that get analysis url works"""
+        url = reverse("get_analyses", args=['some-workspace-id'])
+        self.assertEqual(resolve(url).func, get_analysis_controller)
