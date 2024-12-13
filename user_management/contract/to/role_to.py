@@ -12,6 +12,7 @@ class RoleTO(BaseTO):
     id: int
     role: str
     permissions: list[PermissionTO | None]
+    alias:str
 
     @classmethod
     def from_model(cls, instance: Role) -> 'RoleTO | None':
@@ -21,7 +22,8 @@ class RoleTO(BaseTO):
         return cls(
             id=instance.id,
             role=instance.role,
-            permissions=PermissionTO.from_models(instance.permissions.all())
+            permissions=PermissionTO.from_models(instance.permissions.all()),
+            alias=instance.alias
         )
 
     def to_dict(self) -> Dict:

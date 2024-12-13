@@ -58,7 +58,7 @@ def create_roles_and_permissions(apps, schema_editor):
 
     for role_data in roles_data:
         role, created = Role.objects.get_or_create(**role_data)
-        role.permissions.add(*role_permissions_map[role_data.get("name")])
+        role.permissions.add(*role_permissions_map[role_data["role"]])
         print(role)
         role.save()
 
@@ -68,7 +68,7 @@ def undo_roles(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [('user_management', '0001_initial'), ]
+    dependencies = [('user_management', '0004_permission_alias_alter_permission_name'), ]
 
     operations = [
         migrations.RunPython(create_roles_and_permissions, undo_roles),

@@ -9,8 +9,13 @@ class RoleService(ABC):
     def get_roles(self):
         '''Retrieves the roles'''
 
+    @abstractmethod
     def get_workspace_roles(self):
         '''Retrieves the roles'''
 
+    @abstractmethod
     def get_analysis_roles(self):
         '''Retrieves the roles'''
+    @abstractmethod
+    def get_roles_and_permissions(self):
+        pass

@@ -21,20 +21,20 @@ class RoleRepositoryImpl(RoleRepository):
         role.save()
         return role
 
-    def get_by_id(self, obj_id):
+    def get_by_id(self, obj_id)-> RoleTO:
         """Retrieve role by ID"""
         return RoleTO.from_model(Role.objects.filter(id=obj_id).first())
 
     def create(self, data):
         """Creates and retrieve new role"""
-        return Role.objects.create(data)
+        return RoleTO.from_model(Role.objects.create(data))
 
-    def get_all(self, query_options: QueryOptions):
+    def get_all(self, query_options: QueryOptions) -> list[RoleTO]:
         """Retrieves all roles"""
         roles = Role.objects.exclude(role="ADMIN")
         return RoleTO.from_models(roles)
 
-    def get_roles(self, exclusions):
+    def get_roles(self, exclusions) -> list[RoleTO]:
         """Retrieves all roles"""
         roles = Role.objects.exclude(role__in=exclusions)
         return RoleTO.from_models(roles)

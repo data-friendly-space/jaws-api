@@ -2,7 +2,7 @@
 from django.urls import path
 
 from user_management.interfaces.controllers.create_workspace_controller import create_workspace_controller
-from user_management.interfaces.controllers.get_roles_controller import get_roles_controller
+from user_management.interfaces.controllers.get_roles_by_space_controller import get_roles_controller
 from user_management.interfaces.controllers.get_users_controller import get_users_controller
 from user_management.interfaces.controllers.refresh_token_controller import refresh_token_controller
 from user_management.interfaces.controllers.sign_in_controller import sign_in_controller

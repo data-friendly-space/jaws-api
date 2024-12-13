@@ -6,7 +6,7 @@ from user_management.service.impl.role_service_impl import RoleServiceImpl
 
 
 @api_view(['GET'])
-def get_roles_controller(request, space=None):
+def get_roles_by_space_controller(request, space=None):
     """
     List all roles and return them in RoleTO format.
     """

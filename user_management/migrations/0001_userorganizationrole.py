@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_management', 'roles_permissions_init_data'),
+        ('user_management', '0001_initial'),
     ]
 
     operations = [
