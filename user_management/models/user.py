@@ -1,7 +1,8 @@
 """This module contains the user model"""
 import uuid
 
-from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 from user_management.models.affiliation import Affiliation
@@ -25,8 +26,17 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, email, password, **kwargs):
+        """Create a super user"""
+        user = self.create_user(email, password, **kwargs)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
 
-class User(AbstractBaseUser):
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
     """User model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -45,6 +55,7 @@ class User(AbstractBaseUser):
     )
     is_active = models.BooleanField(default=True)
     objects = CustomUserManager()
+    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'lastname']

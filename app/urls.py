@@ -27,6 +27,8 @@ def redirect_to_health(request):
 
 urlpatterns = [
     path('', redirect_to_health),
+    path('accounts/', include('allauth.urls')),
+    path('_allauth/', include('allauth.headless.urls')),
     path('admin/', admin.site.urls),
 
     path('jaws-api/health', include('health_check.urls')),

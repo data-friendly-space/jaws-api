@@ -71,6 +71,11 @@ INSTALLED_APPS = [
     'health_check.cache',  # Cache backend health checker
     'health_check.storage',  # Default storage system health check
     'corsheaders',
+    'allauth',
+    'allauth.account',
+    'allauth.headless',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
 ]
 
 INSTALLED_APPS += CUSTOM_APPS
@@ -89,6 +94,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 MIDDLEWARE += CUSTOM_MIDDLEWARES
@@ -105,6 +111,7 @@ AUTH_USER_MODEL = 'user_management.User'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -124,6 +131,16 @@ TEMPLATES = [
         },
     },
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SOCIALACCOUNT_EMAIL_AUTHENTICATION': True,
+        'APP': {
+            'client_id': os.getenv('GOOGLE_AUTH_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_AUTH_SECRET')
+        }
+    }
+}
 
 SIMPLE_JWT = {
     # Duration of the access token
@@ -192,3 +209,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD ="email"
+
+HEADLESS_FRONTEND_URLS = {
+    ""
+}
+HEADLESS_ONLY = True
