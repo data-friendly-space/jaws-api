@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'health_check.cache',  # Cache backend health checker
     'health_check.storage',  # Default storage system health check
     'corsheaders',
+    'social_django'
 ]
 
 INSTALLED_APPS += CUSTOM_APPS
@@ -104,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'user_management.User'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -192,3 +194,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Social auth
+SOCIAL_AUTH_USER_MODEL = 'user_management.User'
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+USERNAME_IS_FULL_EMAIL = True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_AUTH_CLIENT_ID")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_AUTH_SECRET")
+
+# SOCIAL_AUTH_GOOGLE_LOGIN_REDIRECT_URL = "/accounts/profile/"
