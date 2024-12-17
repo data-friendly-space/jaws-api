@@ -206,8 +206,6 @@ USERNAME_IS_FULL_EMAIL = True
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_AUTH_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_AUTH_SECRET")
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = "http://localhost:3000/workspaces"
-
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -224,3 +222,5 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
     'user_management.social_auth.pipeline.redirect_to_next_with_token'
 )
+
+SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['localhost:3000']

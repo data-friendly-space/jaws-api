@@ -15,7 +15,7 @@ class JWTMiddleware:
         excluded_paths = [
             '/auth/complete/google-oauth2/',
             '/auth/login/google-oauth2/',
-            '/jaws-api/user-management/sign-in-with-access-token'
+            '/jaws-api/user-management/sign-in-with-access-token',
             '/jaws-api/csrf', 
             '/jaws-api/user-management/sign-up',
             '/jaws-api/user-management/users',

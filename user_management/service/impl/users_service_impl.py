@@ -56,7 +56,24 @@ class UsersServiceImpl(UsersService):
         try:
             return UserTokenSerializer(user_to).data
         except ValueError as e:
-            raise UnauthorizedException(str(e), None)
+            raise UnauthorizedException(str(e), None) from e
+
+    def sign_in_with_access_token(self, token: str):
+        """Sign in a user with an access token"""
+        if not token:
+            raise UnauthorizedException("The token is required", {'is_authenticated': False})
+
+        jwt_auth = JWTAuthentication()
+        try:
+            token_decoded = jwt_auth.get_validated_token(token)
+            user_to = self.get_user_by_filters.exec(
+                UserRepositoryImpl(),
+                id=token_decoded.payload['user_id'])
+            if not user_to:
+                raise BadRequestException("User not found")
+            return UserTokenSerializer(user_to).data
+        except ValueError as e:
+            raise UnauthorizedException(str(e), None) from e
 
     def refresh_token(self, refresh_token):
         """Business logic to process refresh token"""
@@ -90,17 +107,3 @@ class UsersServiceImpl(UsersService):
             return api_response_success("Is authenticated", {'isAuthenticated': True}, status.HTTP_200_OK)
         except (InvalidToken, TokenError):
             raise UnauthorizedException("Session expired", {'is_authenticated': False})
-        
-
-    def sign_in_with_access_token(self, token: str):
-        """Sign in a user with an access token"""
-        if not token:
-            raise UnauthorizedException("The token is required", {'is_authenticated': False})
-
-        jwt_auth = JWTAuthentication()
-        try:
-            token2 = jwt_auth.get_validated_token(token)
-            print(token2, flush=True)
-            return {'isAuthenticated': True}
-        except (InvalidToken, TokenError) as e:
-            raise UnauthorizedException() from e
