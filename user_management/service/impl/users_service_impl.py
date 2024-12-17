@@ -90,3 +90,17 @@ class UsersServiceImpl(UsersService):
             return api_response_success("Is authenticated", {'isAuthenticated': True}, status.HTTP_200_OK)
         except (InvalidToken, TokenError):
             raise UnauthorizedException("Session expired", {'is_authenticated': False})
+        
+
+    def sign_in_with_access_token(self, token: str):
+        """Sign in a user with an access token"""
+        if not token:
+            raise UnauthorizedException("The token is required", {'is_authenticated': False})
+
+        jwt_auth = JWTAuthentication()
+        try:
+            token2 = jwt_auth.get_validated_token(token)
+            print(token2, flush=True)
+            return {'isAuthenticated': True}
+        except (InvalidToken, TokenError) as e:
+            raise UnauthorizedException() from e

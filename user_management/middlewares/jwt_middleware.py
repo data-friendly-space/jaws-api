@@ -1,10 +1,8 @@
 """Contains the middleware for user authentication"""
 from django.http import JsonResponse
-from django.shortcuts import redirect
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import AccessToken
 
-from common.exceptions.exceptions import UnauthorizedException
 from user_management.models import User
 
 
@@ -17,11 +15,15 @@ class JWTMiddleware:
         excluded_paths = [
             '/auth/complete/google-oauth2/',
             '/auth/login/google-oauth2/',
-            '/jaws-api/csrf', '/jaws-api/user-management/sign-up',
+            '/jaws-api/user-management/sign-in-with-access-token'
+            '/jaws-api/csrf', 
+            '/jaws-api/user-management/sign-up',
             '/jaws-api/user-management/users',
-            '/jaws-api/user-management/sign-in', '/jaws-api/user-management/token-refresh',
-            '/jaws-api/user-management/session-verify', '/favicon.ico']
-        
+            '/jaws-api/user-management/sign-in', 
+            '/jaws-api/user-management/token-refresh',
+            '/jaws-api/user-management/session-verify', 
+            '/favicon.ico']
+
 
         if request.path in excluded_paths:
             return self.get_response(request)
