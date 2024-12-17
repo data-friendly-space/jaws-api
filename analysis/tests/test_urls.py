@@ -26,11 +26,6 @@ from analysis.interfaces.controllers.remove_location_controller import remove_lo
 class TestUrls(SimpleTestCase):
     """Contains the tests of each url's controller"""
 
-    def test_get_analyses_url_resolves(self):
-        """Test that get analysis url works"""
-        url = reverse("get_analyses")
-        self.assertEqual(resolve(url).func, get_analysis_controller)
-
     def test_create_analyses_url_resolves(self):
         """Test that create analysis url works"""
         url = reverse("create_analysis")

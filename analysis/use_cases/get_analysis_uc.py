@@ -1,4 +1,5 @@
 from analysis.contract.repository.analysis_repository import AnalysisRepository
+from common.helpers.query_options import QueryOptions
 from common.use_case.base_use_case import BaseUseCase
 
 
@@ -17,5 +18,5 @@ class GetAnalysisUC(BaseUseCase):
             GetAnalysisUC()
         return GetAnalysisUC._instance
 
-    def exec(self, repository: AnalysisRepository):
-        return repository.get_all()
+    def exec(self, repository: AnalysisRepository,query_options: QueryOptions,**kwargs):
+        return repository.get_all(query_options, **kwargs)

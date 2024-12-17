@@ -1,4 +1,5 @@
 """This module contains the get users use case"""
+from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.workspace_repository import WorkspaceRepository
 
 
@@ -19,6 +20,6 @@ class GetUserWorkspacesByFiltersUC:
             GetUserWorkspacesByFiltersUC()
         return GetUserWorkspacesByFiltersUC._instance
 
-    def exec(self, repository: WorkspaceRepository, **kwargs):
+    def exec(self, repository: WorkspaceRepository, query_options: QueryOptions, **kwargs):
         """Execute the use case"""
-        return repository.get_user_workspaces_by_filters(**kwargs)
+        return repository.get_user_workspaces_by_filters(query_options, **kwargs)

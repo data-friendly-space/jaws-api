@@ -15,6 +15,6 @@ def invite_user_to_workspace_controller(request):
     service = WorkspaceServiceImpl()
     invite_user_workspace_in = InviteUserWorkspaceIn(data=to_snake_case_data(request.data))
 
-    return api_response_success("Organization retrieved successfully",
+    return api_response_success("User invited successfully",
                                 service.invite_user_to_workspace(invite_user_workspace_in),
                                 status.HTTP_200_OK)

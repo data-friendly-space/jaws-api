@@ -1,6 +1,5 @@
 """Contains the implementation of AnalysisService"""
 
-
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
@@ -22,6 +21,7 @@ from analysis.use_cases.get_analysis_uc import GetAnalysisUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
+from common.helpers.query_options import QueryOptions
 from user_management.repository.user_repository_impl import UserRepositoryImpl
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 
@@ -47,7 +47,7 @@ class AnalysisServiceImpl(AnalysisService):
         self.user_repository = UserRepositoryImpl()
 
     def create_analysis(self, analysis: CreateAnalysisIn, creator_id):
-        if not self.get_user_by_filter_uc.exec(self.user_repository,id=creator_id):
+        if not self.get_user_by_filter_uc.exec(self.user_repository, id=creator_id):
             raise BadRequestException("Analysis creator doens't exists")
         if not analysis.is_valid():
             raise BadRequestException(
@@ -69,8 +69,8 @@ class AnalysisServiceImpl(AnalysisService):
             "workspace_id": scope['workspace_id'],
         }
         new_analysis = self.create_analysis_uc.exec(
-                self.repository, data, disaggregations, sectors
-            )
+            self.repository, data, disaggregations, sectors
+        )
         return AnalysisSerializer(new_analysis).data
 
     def put_analysis_scope(self, analysis: UpdateAnalysisIn, analysis_id, user_id):
@@ -80,7 +80,7 @@ class AnalysisServiceImpl(AnalysisService):
 
         if not analysis.is_valid():
             raise BadRequestException("Invalid request", analysis.errors)
-        
+
         scope = analysis.validated_data
         if scope["disaggregations"]:
             disaggregations = self.get_disaggregations(scope["disaggregations"])
@@ -97,12 +97,12 @@ class AnalysisServiceImpl(AnalysisService):
         }
 
         analysis_updated = self.put_analysis_scope_uc.exec(
-                self.repository,
-                data=data,
-                disaggregations=disaggregations,
-                sectors=sectors,
-                analysis_id=analysis_id,
-            )
+            self.repository,
+            data=data,
+            disaggregations=disaggregations,
+            sectors=sectors,
+            analysis_id=analysis_id,
+        )
         return AnalysisSerializer(analysis_updated).data
 
     def validate_scope_fields(self, scope, sectors):
@@ -124,10 +124,14 @@ class AnalysisServiceImpl(AnalysisService):
         """Retrieve the sectors"""
         return Sector.objects.filter(pk__in=sectors)
 
-    def get_analysis(self):
-        return AnalysisSerializer(
-            self.get_analysis_uc.exec(self.repository), many=True
-        ).data
+    def get_analysis(self, workspace_id, query_options: QueryOptions):
+        if not workspace_id:
+            raise BadRequestException("The workspace is required")
+        analyses = self.get_analysis_uc.exec(self.repository, query_options, workspace_id=workspace_id)
+        if not analyses:
+            raise NotFoundException("No analysis found")
+        return [analysis.to_dict() for analysis in
+                analyses]
 
     def get_analysis_by_id(self, analysis_id):
         analysis = self.get_analysis_by_id_uc.exec(

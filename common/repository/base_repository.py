@@ -6,8 +6,9 @@ from common.helpers.query_options import QueryOptions
 
 class BaseRepository(ABC):
     """Base repository"""
+
     @abstractmethod
-    def get_all(self,query_options: QueryOptions):
+    def get_all(self, query_options: QueryOptions, **kwargs):
         """
         Retrieve all records from the database.
         """

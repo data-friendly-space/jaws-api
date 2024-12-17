@@ -1,5 +1,6 @@
 '''This module contains the Analysis Transfer Object'''
 from _pydatetime import date
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -10,36 +11,21 @@ from analysis.models.analysis import Analysis
 from common.contract.to.base_to import BaseTO
 
 
+@dataclass
 class AnalysisTO(BaseTO):
     '''Analysis Data Transfer Object'''
-
-    def __init__(
-            self,
-            id: str,
-            title: str,
-            objectives: str,
-            created_on: datetime | None,
-            end_date: date | None,
-            sectors: Optional[dict],
-            workspace_id: str | None,
-            last_change: datetime | None,
-            disaggregations: Optional[dict] = None,
-            start_date: date | None = None,
-            creator: Optional[str] = None,
-            locations: Optional[str] = None
-    ):
-        self.id = id
-        self.objectives = objectives
-        self.title = title
-        self.created_on = created_on
-        self.start_date = start_date
-        self.end_date = end_date
-        self.disaggregations = disaggregations
-        self.sectors = sectors
-        self.workspace_id = workspace_id
-        self.last_change = last_change
-        self.creator = creator
-        self.locations = locations
+    id: str
+    title: str
+    objectives: str
+    created_on: datetime | None
+    end_date: date | None
+    sectors: Optional[dict]
+    workspace_id: str | None
+    last_change: datetime | None
+    disaggregations: Optional[dict] = None,
+    start_date: date | None = None,
+    creator: Optional[str] = None,
+    locations: Optional[str] = None
 
     @classmethod
     def from_model(cls, instance: Analysis):
@@ -60,3 +46,4 @@ class AnalysisTO(BaseTO):
             sectors=SectorTO.from_models(instance.sectors),
             locations=AdministrativeDivisionTO.from_models(instance.locations, include_hierarchy=True)
         )
+

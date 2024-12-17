@@ -9,13 +9,20 @@ from user_management.models import Workspace, UserWorkspaceRole
 
 class WorkspaceRepositoryImpl(WorkspaceRepository):
 
-    def get_user_workspaces_by_filters(self, **kwargs):
+    def get_user_workspaces_by_filters(self, query_options: QueryOptions, **kwargs):
         filters = {key: value for key, value in kwargs.items() if value is not None}
         workspace_users = UserWorkspaceRole.objects.filter(**filters)
+        if query_options:
+            workspace_users = query_options.filter_and_exec_queryset(workspace_users, model=UserWorkspaceRole)
+        if not workspace_users or len(workspace_users) == 0:
+            return []
         return UserWorkspaceRoleTO.from_models(workspace_users)
 
-    def get_workspace_users_by_workspace_id(self, workspace_id):
-        workspace_users = UserWorkspaceRole.objects.filter(workspace_id=workspace_id)
+    def get_workspaces_users_by_user_id(self, user_id):
+        user_workspaces = UserWorkspaceRole.objects.filter(user_id=user_id)
+        workspace_users = UserWorkspaceRole.objects.filter(
+            workspace__id__in=user_workspaces.values_list('workspace', flat=True)).select_related('user', 'role',
+                                                                                                  'workspace')
         return UserWorkspaceTO.from_models(workspace_users)
 
     def delete_by_id(self, obj_id):
@@ -47,3 +54,7 @@ class WorkspaceRepositoryImpl(WorkspaceRepository):
     def invite_user_to_workspace(self, data):
         """Invite user to workspace"""
         UserWorkspaceRole.objects.create(data)
+
+    def add_user_to_workspace(self, user_id, workspace_id, role_id):
+        return UserWorkspaceRoleTO.from_model(
+            UserWorkspaceRole.objects.create(user_id=user_id, workspace_id=workspace_id, role_id=role_id))

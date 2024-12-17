@@ -6,11 +6,12 @@ from user_management.service.impl.organization_service_impl import OrganizationS
 
 
 @api_view(['GET'])
-def get_organization_by_user_id_controller(request, user_id):
+def get_available_user_organizations(request):
     """
-    return OrganizationTO.
+    return OrganizationTO filtering by user_id.
     """
     service = OrganizationServiceImpl()
 
-    return api_response_success("Organizations retrieved successfully", service.get_organizations_by_user_id(user_id),
+    return api_response_success("Organizations retrieved successfully",
+                                service.get_available_organizations_by_user_id(request.user.id),
                                 status.HTTP_200_OK)

@@ -19,6 +19,6 @@ class CreateWorkspaceUC:
             CreateWorkspaceUC()
         return CreateWorkspaceUC._instance
 
-    def exec(self, repository:WorkspaceRepository, data):
+    def exec(self, repository: WorkspaceRepository, data):
         """Execute the use case"""
         return repository.create(data)

@@ -6,15 +6,10 @@ from user_management.service.impl.role_service_impl import RoleServiceImpl
 
 
 @api_view(['GET'])
-def get_roles_controller(request):
+def get_roles_and_permissions_controller(request):
     """
-    List all roles and return them in RoleTO format.
+    List all roles and permissions then return them in RoleTO format.
     """
     roles_service = RoleServiceImpl()
-    roles = {
-        "workspace": roles_service.get_workspace_roles,
-        "analysis": roles_service.get_analysis_roles
-    }.get(space, roles_service.get_roles)()
-
-    return api_response_success("Roles retrieved successfully", roles,
+    return api_response_success("Roles retrieved successfully", roles_service.get_roles_and_permissions(),
                                 status.HTTP_200_OK)

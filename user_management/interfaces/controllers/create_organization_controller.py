@@ -15,6 +15,6 @@ def create_organization_controller(request):
     service = OrganizationServiceImpl()
     create_organization_in = CreateOrganizationIn(data=to_snake_case_data(request.data))
 
-    return api_response_success("Organization retrieved successfully",
+    return api_response_success("Organization created successfully",
                                 service.create_organization(create_organization_in),
-                                status.HTTP_200_OK)
+                                status.HTTP_201_CREATED)

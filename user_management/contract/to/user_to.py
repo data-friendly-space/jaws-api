@@ -12,16 +12,15 @@ from user_management.models import User
 
 @dataclass
 class UserTO(BaseTO):
-    id: str
-    name: str
-    password: str
-    lastname: str
-    email: str
-    country: str
-    position: Optional[dict]
-    affiliation: Optional[dict]
-    organization: Optional[dict]
-    uiConfiguration: Optional[dict]
+    id: str | None = None
+    name: str | None = None
+    password: str | None = None
+    lastname: str | None = None
+    email: str | None = None
+    country: str | None = None
+    position: Optional[dict] = None
+    affiliation: Optional[dict] = None
+    uiConfiguration: Optional[dict] = None
     profileImage: Optional[str] = None
 
     @classmethod
@@ -38,7 +37,6 @@ class UserTO(BaseTO):
             country=instance.country,
             position=PositionTO.from_model(instance.position),
             affiliation=AffiliationTO.from_model(instance.affiliation),
-            organization=OrganizationTO.from_model(instance.organization),
             uiConfiguration=UiConfigurationTO.from_model(instance.ui_configuration),
             profileImage=instance.profile_image,
         )

@@ -1,4 +1,5 @@
 """This module contains the get users use case"""
+from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.organization_repository import OrganizationRepository
 
 
@@ -19,6 +20,6 @@ class GetUserOrganizationsByFiltersUC:
             GetUserOrganizationsByFiltersUC()
         return GetUserOrganizationsByFiltersUC._instance
 
-    def exec(self, repository: OrganizationRepository, **kwargs):
+    def exec(self, repository: OrganizationRepository, query_options: QueryOptions, **kwargs):
         """Execute the use case"""
-        return repository.get_user_organizations_by_filters(**kwargs)
+        return repository.get_user_organizations_by_filters(query_options,**kwargs)

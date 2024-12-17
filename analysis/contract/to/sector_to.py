@@ -1,16 +1,15 @@
 """This module contains the disaggregation Transfer Object"""
+from dataclasses import dataclass
+
 from analysis.models.sector import Sector
+from common.contract.to.base_to import BaseTO
 
 
-class SectorTO:
+@dataclass
+class SectorTO(BaseTO):
     """Sector DTO"""
-    def __init__(
-            self,
-            id: str,
-            name: str
-    ):
-        self.id = id
-        self.name = name
+    id: str
+    name: str
 
     @classmethod
     def from_model(cls, instance: Sector):

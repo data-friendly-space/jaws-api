@@ -10,7 +10,7 @@ from common.test_utils import create_logged_in_client, User
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 
-class TestAnalysisService(TestCase):
+class TestUserService(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()

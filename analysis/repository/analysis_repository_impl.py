@@ -1,19 +1,23 @@
 """This module contains the implementation of analysis repository"""
-from analysis.contract.to.analysis_to import AnalysisTO
-from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
 from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from common.helpers.query_options import QueryOptions
 
 
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
 
-    def get_all(self):
+    def get_all(self, query_options: QueryOptions, **kwargs):
         """
-        Retrieve all users from the database.
+        Retrieve all analysis from the database.
         """
-        analyses = Analysis.objects.all()
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        analyses = Analysis.objects.filter(**filters)
+        if query_options:
+            analyses = query_options.filter_and_exec_queryset(analyses, model=Analysis)
         if not analyses or len(analyses) == 0:
             return []
         return AnalysisTO.from_models(analyses)
