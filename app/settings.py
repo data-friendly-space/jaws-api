@@ -77,8 +77,8 @@ INSTALLED_APPS = [
 INSTALLED_APPS += CUSTOM_APPS
 
 CUSTOM_MIDDLEWARES = [
-    'user_management.middlewares.jwt_middleware.JWTMiddleware',
     'common.middlewares.exception_handler.ExceptionHandler',
+    'user_management.middlewares.jwt_middleware.JWTMiddleware',
 ]
 
 MIDDLEWARE = [
@@ -90,6 +90,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+
 ]
 
 MIDDLEWARE += CUSTOM_MIDDLEWARES
@@ -204,4 +206,21 @@ USERNAME_IS_FULL_EMAIL = True
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_AUTH_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_AUTH_SECRET")
 
-# SOCIAL_AUTH_GOOGLE_LOGIN_REDIRECT_URL = "/accounts/profile/"
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "http://localhost:3000/workspaces"
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    # Disabled by default
+    # 'social_core.pipeline.mail.mail_validation',
+    # Disabled by default
+    # 'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'user_management.social_auth.pipeline.redirect_to_next_with_token'
+)
