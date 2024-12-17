@@ -14,16 +14,16 @@ from common.contract.to.base_to import BaseTO
 @dataclass
 class AnalysisTO(BaseTO):
     '''Analysis Data Transfer Object'''
-    id: str
+    id: int
     title: str
     objectives: str
-    created_on: datetime | None
-    end_date: date | None
+    createdOn: datetime | None
+    endDate: date | None
     sectors: Optional[dict]
-    workspace_id: str | None
-    last_change: datetime | None
+    workspaceId: str | None
+    lastChange: datetime | None
     disaggregations: Optional[dict] = None,
-    start_date: date | None = None,
+    startDate: date | None = None,
     creator: Optional[str] = None,
     locations: Optional[str] = None
 
@@ -37,13 +37,12 @@ class AnalysisTO(BaseTO):
             title=instance.title,
             objectives=instance.objectives,
             creator=instance.creator_id,
-            workspace_id=instance.workspace_id,
-            start_date=instance.start_date,
-            end_date=instance.end_date,
-            last_change=instance.last_change,
-            created_on=instance.created_on,
+            workspaceId=instance.workspace_id,
+            startDate=instance.start_date,
+            endDate=instance.end_date,
+            lastChange=instance.last_change,
+            createdOn=instance.created_on,
             disaggregations=DisaggregationTO.from_models(instance.disaggregations),
             sectors=SectorTO.from_models(instance.sectors),
             locations=AdministrativeDivisionTO.from_models(instance.locations, include_hierarchy=True)
         )
-

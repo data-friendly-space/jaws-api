@@ -22,8 +22,8 @@ class WorkspaceTestCase(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
-        self.org = Organization.objects.create(name="TestOrganization1")
-        self.workspace = Workspace.objects.create(title="TestWorkspace1", organization=self.org,
+        self.org = Organization.objects.create(name="TestOrganization5")
+        self.workspace = Workspace.objects.create(title="TestWorkspace6", organization=self.org,
                                                   facilitator_id=self.user.id, creator_id=self.user.id)
         self.role = Role.objects.get_or_create(role="ADMIN")
         self.analysis = Analysis.objects.create(title="TestAnalysis1", workspace_id=self.workspace.id,
@@ -33,7 +33,7 @@ class WorkspaceTestCase(TestCase):
         response = self.client.post(reverse('create_workspace'), {
             "title": "TestName1",
             "facilitator_email": "test@test.com",
-            "organization_id": uuid.uuid4(),
+            "organization_id": self.org.id,
         })
 
         self.assertEqual(response.data['status'], status.HTTP_201_CREATED)

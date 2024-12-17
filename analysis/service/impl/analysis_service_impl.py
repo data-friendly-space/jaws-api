@@ -5,7 +5,6 @@ from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
-from analysis.interfaces.serializers.analysis_serializer import AnalysisSerializer
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from analysis.models.disaggregation import Disaggregation
@@ -71,7 +70,7 @@ class AnalysisServiceImpl(AnalysisService):
         new_analysis = self.create_analysis_uc.exec(
             self.repository, data, disaggregations, sectors
         )
-        return AnalysisSerializer(new_analysis).data
+        return new_analysis.to_dict()
 
     def put_analysis_scope(self, analysis: UpdateAnalysisIn, analysis_id, user_id):
         self.get_analysis_by_id(analysis_id)
@@ -103,7 +102,7 @@ class AnalysisServiceImpl(AnalysisService):
             sectors=sectors,
             analysis_id=analysis_id,
         )
-        return AnalysisSerializer(analysis_updated).data
+        return analysis_updated.to_dict()
 
     def validate_scope_fields(self, scope, sectors):
         """Validate that the scope contains everything needed and the sectors are not empty"""
@@ -139,7 +138,7 @@ class AnalysisServiceImpl(AnalysisService):
         )
         if not analysis:
             raise NotFoundException("Analysis not found")
-        return AnalysisSerializer(analysis).data
+        return analysis.to_dict()
 
     def get_administrative_divisions(self, parent_p_code):
         administrative_divisions = self.get_administrative_divisions_uc.exec(

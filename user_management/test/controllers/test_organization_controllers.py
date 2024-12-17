@@ -27,8 +27,8 @@ class OrganizationTestCase(TestCase):
             "email": "test1@test.com",
             "password": "testpassword1"
         }
-        self.org = Organization.objects.create(name="TestOrganization1")
-        self.workspace = Workspace.objects.create(title="TestWorkspace1", organization=self.org,
+        self.org = Organization.objects.create(name="TestOrganization3")
+        self.workspace = Workspace.objects.create(title="TestWorkspace3", organization=self.org,
                                                   facilitator_id=self.user.id, creator_id=self.user.id)
         self.role = Role.objects.get_or_create(role="FACILITATOR")
         self.analysis = Analysis.objects.create(title="TestAnalysis1", workspace_id=self.workspace.id,

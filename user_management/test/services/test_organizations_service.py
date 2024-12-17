@@ -14,8 +14,8 @@ class TestOrganizationService(TestCase):
     def setUp(self):
         self.client, self.user = create_logged_in_client()
         self.service = OrganizationServiceImpl()
-        self.org = Organization.objects.create(name="TestOrganization1")
-        self.workspace = Workspace.objects.create(title="TestWorkspace1", organization=self.org,
+        self.org = Organization.objects.create(name="TestOrganization6")
+        self.workspace = Workspace.objects.create(title="TestWorkspace7", organization=self.org,
                                                   facilitator_id=self.user.id, creator_id=self.user.id)
         self.role = Role.objects.get_or_create(role="ADMIN")
         self.analysis = Analysis.objects.create(title="TestAnalysis1", workspace_id=self.workspace.id,
