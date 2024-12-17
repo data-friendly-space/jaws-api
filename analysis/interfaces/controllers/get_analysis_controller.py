@@ -16,6 +16,6 @@ def get_analysis_controller(request, workspace_id):
 
     query_options = QueryOptions.from_request(request)
 
-    return api_response_success("Success",
+    return api_response_success("Analysis retrieved successfully.",
                                 service.get_analysis(workspace_id, query_options),
                                 status.HTTP_200_OK)

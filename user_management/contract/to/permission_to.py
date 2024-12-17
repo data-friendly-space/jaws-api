@@ -11,6 +11,7 @@ class PermissionTO(BaseTO):
     id: int
     name: str
     type: str
+    alias:str
 
     @classmethod
     def from_model(cls, instance: Permission):
@@ -20,7 +21,8 @@ class PermissionTO(BaseTO):
         return cls(
             id=instance.id,
             name=instance.name,
-            type=instance.type
+            type=instance.type,
+            alias=instance.alias,
         )
 
     def to_dict(self) -> Dict:

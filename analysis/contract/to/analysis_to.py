@@ -1,5 +1,6 @@
 '''This module contains the Analysis Transfer Object'''
 from _pydatetime import date
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -10,36 +11,21 @@ from analysis.models.analysis import Analysis
 from common.contract.to.base_to import BaseTO
 
 
+@dataclass
 class AnalysisTO(BaseTO):
     '''Analysis Data Transfer Object'''
-
-    def __init__(
-            self,
-            id: str,
-            title: str,
-            objectives: str,
-            created_on: datetime | None,
-            end_date: date | None,
-            sectors: Optional[dict],
-            workspace_id: str | None,
-            last_change: datetime | None,
-            disaggregations: Optional[dict] = None,
-            start_date: date | None = None,
-            creator: Optional[str] = None,
-            locations: Optional[str] = None
-    ):
-        self.id = id
-        self.objectives = objectives
-        self.title = title
-        self.created_on = created_on
-        self.start_date = start_date
-        self.end_date = end_date
-        self.disaggregations = disaggregations
-        self.sectors = sectors
-        self.workspace_id = workspace_id
-        self.last_change = last_change
-        self.creator = creator
-        self.locations = locations
+    id: int
+    title: str
+    objectives: str
+    createdOn: datetime | None
+    endDate: date | None
+    sectors: Optional[dict]
+    workspaceId: str | None
+    lastChange: datetime | None
+    disaggregations: Optional[dict] = None,
+    startDate: date | None = None,
+    creator: Optional[str] = None,
+    locations: Optional[str] = None
 
     @classmethod
     def from_model(cls, instance: Analysis):
@@ -51,11 +37,11 @@ class AnalysisTO(BaseTO):
             title=instance.title,
             objectives=instance.objectives,
             creator=instance.creator_id,
-            workspace_id=instance.workspace_id,
-            start_date=instance.start_date,
-            end_date=instance.end_date,
-            last_change=instance.last_change,
-            created_on=instance.created_on,
+            workspaceId=instance.workspace_id,
+            startDate=instance.start_date,
+            endDate=instance.end_date,
+            lastChange=instance.last_change,
+            createdOn=instance.created_on,
             disaggregations=DisaggregationTO.from_models(instance.disaggregations),
             sectors=SectorTO.from_models(instance.sectors),
             locations=AdministrativeDivisionTO.from_models(instance.locations, include_hierarchy=True)

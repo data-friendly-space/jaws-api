@@ -1,12 +1,10 @@
 """Contains the implementation of AnalysisService"""
 
-
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
-from analysis.interfaces.serializers.analysis_serializer import AnalysisSerializer
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from analysis.models.disaggregation import Disaggregation
@@ -24,7 +22,7 @@ from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
 from user_management.repository.user_repository_impl import UserRepositoryImpl
-from user_management.usecases.get_user_uc_by_filters import GetUserByFiltersUC
+from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 
 
 class AnalysisServiceImpl(AnalysisService):
@@ -48,7 +46,7 @@ class AnalysisServiceImpl(AnalysisService):
         self.user_repository = UserRepositoryImpl()
 
     def create_analysis(self, analysis: CreateAnalysisIn, creator_id):
-        if not self.get_user_by_filter_uc.exec(self.user_repository,id=creator_id):
+        if not self.get_user_by_filter_uc.exec(self.user_repository, id=creator_id):
             raise BadRequestException("Analysis creator doens't exists")
         if not analysis.is_valid():
             raise BadRequestException(
@@ -70,9 +68,9 @@ class AnalysisServiceImpl(AnalysisService):
             "workspace_id": scope['workspace_id'],
         }
         new_analysis = self.create_analysis_uc.exec(
-                self.repository, data, disaggregations, sectors
-            )
-        return AnalysisSerializer(new_analysis).data
+            self.repository, data, disaggregations, sectors
+        )
+        return new_analysis.to_dict()
 
     def put_analysis_scope(self, analysis: UpdateAnalysisIn, analysis_id, user_id):
         self.get_analysis_by_id(analysis_id)
@@ -81,7 +79,6 @@ class AnalysisServiceImpl(AnalysisService):
 
         if not analysis.is_valid():
             raise BadRequestException("Invalid request", analysis.errors)
-        
         scope = analysis.validated_data
         if scope["disaggregations"]:
             disaggregations = self.get_disaggregations(scope["disaggregations"])
@@ -98,13 +95,13 @@ class AnalysisServiceImpl(AnalysisService):
         }
 
         analysis_updated = self.put_analysis_scope_uc.exec(
-                self.repository,
-                data=data,
-                disaggregations=disaggregations,
-                sectors=sectors,
-                analysis_id=analysis_id,
-            )
-        return AnalysisSerializer(analysis_updated).data
+            self.repository,
+            data=data,
+            disaggregations=disaggregations,
+            sectors=sectors,
+            analysis_id=analysis_id,
+        )
+        return analysis_updated.to_dict()
 
     def validate_scope_fields(self, scope, sectors):
         """Validate that the scope contains everything needed and the sectors are not empty"""
@@ -128,9 +125,11 @@ class AnalysisServiceImpl(AnalysisService):
     def get_analysis(self, workspace_id, query_options: QueryOptions):
         if not workspace_id:
             raise BadRequestException("The workspace is required")
-        return AnalysisSerializer(
-            self.get_analysis_uc.exec(self.repository, workspace_id, query_options), many=True
-        ).data
+        analyses = self.get_analysis_uc.exec(self.repository, query_options, workspace_id=workspace_id)
+        if not analyses:
+            raise NotFoundException("No analysis found")
+        return [analysis.to_dict() for analysis in
+                analyses]
 
     def get_analysis_by_id(self, analysis_id):
         analysis = self.get_analysis_by_id_uc.exec(
@@ -138,7 +137,7 @@ class AnalysisServiceImpl(AnalysisService):
         )
         if not analysis:
             raise NotFoundException("Analysis not found")
-        return AnalysisSerializer(analysis).data
+        return analysis.to_dict()
 
     def get_administrative_divisions(self, parent_p_code):
         administrative_divisions = self.get_administrative_divisions_uc.exec(

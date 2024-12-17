@@ -16,7 +16,7 @@ from user_management.interfaces.serializers.token_serializer import UserTokenSer
 from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.repository.user_repository_impl import UserRepositoryImpl
 from user_management.service.users_service import UsersService
-from user_management.usecases.get_user_uc_by_filters import GetUserByFiltersUC
+from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 from user_management.usecases.sign_in_uc import SignInUC
 from user_management.usecases.sign_up_uc import SignUpUC
 

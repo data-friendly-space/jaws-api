@@ -18,5 +18,5 @@ class GetAnalysisUC(BaseUseCase):
             GetAnalysisUC()
         return GetAnalysisUC._instance
 
-    def exec(self, repository: AnalysisRepository, workspace_id, query_options: QueryOptions):
-        return repository.get_all(workspace_id, query_options)
+    def exec(self, repository: AnalysisRepository,query_options: QueryOptions,**kwargs):
+        return repository.get_all(query_options, **kwargs)

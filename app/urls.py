@@ -30,7 +30,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('social_django.urls', namespace='social')),
     path('jaws-api/health', include('health_check.urls')),
+
     path('jaws-api/user-management/', include('user_management.user-management-urls')),
+
     path('jaws-api/analysis/', include('analysis.urls')),
     path('jaws-api/csrf', csrf_token_controller, name='csrf'),
 ]

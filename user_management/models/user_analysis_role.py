@@ -2,9 +2,9 @@ from django.db import models
 
 
 class UserAnalysisRole(models.Model):
-    user = models.ForeignKey('User')
-    analysis = models.ForeignKey('user_management.Analysis')
-    role = models.ForeignKey('Role')
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    analysis = models.ForeignKey('user_management.Analysis', on_delete=models.CASCADE)
+    role = models.ForeignKey('Role', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('user', 'analysis')
