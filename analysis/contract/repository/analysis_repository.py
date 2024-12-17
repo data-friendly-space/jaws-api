@@ -1,5 +1,5 @@
-"""This module contains the analysis repository"""
-from analysis.contract.repository.base_repository import BaseRepository
+'''This module contains the analysis repository'''
+from common.repository.base_repository import BaseRepository
 
 
 class AnalysisRepository(BaseRepository):

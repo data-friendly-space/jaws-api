@@ -1,4 +1,3 @@
-"""Contains the user repository which handles the database access"""
 from django.contrib.auth.hashers import make_password
 
 from common.helpers.query_options import QueryOptions
@@ -9,9 +8,18 @@ from user_management.models import User
 
 class UserRepositoryImpl(UserRepository):
     """Contains the database access for user model"""
+
+    def get_user_by_filters(self, **kwargs):
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        users_found = User.objects.filter(**filters).first()
+        return UserTO.from_model(users_found)
+
     def sign_up(self, name, lastname, email, password):
         return User.objects.create(
-            lastname=lastname, name=name, email=email, password=make_password(password)
+            lastname=lastname,
+            name=name,
+            email=email,
+            password=make_password(password)
         )
 
     def get_user_by_email(self, email):
@@ -24,7 +32,7 @@ class UserRepositoryImpl(UserRepository):
         users = query_options.filter_and_exec_queryset(
             users_query, model=User, exclude_fields=exclude_fields
         )
-        return UserTO.fromModels(users)
+        return UserTO.from_models(users)
 
     def get_by_id(self, obj_id):
         try:
@@ -51,5 +59,8 @@ class UserRepositoryImpl(UserRepository):
             return None
 
     def create(self, data):
+        """
+        Add a new user to the database.
+        """
         user = User.objects.create(**data)
         return user

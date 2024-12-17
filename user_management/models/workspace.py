@@ -1,18 +1,24 @@
 """This module contains the workspace model"""
-from django.db import models
+import uuid
 
-from analysis.models.analysis_framework import AnalysisFramework
+from django.db import models
 
 
 class Workspace(models.Model):
     """Model for the workspace"""
-    title = models.CharField(max_length=200)
-    creation_date = models.DateTimeField()
-    last_access_date = models.DateTimeField()
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200, unique=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    last_access_date = models.DateTimeField(null=True)
     facilitator = models.ForeignKey("user_management.User", on_delete=models.CASCADE,
                                     related_name="facilitated_workspaces")
     country = models.CharField(max_length=100)
-    analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE, null=True)
+    organization = models.ForeignKey(
+        "Organization",
+        on_delete=models.CASCADE,
+        related_name="organizations",
+    )
+    creator = models.ForeignKey('user_management.User', on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)

@@ -1,6 +1,10 @@
 """This module contains the sign up use case"""
-class SignUpUC:
-    """Class for handling the sign up process"""
+from common.use_case.base_use_case import BaseUseCase
+from user_management.contract.repository.user_repository import UserRepository
+
+
+class SignUpUC(BaseUseCase):
+    """Class for handling the sign-up process"""
     _instance = None
 
     def __init__(self):
@@ -16,6 +20,6 @@ class SignUpUC:
             SignUpUC()
         return SignUpUC._instance
 
-    def exec(self, repository, name, lastname, email, password):
+    def exec(self, repository: UserRepository, name, lastname, email, password):
         """Execute de use case"""
         return repository.sign_up(name, lastname, email, password)

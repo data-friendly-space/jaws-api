@@ -1,16 +1,13 @@
-from rest_framework import serializers
+from dataclasses import dataclass
 
+from common.contract.to.base_to import BaseTO
 from user_management.models import Organization
 
 
-class OrganizationTO(serializers.ModelSerializer):
-    def __init__(
-            self,
-            id: int,
-            name: str
-    ):
-        self.id = id
-        self.name = name
+@dataclass
+class OrganizationTO(BaseTO):
+    id: int
+    name: str
 
     @classmethod
     def from_model(cls, instance: Organization):

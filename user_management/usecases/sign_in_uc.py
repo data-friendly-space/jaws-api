@@ -1,4 +1,8 @@
-class SignInUC:
+from common.use_case.base_use_case import BaseUseCase
+from user_management.contract.repository.user_repository import UserRepository
+
+
+class SignInUC(BaseUseCase):
     _instance = None
 
     def __init__(self):
@@ -13,5 +17,5 @@ class SignInUC:
             SignInUC()
         return SignInUC._instance
 
-    def exec(self, repository,data):
+    def exec(self, repository: UserRepository, data):
         return repository.sign_up(data)

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from analysis.models.analysis import Analysis
 from common.serializer.CamelCaseMixin import CamelCaseMixin
 
+
 class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
     """
     Serializer to transform Analysis model to AnalysisTO format.
@@ -11,7 +12,7 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
     title = serializers.CharField(max_length=255)
     start_date = serializers.DateField(allow_null=True, required=False)
     end_date = serializers.DateField()
-    objetives = serializers.CharField(max_length=400)
+    objectives = serializers.CharField(max_length=400)
     workspace_id = serializers.CharField(max_length=36)
     creator = serializers.CharField(max_length=36)
     created_on = serializers.DateTimeField()
@@ -24,11 +25,11 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
         """from where it takes the fields"""
         model = Analysis
         fields = [
-                    'id', 'title', 'start_date', 'end_date',
-                    'objetives', 'workspace_id', 'creator',
-                    'created_on', 'last_change', 'disaggregations', 
-                    'sectors', 'locations'
-                ]
+            'id', 'title', 'start_date', 'end_date',
+            'objectives', 'workspace_id', 'creator',
+            'created_on', 'last_change', 'disaggregations',
+            'sectors', 'locations'
+        ]
 
     def get_disaggregations(self, obj):
         """serialize disaggregations"""
@@ -53,5 +54,5 @@ class AnalysisSerializer(CamelCaseMixin, serializers.ModelSerializer):
                     'adminLevel': loc['adminLevel'],
                     'name': loc['name'],
                     'pCode': loc['pCode']
-                } for loc in location.hierarchy ]})
+                } for loc in location.hierarchy]})
         return locations_data

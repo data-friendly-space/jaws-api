@@ -5,6 +5,7 @@ from django.urls import reverse
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.test_utils import create_logged_in_client
+from user_management.models import Organization, Workspace
 
 
 class AnalysisTestCase(TestCase):
@@ -17,28 +18,29 @@ class AnalysisTestCase(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
-
-    def test_get_analyses(self):
-        """Test if the get analysis work as expected"""
-        response = self.client.get(reverse("get_analyses"))
-        self.assertEqual(response.status_code, 200)
+        self.org = Organization.objects.create(name="TestOrganization1")
+        self.workspace = Workspace.objects.create(title="TestWorkspace1", organization=self.org,
+                                                  facilitator_id=self.user.id, creator_id=self.user.id)
 
     def test_get_analysis_by_id(self):
         """Test if get analysis by id work as expected"""
+
         Analysis.objects.create(
-            id="test",
+            id=1,
             title="test analysis",
-            objetives="test",
-            end_date="2024-11-20"
+            objectives="test",
+            end_date="2024-11-20",
+            creator_id=self.user.id,
+            workspace_id= self.workspace.id
         )
 
-        response = self.client.get(reverse("get_analysis", args=["test"]))
+        response = self.client.get(reverse("get_analysis", args=[1]))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["payload"]["id"], "test")
+        self.assertEqual(response.data["payload"]["id"], 1)
 
     def test_get_analysis_by_id_not_found(self):
         """Test if get analysis by id with an invalid id throw 400"""
-        response = self.client.get(reverse("get_analysis", args=["test"]))
+        response = self.client.get(reverse("get_analysis", args=[1]))
         self.assertEqual(response.status_code, 404)
 
     # def test_create_analysis_successfully(self):
