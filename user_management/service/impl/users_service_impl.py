@@ -72,7 +72,7 @@ class UsersServiceImpl(UsersService):
             if not user_to:
                 raise BadRequestException("User not found")
             return UserTokenSerializer(user_to).data
-        except ValueError as e:
+        except (ValueError, InvalidToken) as e:
             raise UnauthorizedException(str(e), None) from e
 
     def refresh_token(self, refresh_token):
