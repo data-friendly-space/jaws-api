@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'health_check.cache',  # Cache backend health checker
     'health_check.storage',  # Default storage system health check
     'corsheaders',
+    'social_django'
 ]
 
 INSTALLED_APPS += CUSTOM_APPS
@@ -89,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
 MIDDLEWARE += CUSTOM_MIDDLEWARES
@@ -104,6 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'user_management.User'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -192,3 +195,31 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Social auth
+SOCIAL_AUTH_USER_MODEL = 'user_management.User'
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+USERNAME_IS_FULL_EMAIL = True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("GOOGLE_AUTH_CLIENT_ID")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("GOOGLE_AUTH_SECRET")
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    # Disabled by default
+    # 'social_core.pipeline.mail.mail_validation',
+    # Disabled by default
+    # 'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'user_management.social_auth.pipeline.redirect_to_next_with_token'
+)
+
+SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['localhost:3000']
