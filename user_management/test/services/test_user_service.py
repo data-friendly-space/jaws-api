@@ -83,3 +83,9 @@ class TestUserService(TestCase):
         with self.assertRaises(BadRequestException) as context:
             self.service.refresh_token("")
         self.assertEqual(str(context.exception), "Refresh token is required.")
+
+class TestSignInWithAccessToken(TestCase):
+    """Test the method for signing in with an access token"""
+
+    def test_token_not_provided(self):
+        """"""
