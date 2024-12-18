@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from common.exceptions.exceptions import UnauthorizedException
 
-from ...social_auth.pipeline import redirect_to_next_with_token
+from ..social_auth.pipeline import redirect_to_next_with_token
 
 
 class TestSocialAuthPipeline(TestCase):
