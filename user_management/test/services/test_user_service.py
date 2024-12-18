@@ -1,13 +1,13 @@
 """Contains the tests for the user service"""
-from unittest.mock import patch, MagicMock
-
 from django.test import TestCase
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from common.exceptions.exceptions import BadRequestException, UnauthorizedException
 from common.test_utils import create_logged_in_client, User
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
+from user_management.contract.to.user_to import UserTO
+from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 
@@ -104,6 +104,20 @@ class TestSignInWithAccessToken(TestCase):
 
     def test_user_not_found(self):
         """Test that using a false JWT raises a BadRequestException"""
-        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQwMzQyNDQ2LCJpYXQiOjE3MzQzNDI0NDYsImp0aSI6IjhjZGJiOTUxYzc4NTQ2MmRhNTc3NmRhM2FlNDUwYjBhIiwidXNlcl9pZCI6IjgxYjA0ODQ4LTZjMGQtNDU1Mi04MzBiLTJiNmEzMjcyMTdlNiJ9.OBgYSunsdmIAjI6IR_xsOoUcaRQRvZxuCvPC0kkbW1Q"
+        token_user_not_existing = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQwMzQyNDQ2LCJpYXQiOjE3MzQzNDI0NDYsImp0aSI6IjhjZGJiOTUxYzc4NTQ2MmRhNTc3NmRhM2FlNDUwYjBhIiwidXNlcl9pZCI6IjgxYjA0ODQ4LTZjMGQtNDU1Mi04MzBiLTJiNmEzMjcyMTdlNiJ9.OBgYSunsdmIAjI6IR_xsOoUcaRQRvZxuCvPC0kkbW1Q"
         with self.assertRaises(BadRequestException):
-            self.service.sign_in_with_access_token(token)
+            self.service.sign_in_with_access_token(token_user_not_existing)
+
+    def test_user_existing(self):
+        """Test that using a valid token returns a valid response"""
+        user = User.objects.create(
+            name="TestName",
+            lastname="TestLastname",
+            email="test@test.com",
+            password="testpassword",
+        )
+        user_to = UserTO.from_model(user)
+        valid_token = AccessToken.for_user(user)
+        response = self.service.sign_in_with_access_token(str(valid_token))
+        response_expected = UserTokenSerializer(user_to).data
+        self.assertEqual(response["user"]["id"], response_expected["user"]["id"])
