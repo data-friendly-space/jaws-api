@@ -32,7 +32,7 @@ urlpatterns = [
     path('jaws-api/health', include('health_check.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
 
-    path('jaws-api/user-management/', include('user_management.user-management-urls')),
+    path('jaws-api/user-management/', include('user_management.user_management_urls')),
 
     path('jaws-api/analysis/', include('analysis.urls')),
 
