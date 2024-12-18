@@ -8,7 +8,6 @@ from user_management.service.impl.users_service_impl import UsersServiceImpl
 def sign_in_with_access_token_controller(request):
     """Sign in an user with an access token"""
     token = request.query_params.get("access_token")
-
     user_service = UsersServiceImpl()
     return api_response_success(
         data=user_service.sign_in_with_access_token(token)
