@@ -2,7 +2,6 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.test_utils import create_logged_in_client
 from user_management.models import Organization, Workspace
@@ -39,7 +38,7 @@ class AnalysisTestCase(TestCase):
         self.assertEqual(response.data["payload"]["id"], 1)
 
     def test_get_analysis_by_id_not_found(self):
-        """Test if get analysis by id with an invalid id throw 400"""
+        """Test if get analysis by id with an invalid id throw 404"""
         response = self.client.get(reverse("get_analysis", args=[1]))
         self.assertEqual(response.status_code, 404)
 

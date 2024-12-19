@@ -50,5 +50,6 @@ class AnalysisTO(BaseTO):
         )
 
     def to_dict(self):
-        self.locations = [location.to_dict() for location in self.locations]
+        if self.locations:
+            self.locations = [location.to_dict() for location in self.locations]
         return asdict(self)
