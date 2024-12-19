@@ -1,24 +1,44 @@
+"""Test the user management urls"""
+
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 
-from analysis.interfaces.controllers.get_analysis_controller import get_analysis_controller
-from user_management.interfaces.controllers.create_organization_controller import create_organization_controller
-from user_management.interfaces.controllers.get_organization_users_controller import \
-    get_organizations_users_by_user_id_controller
-from user_management.interfaces.controllers.get_user_logged_organizations_controller import \
-    get_available_user_organizations
-from user_management.interfaces.controllers.get_user_logged_workspaces_controller import \
-    get_user_logged_workspaces_controller
-from user_management.interfaces.controllers.get_users_controller import get_users_controller
-from user_management.interfaces.controllers.get_users_from_organization_by_role_controller import \
-    get_users_from_organization_by_role_controller
-from user_management.interfaces.controllers.refresh_token_controller import refresh_token_controller
+from analysis.interfaces.controllers.get_analysis_controller import (
+    get_analysis_controller,
+)
+from user_management.interfaces.controllers.create_organization_controller import (
+    create_organization_controller,
+)
+from user_management.interfaces.controllers.get_organization_users_controller import (
+    get_organizations_users_by_user_id_controller,
+)
+from user_management.interfaces.controllers.get_user_logged_organizations_controller import (
+    get_available_user_organizations,
+)
+from user_management.interfaces.controllers.get_user_logged_workspaces_controller import (
+    get_user_logged_workspaces_controller,
+)
+from user_management.interfaces.controllers.get_users_controller import (
+    get_users_controller,
+)
+from user_management.interfaces.controllers.get_users_from_organization_by_role_controller import (
+    get_users_from_organization_by_role_controller,
+)
+from user_management.interfaces.controllers.refresh_token_controller import (
+    refresh_token_controller,
+)
 from user_management.interfaces.controllers.sign_in_controller import sign_in_controller
+from user_management.interfaces.controllers.sign_in_with_access_token_controller import (
+    sign_in_with_access_token_controller,
+)
 from user_management.interfaces.controllers.sign_up_controller import sign_up_controller
-from user_management.interfaces.controllers.verify_token_controller import verify_token_controller
+from user_management.interfaces.controllers.verify_token_controller import (
+    verify_token_controller,
+)
 
 
 class TestUrls(SimpleTestCase):
+    """Contain the URL tests"""
 
     def test_get_users_url_resolves(self):
         """Test get user url"""
@@ -51,7 +71,7 @@ class TestUrls(SimpleTestCase):
 
     def test_get_analyses_url_resolves(self):
         """Test that get analysis url works"""
-        url = reverse("get_analysis_controller", args=['some-workspace-id'])
+        url = reverse("get_analysis_controller", args=["some-workspace-id"])
         self.assertEqual(resolve(url).func, get_analysis_controller)
 
     def test_create_organization_url_resolves(self):
@@ -62,12 +82,19 @@ class TestUrls(SimpleTestCase):
     def test_get_organizations_users_url_resolves(self):
         """Test that the get organization users by user ID URL works"""
         url = reverse("get-organizations-users-by-user-id")
-        self.assertEqual(resolve(url).func, get_organizations_users_by_user_id_controller)
+        self.assertEqual(
+            resolve(url).func, get_organizations_users_by_user_id_controller
+        )
 
     def test_get_users_from_organization_by_role_url_resolves(self):
         """Test that the get users from organization by role URL works"""
-        url = reverse("get_users_from_organization_by_role_controller", args=['some-organization-id', 'some-role'])
-        self.assertEqual(resolve(url).func, get_users_from_organization_by_role_controller)
+        url = reverse(
+            "get_users_from_organization_by_role_controller",
+            args=["some-organization-id", "some-role"],
+        )
+        self.assertEqual(
+            resolve(url).func, get_users_from_organization_by_role_controller
+        )
 
     def test_get_user_logged_workspaces_url_resolves(self):
         """Test that the get user logged workspaces URL works"""
@@ -78,3 +105,8 @@ class TestUrls(SimpleTestCase):
         """Test that the get available user organizations URL works"""
         url = reverse("get_available_organizations_by_user_id")
         self.assertEqual(resolve(url).func, get_available_user_organizations)
+
+    def test_sign_in_with_access_token_resolves(self):
+        """Test that sign in with access token URL works"""
+        url = reverse("sign_in_with_access_token")
+        self.assertEqual(resolve(url).func, sign_in_with_access_token_controller)

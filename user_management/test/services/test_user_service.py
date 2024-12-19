@@ -1,17 +1,18 @@
-from unittest.mock import patch, MagicMock
-
+"""Contains the tests for the user service"""
 from django.test import TestCase
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
-from common.exceptions.exceptions import BadRequestException
+from common.exceptions.exceptions import BadRequestException, UnauthorizedException
 from common.test_utils import create_logged_in_client, User
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
+from user_management.contract.to.user_to import UserTO
+from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 
 
 class TestUserService(TestCase):
+    """Contains the tests for the user service"""
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
@@ -83,3 +84,40 @@ class TestUserService(TestCase):
         with self.assertRaises(BadRequestException) as context:
             self.service.refresh_token("")
         self.assertEqual(str(context.exception), "Refresh token is required.")
+
+class TestSignInWithAccessToken(TestCase):
+    """Test the method for signing in with an access token"""
+
+    def setUp(self):
+        self.service = UsersServiceImpl()
+
+    def test_token_not_provided(self):
+        """Test that calling the method with no token raises an exception"""
+        with self.assertRaises(UnauthorizedException):
+            self.service.sign_in_with_access_token(None)
+
+    def test_token_not_valid(self):
+        """Test that using an unvalid token raises an UnauthorizedException"""
+        token = "invalid-token"
+        with self.assertRaises(UnauthorizedException):
+            self.service.sign_in_with_access_token(token)
+
+    def test_user_not_found(self):
+        """Test that using a false JWT raises a BadRequestException"""
+        token_user_not_existing = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQwMzQyNDQ2LCJpYXQiOjE3MzQzNDI0NDYsImp0aSI6IjhjZGJiOTUxYzc4NTQ2MmRhNTc3NmRhM2FlNDUwYjBhIiwidXNlcl9pZCI6IjgxYjA0ODQ4LTZjMGQtNDU1Mi04MzBiLTJiNmEzMjcyMTdlNiJ9.OBgYSunsdmIAjI6IR_xsOoUcaRQRvZxuCvPC0kkbW1Q"
+        with self.assertRaises(BadRequestException):
+            self.service.sign_in_with_access_token(token_user_not_existing)
+
+    def test_user_existing(self):
+        """Test that using a valid token returns a valid response"""
+        user = User.objects.create(
+            name="TestName",
+            lastname="TestLastname",
+            email="test@test.com",
+            password="testpassword",
+        )
+        user_to = UserTO.from_model(user)
+        valid_token = AccessToken.for_user(user)
+        response = self.service.sign_in_with_access_token(str(valid_token))
+        response_expected = UserTokenSerializer(user_to).data
+        self.assertEqual(response["user"]["id"], response_expected["user"]["id"])
