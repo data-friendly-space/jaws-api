@@ -1,6 +1,6 @@
 '''This module contains the Analysis Transfer Object'''
 from _pydatetime import date
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -44,5 +44,11 @@ class AnalysisTO(BaseTO):
             createdOn=instance.created_on,
             disaggregations=DisaggregationTO.from_models(instance.disaggregations),
             sectors=SectorTO.from_models(instance.sectors),
-            locations=AdministrativeDivisionTO.from_models(instance.locations, include_hierarchy=True)
+            locations=AdministrativeDivisionTO.from_models(
+                instance.locations,
+                include_hierarchy=True)
         )
+
+    def to_dict(self):
+        self.locations = [location.to_dict() for location in self.locations]
+        return asdict(self)
