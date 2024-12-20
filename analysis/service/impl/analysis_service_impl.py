@@ -2,6 +2,7 @@
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
+from analysis.contract.io.update_steps_in import UpdateStepsIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
@@ -17,6 +18,7 @@ from analysis.use_cases.get_administrative_divisions_uc import GetAdministrative
     GetAdministrativeDivisionByIdUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_uc import GetAnalysisUC
+from analysis.use_cases.get_steps_uc import GetStepsUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
@@ -42,6 +44,7 @@ class AnalysisServiceImpl(AnalysisService):
         self.add_location_uc = AddLocationUC.get_instance()
         self.remove_location_uc = RemoveLocationUC.get_instance()
         self.get_user_by_filter_uc = GetUserByFiltersUC.get_instance()
+        self.get_steps_uc = GetStepsUC.get_instance()
         self.repository = AnalysisRepositoryImpl()
         self.user_repository = UserRepositoryImpl()
 
@@ -173,3 +176,12 @@ class AnalysisServiceImpl(AnalysisService):
         if not existing_analysis.locations.filter(p_code=p_code).exists():
             raise BadRequestException("The location is not present in the analysis")
         self.remove_location_uc.exec(self.repository, existing_analysis, administrative_division)
+
+
+    def update_steps(self, analysis_id, step_ids: UpdateStepsIn):
+        pass
+
+    def get_steps(self):
+        steps = self.get_steps_uc.exec(self.repository)
+        dict_steps = [step.to_dict() for step in steps]
+        return dict_steps

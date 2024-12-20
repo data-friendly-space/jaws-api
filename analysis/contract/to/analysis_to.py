@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.contract.to.sector_to import SectorTO
 from analysis.models.analysis import Analysis
@@ -26,6 +27,8 @@ class AnalysisTO(BaseTO):
     startDate: date | None = None,
     creator: Optional[str] = None,
     locations: Optional[str] = None
+    analysisSteps: Optional[str] = None
+
 
     @classmethod
     def from_model(cls, instance: Analysis):
@@ -46,7 +49,8 @@ class AnalysisTO(BaseTO):
             sectors=SectorTO.from_models(instance.sectors),
             locations=AdministrativeDivisionTO.from_models(
                 instance.locations,
-                include_hierarchy=True)
+                include_hierarchy=True),
+            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps)
         )
 
     def to_dict(self):

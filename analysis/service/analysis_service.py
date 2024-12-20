@@ -45,3 +45,15 @@ class AnalysisService(BaseService):
         """
         Remove an existing location from an analysis
         """
+
+    @abstractmethod
+    def update_steps(self, analysis_id, step_ids):
+        """
+        Update the list of steps in the analysis
+        """
+
+    @abstractmethod
+    def get_steps(self):
+        """
+        Return the available steps
+        """
