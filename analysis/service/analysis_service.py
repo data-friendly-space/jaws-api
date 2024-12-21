@@ -57,3 +57,9 @@ class AnalysisService(BaseService):
         """
         Return the available steps
         """
+
+    @abstractmethod
+    def get_mandatory_step_ids(self):
+        """
+        Return the required steps
+        """

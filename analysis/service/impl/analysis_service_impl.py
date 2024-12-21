@@ -1,5 +1,6 @@
 """Contains the implementation of AnalysisService"""
 
+from typing import List
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.contract.io.update_steps_in import UpdateStepsIn
@@ -21,6 +22,7 @@ from analysis.use_cases.get_analysis_uc import GetAnalysisUC
 from analysis.use_cases.get_steps_uc import GetStepsUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
+from analysis.use_cases.update_analysis_steps_uc import UpdateAnalysisStepsUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
 from user_management.repository.user_repository_impl import UserRepositoryImpl
@@ -45,6 +47,7 @@ class AnalysisServiceImpl(AnalysisService):
         self.remove_location_uc = RemoveLocationUC.get_instance()
         self.get_user_by_filter_uc = GetUserByFiltersUC.get_instance()
         self.get_steps_uc = GetStepsUC.get_instance()
+        self.update_analysis_steps_uc = UpdateAnalysisStepsUC.get_instance()
         self.repository = AnalysisRepositoryImpl()
         self.user_repository = UserRepositoryImpl()
 
@@ -178,10 +181,27 @@ class AnalysisServiceImpl(AnalysisService):
         self.remove_location_uc.exec(self.repository, existing_analysis, administrative_division)
 
 
-    def update_steps(self, analysis_id, step_ids: UpdateStepsIn):
-        pass
+    def update_steps(self, analysis_id: int, step_ids: List[int]):
+        analysis = self.get_analysis_by_id(analysis_id)
+        if not analysis:
+            raise NotFoundException("Analysis not found")
+        if not step_ids or len(step_ids) <= 0:
+            raise BadRequestException("Step ids required")
+        steps = self.repository.get_steps_by_ids(step_ids)
+        if len(step_ids) != len(steps):
+            raise BadRequestException("All the steps should be valid")
+        mandatory_step_ids = self.get_mandatory_step_ids()
+        if not set(mandatory_step_ids).issubset(step_ids):
+            raise BadRequestException("You can't delete mandatory steps")
+        self.update_analysis_steps_uc.exec(self.repository, analysis_id, step_ids)
+
 
     def get_steps(self):
         steps = self.get_steps_uc.exec(self.repository)
         dict_steps = [step.to_dict() for step in steps]
         return dict_steps
+    
+    def get_mandatory_step_ids(self):
+        steps = self.get_steps_uc.exec(self.repository)
+        mandatory_steps = [step.id for step in steps if step.mandatory and not step.parentStepId]
+        return mandatory_steps
