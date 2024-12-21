@@ -20,7 +20,7 @@ def add_steps(apps, schema_editor):
     anticipation_step = AnalysisStep.objects.create(
         name="Anticipation", mandatory=False, order=7
     )
-    AnalysisStep.objects.create(name="Prescription", mandatory=False, order=8)
+    prescription_step = AnalysisStep.objects.create(name="Prescription", mandatory=False, order=8)
     AnalysisStep.objects.create(name="Communication", order=9)
     substeps = [
         {
@@ -127,6 +127,36 @@ def add_steps(apps, schema_editor):
             "name": "Likelihood scale", 
             "step_parent": anticipation_step,
             "order": 8
+        },
+        {
+            "name": "Information gap checklist", 
+            "step_parent": prescription_step,
+            "order": 1
+        },
+        {
+            "name": "Key assumption checklist", 
+            "step_parent": prescription_step,
+            "order": 2
+        },
+        {
+            "name": "Problem tree", 
+            "step_parent": prescription_step,
+            "order": 3
+        },
+        {
+            "name": "Structured Brainstorming", 
+            "step_parent": prescription_step,
+            "order": 4
+        },
+        {
+            "name": "Prioritisation techniques (voting/ranking)", 
+            "step_parent": prescription_step,
+            "order": 5
+        },
+        {
+            "name": "Expert Judgement Elicitation (survey)", 
+            "step_parent": prescription_step,
+            "order": 6
         },
     ]
     for step in substeps:
