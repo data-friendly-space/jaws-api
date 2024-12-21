@@ -11,7 +11,7 @@ class AdministrativeDivisionSerializer(CamelCaseMixin, serializers.ModelSerializ
     Serializer to transform Analysis model to AnalysisTO format.
     """
 
-    p_code = serializers.CharField()
+    pCode = serializers.CharField()
     name = serializers.CharField()
     hierarchy = serializers.SerializerMethodField(allow_null=True)
 
@@ -19,7 +19,7 @@ class AdministrativeDivisionSerializer(CamelCaseMixin, serializers.ModelSerializ
         """Base class"""
 
         model = AdministrativeDivision
-        fields = ["p_code", "name", "hierarchy"]
+        fields = ["pCode", "name", "hierarchy"]
 
     def get_hierarchy(self, obj):
         """Serialize locations with hierarchy"""

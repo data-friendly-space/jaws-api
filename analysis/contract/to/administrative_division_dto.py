@@ -1,13 +1,15 @@
 """This module contains the analysis DTO"""
 
+from dataclasses import asdict, dataclass
 from analysis.models.administrative_division import AdministrativeDivision
+from common.contract.to.base_to import BaseTO
 
-
-class AdministrativeDivisionTO:
+@dataclass
+class AdministrativeDivisionTO(BaseTO):
     """Administrative Division Data Transfer Object"""
 
     def __init__(self, p_code: str, name: str, hierarchy=None):
-        self.p_code = p_code
+        self.pCode = p_code
         self.name = name
         self.hierarchy = hierarchy
 
@@ -39,3 +41,6 @@ class AdministrativeDivisionTO:
             cls.from_model(administrative_division, include_hierarchy)
             for administrative_division in administrative_divisions.all()
         ]
+
+    def to_dict(self):
+        return self.__dict__

@@ -23,8 +23,12 @@ class TestAnalysisService(TestCase):
         self.client, self.user = create_logged_in_client()
         self.service = AnalysisServiceImpl()
         self.org = Organization.objects.create(name="TestOrganization2")
-        self.workspace = Workspace.objects.create(title="TestWorksp2ace1", organization=self.org,
-                                                  facilitator_id=self.user.id, creator_id=self.user.id)
+        self.workspace = Workspace.objects.create(
+            title="TestWorksp2ace1",
+            organization=self.org,
+            facilitator_id=self.user.id,
+            creator_id=self.user.id,
+        )
         self.role = Role.objects.get_or_create(role="ADMIN")
 
         self.test_sector = Sector.objects.create(id=1, name="Sector test")
@@ -36,9 +40,13 @@ class TestAnalysisService(TestCase):
                 p_code="test", name="Test", admin_level=0
             )
         )
-        self.test_analysis = Analysis.objects.create(id=1,title="TestAnalysis1", workspace_id=self.workspace.id,
-                                                end_date='2024-12-17', creator_id=self.user.id)
-
+        self.test_analysis = Analysis.objects.create(
+            id=1,
+            title="TestAnalysis1",
+            workspace_id=self.workspace.id,
+            end_date="2024-12-17",
+            creator_id=self.user.id,
+        )
 
     def test_validate_scope_fields_invalid_date(self):
         """Test that an invalid date is not valid"""
@@ -53,7 +61,7 @@ class TestAnalysisService(TestCase):
             self.service.validate_scope_fields(scope, [self.test_sector])
         self.assertEqual(str(context.exception), "Start date must be before end date")
 
-    #def test_validate_scope_fields_no_data(self):
+    # def test_validate_scope_fields_no_data(self):
     #    """Tests that a scope with no data is invalid"""
     #    scope = {}
     #    with self.assertRaises(BadRequestException) as context:
@@ -75,10 +83,11 @@ class TestAnalysisService(TestCase):
         administrative_divisions = self.service.get_administrative_divisions(
             parent_p_code=None
         )
+        administrative_division_to = AdministrativeDivisionTO.from_model(
+            self.test_administrative_division_level_0
+        )
         self.assertEqual(
-            AdministrativeDivisionSerializer(
-                self.test_administrative_division_level_0
-            ).data,
+            AdministrativeDivisionSerializer(administrative_division_to).data,
             administrative_divisions[0],
         )
 
@@ -90,11 +99,14 @@ class TestAnalysisService(TestCase):
             parent_p_code=self.test_administrative_division_level_0,
             admin_level=1,
         )
+        administrative_division_level_1_to = AdministrativeDivisionTO.from_model(
+            administrative_division_level_1
+        )
         administrative_divisions = self.service.get_administrative_divisions(
             parent_p_code=self.test_administrative_division_level_0.p_code
         )
         self.assertEqual(
-            AdministrativeDivisionSerializer(administrative_division_level_1).data,
+            AdministrativeDivisionSerializer(administrative_division_level_1_to).data,
             administrative_divisions[0],
         )
 

@@ -19,4 +19,5 @@ class BaseTO(ABC):
         return [self.from_model(model) for model in models]
 
     def to_dict(self) -> Dict:
+        """Return a dict of the object"""
         return asdict(self)
