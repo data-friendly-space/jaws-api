@@ -4,6 +4,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
+from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
 
 
@@ -162,9 +163,18 @@ def add_steps(apps, schema_editor):
     for step in substeps:
         AnalysisStep.objects.create(**step)
 
+    existing_analyses = Analysis.objects.all()
+    mandatory_steps = AnalysisStep.objects.filter(
+        models.Q(step_parent__isnull=True, mandatory=True) |
+        models.Q(step_parent__mandatory=True, mandatory=True))
+    for analysis in existing_analyses:
+        analysis.analysis_steps.set(mandatory_steps)
 
 def remove_steps(apps, schema_editor):
     """Remove the initial steps"""
+    existing_analyses = Analysis.objects.all()
+    for analysis in existing_analyses:
+        analysis.analysis_steps.clear()
     AnalysisStep.objects.all().delete()  # noqa: F821
 
 
@@ -176,6 +186,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE',
+                      reverse_sql=migrations.RunSQL.noop),
         migrations.CreateModel(
             name='AnalysisStep',
             fields=[
@@ -196,5 +208,7 @@ class Migration(migrations.Migration):
             name='analysis_steps',
             field=models.ManyToManyField(to='analysis.analysisstep'),
         ),
-        migrations.RunPython(add_steps, remove_steps)
+        migrations.RunPython(add_steps, remove_steps),
+        migrations.RunSQL(migrations.RunSQL.noop,
+                      reverse_sql='SET CONSTRAINTS ALL IMMEDIATE')
     ]
