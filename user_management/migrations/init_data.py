@@ -114,6 +114,9 @@ def create_roles_and_permissions(apps, schema_editor):
 
 def undo_roles(apps, schema_editor):
     Role.objects.all().delete()
+    Permission.objects.all().delete()
+    Position.objects.all().delete()
+    Affiliation.objects.all().delete()
 
 
 class Migration(migrations.Migration):
