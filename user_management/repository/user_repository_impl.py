@@ -7,6 +7,13 @@ from user_management.models import User
 
 
 class UserRepositoryImpl(UserRepository):
+    """Contains the database access for user model"""
+
+    def get_user_by_filters(self, **kwargs):
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        users_found = User.objects.filter(**filters).first()
+        return UserTO.from_model(users_found)
+
     def sign_up(self, name, lastname, email, password):
         return User.objects.create(
             lastname=lastname,
@@ -20,29 +27,20 @@ class UserRepositoryImpl(UserRepository):
         return UserTO.from_model(user)
 
     def get_all(self, query_options: QueryOptions):
-        """
-        Retrieve all users from the database.
-        """
         users_query = User.objects.all()
-        if not users_query or not users_query.exists() or len(users_query) == 0:
-            # TODO: Raise NotFoundException
-            return []
-        users = query_options.filter_and_exec_queryset(users_query)
-        return UserTO.fromModels(users)
+        exclude_fields = ["password"]
+        users = query_options.filter_and_exec_queryset(
+            users_query, model=User, exclude_fields=exclude_fields
+        )
+        return UserTO.from_models(users)
 
     def get_by_id(self, obj_id):
-        """
-        Retrieve a single user by ID.
-        """
         try:
             return User.objects.get(id=obj_id)
         except User.DoesNotExist:
             return None
 
     def delete_by_id(self, obj_id):
-        """
-        Delete a user by ID.
-        """
         try:
             user = User.objects.get(id=obj_id)
             user.delete()
@@ -51,9 +49,6 @@ class UserRepositoryImpl(UserRepository):
             return False
 
     def update(self, obj_id, data):
-        """
-        Update a user by ID.
-        """
         try:
             user = User.objects.get(id=obj_id)
             for field, value in data.items():

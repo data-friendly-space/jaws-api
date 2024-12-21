@@ -1,9 +1,9 @@
-'''This module contains the ui configuration model'''
+"""This module contains the ui configuration model"""
 from django.db import models
 
 
 class UiConfiguration(models.Model):
-    '''Ui configuration module'''
+    """Ui configuration module"""
     color = models.CharField(max_length=40)
 
     def __init__(self, *args, **kwargs):

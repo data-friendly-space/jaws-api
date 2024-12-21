@@ -1,12 +1,13 @@
-'''This module contains the query options'''
+"""This module contains the query options"""
 import ast
+from typing import List, Optional, Type
 from django.core.paginator import Paginator
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Model
 from rest_framework import serializers
 
 
 class QueryOptions(serializers.Serializer):
-    '''Class for handling the querying, ordering and pagination'''
+    """Class for handling the querying, ordering and pagination"""
     page_number = serializers.IntegerField(required=False)
     page_size = serializers.IntegerField(required=False)
     search_term = serializers.CharField(required=False)
@@ -29,7 +30,7 @@ class QueryOptions(serializers.Serializer):
         self.order_by = order_by
 
     def to_dict(self):
-        '''Return a dict of the query options'''
+        """Return a dict of the query options"""
         return {
             'page_number': self.page_number,
             'page_size': self.page_size,
@@ -40,7 +41,7 @@ class QueryOptions(serializers.Serializer):
 
     @classmethod
     def from_dict(cls, data):
-        '''Creates a QueryOption from a dict'''
+        """Creates a QueryOption from a dict"""
         return cls(
             page_number=data.get('page_number'),
             page_size=data.get('page_size'),
@@ -51,7 +52,7 @@ class QueryOptions(serializers.Serializer):
 
     @classmethod
     def from_request(cls, request):
-        '''Creates a query option from a request'''
+        """Creates a query option from a request"""
         order_by = request.query_params.get('order_by')
         if order_by:
             order_by = ast.literal_eval(order_by)
@@ -60,14 +61,34 @@ class QueryOptions(serializers.Serializer):
             page_number=request.query_params.get('page_number'),
             page_size=request.query_params.get('page_size'),
             search_term=request.query_params.get('search_term'),
-            search_fields=request.query_params.getlist('search_fields'),
             order_by=order_by
         )
 
-    def filter_and_exec_queryset(self, queryset: QuerySet) -> list:
-        '''Filter, order and paginate the response'''
+    def get_queryable_fields(self, model: Type[Model]) -> List[str]:
+        """
+        Get fields of the model that can be queried (non-relational fields).
+        """
+        return [
+            field.name
+            for field in model._meta.get_fields(include_parents=True)
+            if not (field.is_relation or field.many_to_one or field.many_to_many)
+        ]
+
+    def filter_and_exec_queryset(
+            self,
+            queryset: QuerySet,
+            model: Type[Model],
+            exclude_fields: Optional[List[str]] = None) -> list:
+        """Filter, order and paginate the response"""
         if not queryset:
             return list()
+
+        self.search_fields = self.get_queryable_fields(model)
+
+        if exclude_fields:
+            self.search_fields = [
+                field for field in self.search_fields if field not in exclude_fields
+            ]
 
         if self.search_term and self.search_fields:
             search_filter = Q()

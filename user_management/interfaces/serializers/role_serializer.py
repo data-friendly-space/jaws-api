@@ -1,9 +1,16 @@
+"""This module contains the role serializer"""
 from rest_framework import serializers
 
-from user_management.models import UiConfiguration
+
+class PermissionSerializer(serializers.Serializer):
+    """Serializer for the Permission model."""
+    id = serializers.ReadOnlyField()
+    role = serializers.ReadOnlyField()
+    type = serializers.ReadOnlyField()
 
 
-class UiConfigurationTO(serializers.ModelSerializer):
-    class Meta:
-        model = UiConfiguration
-        fields = ['color']
+class RoleSerializer(serializers.Serializer):
+    """Serializer for the Role model."""
+    id = serializers.ReadOnlyField()
+    role = serializers.ReadOnlyField()
+    permissions = PermissionSerializer(many=True, read_only=True)

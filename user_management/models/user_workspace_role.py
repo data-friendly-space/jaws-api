@@ -2,9 +2,9 @@ from django.db import models
 
 
 class UserWorkspaceRole(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    user = models.ForeignKey('user_management.User', on_delete=models.CASCADE)
     workspace = models.ForeignKey('user_management.Workspace', on_delete=models.CASCADE)
-    role = models.ForeignKey('Role', on_delete=models.CASCADE)
+    role = models.ForeignKey('user_management.Role', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('user', 'workspace')
