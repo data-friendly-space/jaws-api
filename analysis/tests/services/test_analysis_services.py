@@ -36,13 +36,10 @@ class TestAnalysisService(TestCase):
         self.test_disaggregation = Disaggregation.objects.create(
             id=1, name="Disaggregation test"
         )
-        self.test_administrative_division_level_0 = (
-            AdministrativeDivision.objects.create(
-                p_code="test", name="Test", admin_level=0
-            )
+        self.test_administrative_division_level_0 = AdministrativeDivision.objects.create(
+            p_code="test", name="Test", admin_level=0
         )
         self.test_analysis = Analysis.objects.create(
-            id=1,
             title="TestAnalysis1",
             workspace_id=self.workspace.id,
             end_date="2024-12-17",

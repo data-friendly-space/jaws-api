@@ -25,7 +25,6 @@ class AnalysisTestCase(TestCase):
     def test_get_analysis_by_id(self):
         """Test if get analysis by id work as expected"""
         Analysis.objects.create(
-            id=1,
             title="test analysis",
             objectives="test",
             end_date="2024-11-20",
