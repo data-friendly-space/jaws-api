@@ -186,7 +186,7 @@ class AnalysisServiceImpl(AnalysisService):
         if not step_ids or len(step_ids) <= 0:
             raise BadRequestException("Step ids required")
         steps = self.repository.get_steps_by_ids(step_ids)
-        if len(step_ids) != len(steps):
+        if not steps or len(step_ids) != len(steps):
             raise BadRequestException("All the steps should be valid")
         mandatory_step_ids = self.get_mandatory_step_ids()
         if not set(mandatory_step_ids).issubset(step_ids):
@@ -198,7 +198,7 @@ class AnalysisServiceImpl(AnalysisService):
         steps = self.get_steps_uc.exec(self.repository)
         dict_steps = [step.to_dict() for step in steps]
         return dict_steps
-    
+
     def get_mandatory_step_ids(self):
         steps = self.get_steps_uc.exec(self.repository)
         mandatory_steps = [step.id for step in steps if step.mandatory and not step.parentStepId]
