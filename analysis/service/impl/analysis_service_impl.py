@@ -182,9 +182,7 @@ class AnalysisServiceImpl(AnalysisService):
 
 
     def update_steps(self, analysis_id: int, step_ids: List[int]):
-        analysis = self.get_analysis_by_id(analysis_id)
-        if not analysis:
-            raise NotFoundException("Analysis not found")
+        self.get_analysis_by_id(analysis_id) #if analysis doesn't exist raises 404
         if not step_ids or len(step_ids) <= 0:
             raise BadRequestException("Step ids required")
         steps = self.repository.get_steps_by_ids(step_ids)
