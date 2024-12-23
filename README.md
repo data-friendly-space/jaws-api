@@ -53,7 +53,6 @@ FOLLOW THE ORDER,
 Run the following command to generate migration files for the models in your application.
 After each generation execute the migrations to create the necessary tables in the database:
 
-    python manage.py makemigrations
     python manage.py migrate
 
 Django will now map the models in your project to the PostgreSQL database and create the corresponding tables.
