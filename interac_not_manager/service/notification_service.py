@@ -2,7 +2,6 @@
 from abc import ABC, abstractmethod
 
 from common.helpers.query_options import QueryOptions
-from user_management.models import User
 
 
 class NotificationService(ABC):
@@ -10,5 +9,10 @@ class NotificationService(ABC):
     @abstractmethod
     def get_user_notifications(self, query_options: QueryOptions, user_id: str):
         """Retrieves the notifications"""
+        pass
+
+    @abstractmethod
+    def delete_notification(self, notification_id: int):
+        """Delete the notification by ID"""
         pass
 
