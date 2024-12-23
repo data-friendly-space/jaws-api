@@ -1,9 +1,12 @@
 """This module contains the implementation of analysis repository"""
+from typing import List
 from analysis.contract.repository.analysis_repository import AnalysisRepository
 from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from analysis.models.analysis_step import AnalysisStep
 from common.helpers.query_options import QueryOptions
 
 
@@ -95,3 +98,21 @@ class AnalysisRepositoryImpl(AnalysisRepository):
     def remove_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
         """Add a new administrative division into a analysis"""
         analysis.locations.remove(administrative_division)
+
+    def get_steps(self):
+        """Return the analysis steps"""
+        steps = AnalysisStep.objects.all()
+        steps_to = AnalysisStepTO.from_models(steps)
+        return steps_to
+    
+    def get_steps_by_ids(self, ids):
+        """Return analysis steps based on a list of ids"""
+        steps = AnalysisStep.objects.filter(id__in=ids)
+        steps_to = AnalysisStepTO.from_models(steps)
+        return steps_to
+
+    def update_analysis_steps(self, analysis_id: int, step_ids: List[int]):
+        """Update the analysis steps"""
+        analysis = Analysis.objects.filter(id=analysis_id).first()
+        steps = AnalysisStep.objects.filter(id__in=step_ids)
+        analysis.analysis_steps.set(steps)

@@ -1,7 +1,8 @@
 """This module contains the analysis model"""
-from django.db import models
+from django.db import models, transaction
 
 from analysis.models.administrative_division import AdministrativeDivision
+from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 
@@ -23,6 +24,18 @@ class Analysis(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_change = models.DateTimeField(auto_now=True)
     locations = models.ManyToManyField(AdministrativeDivision)
+    analysis_steps = models.ManyToManyField(AnalysisStep)
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+
+        if is_new:
+            with transaction.atomic():
+                super().save(*args, **kwargs)
+                mandatory_steps = AnalysisStep.objects.filter(
+                    models.Q(step_parent__isnull=True, mandatory=True) |
+                    models.Q(step_parent__mandatory=True, mandatory=True))
+                self.analysis_steps.set(mandatory_steps)
 
     class Meta:
         """Table metadata"""
