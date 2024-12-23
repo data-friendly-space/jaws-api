@@ -9,6 +9,7 @@ This guide explains how to create a PostgreSQL database, configure it for use in
 ### **Prerequisites**
 - PostgreSQL must be installed and running on your system.
 - Access to the PostgreSQL command-line tool (`psql`).
+- Create a virtual environment using `python3 -m venv myenv>`
 
 ### **Commands to Create the Database**
 1. Open a terminal and log in to `psql` with a superuser account:
