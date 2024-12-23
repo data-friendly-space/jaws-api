@@ -21,19 +21,6 @@ This guide explains how to create a PostgreSQL database, configure it for use in
 ### **Step 2: Configure Django to Use the Database**
 Open your Django project's settings.py file.
 
-Update the DATABASES configuration to include the details of the PostgreSQL database:
-    
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'USER',//your postgre database
-            'USER': 'postgre',your postgre user
-            'PASSWORD': 'root',your postgre password
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
-
 Add this configuration to a .env file like this:
    
    DATABASE_HOST=localhost
