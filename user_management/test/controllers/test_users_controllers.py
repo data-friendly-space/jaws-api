@@ -66,6 +66,25 @@ class InviteUserOrgTestCase(TestCase):
         self.assertEqual(response.data['status'], status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Invite user to organization successfully')
 
+    def test_invite_user_to_org_bad_request(self):
+        """Test invite user to org request not valid"""
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertIsNotNone(response.data['errors'])
+
+    def test_invite_user_to_org_user_not_found(self):
+        """Test invite user to org request not valid"""
+        response = self.client.post(self.url, {
+            "email": "notfound@test.com",
+            "roleId": self.role[0].id,
+            "id": self.org.id
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], "User not found")
+
 
 class InviteUserAnalysisTestCase(TestCase):
 
@@ -79,3 +98,42 @@ class InviteUserAnalysisTestCase(TestCase):
         self.role = Role.objects.get_or_create(role="FACILITATOR")
         self.analysis = Analysis.objects.create(title="TestAnalysis1", workspace_id=self.workspace.id,
                                                 end_date='2024-12-17', creator_id=self.user.id)
+
+    def test_invite_user_to_analysis(self):
+        """Test invite user to analysis """
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+            "id": self.analysis.id
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Invite user to organization successfully')
+
+    def test_invite_user_to_analysis_bad_request(self):
+        """Test invite user to analysis request not valid"""
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertIsNotNone(response.data['errors'])
+
+    def test_invite_user_to_analysis_user_not_found(self):
+        """Test invite user to analysis request not valid"""
+        response = self.client.post(self.url, {
+            "email": "notfound@test.com",
+            "roleId": self.role[0].id,
+            "id": self.analysis.id
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], "User not found")
+
+    def test_invite_user_to_analysis_analysis_not_found(self):
+        """Test invite user to analysis request not valid"""
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+            "id": 2
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], "Analysis not found")

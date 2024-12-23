@@ -15,6 +15,7 @@ from common.use_case.get_all_uc import GetAllUC as GetUsersUC
 from interac_not_manager.repository.notification_repository_impl import NotificationRepositoryImpl
 from interac_not_manager.service.utils.messages import ORGANIZATION_INVITE_MESSAGE, ANALYSIS_INVITE_MESSAGE
 from interac_not_manager.usecases.send_notification_to_user_uc import SendNotificationToUserUC
+from user_management.contract.io.invite_user_analysis_in import InviteUserAnalysisIn
 from user_management.contract.io.invite_user_in import InviteUserIn
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
@@ -57,9 +58,9 @@ class UsersServiceImpl(UsersService):
         user_org_role = self.invite_user_to_org_uc.exec(OrganizationRepositoryImpl(), user.id, data['id'],
                                                         data['role_id'])
         self.notify_user_uc.exec(NotificationRepositoryImpl(), {"user_id": user.id,
-                                                                   "message": ORGANIZATION_INVITE_MESSAGE + " " + user_org_role.organization.name})
+                                                                "message": ORGANIZATION_INVITE_MESSAGE + " " + user_org_role.organization.name})
 
-    def invite_user_to_analysis(self, invite_user_in: InviteUserIn):
+    def invite_user_to_analysis(self, invite_user_in: InviteUserAnalysisIn):
         """Business logic to invite user to an analysis"""
         if not invite_user_in.is_valid():
             raise BadRequestException("Invitation not valid", invite_user_in.errors)
@@ -67,13 +68,13 @@ class UsersServiceImpl(UsersService):
         user = self.get_user_by_filters.exec(UserRepositoryImpl(), email=data['email'])
         if user is None:
             raise NotFoundException("User not found")
-        analysis = self.get_analysis_uc.exec(AnalysisRepositoryImpl(), None, analysis_id=data['id'])
-        if analysis is None:
+        analysis = self.get_analysis_uc.exec(AnalysisRepositoryImpl(), None, id=data['id'])
+        if analysis is None or len(analysis) != 1:
             raise NotFoundException("Analysis not found")
         self.invite_user_to_analysis_uc.exec(AnalysisRepositoryImpl(), user.id, data['id'], data['role_id'])
-        self.add_user_to_workspace_uc.exec(WorkspaceRepositoryImpl(), user.id, analysis.workspace.id, None)
-        self.notify_user_uc.exec(NotificationRepositoryImpl,
-                                 {"user_id": user.id, "message": ANALYSIS_INVITE_MESSAGE + " " + analysis.name})
+        self.add_user_to_workspace_uc.exec(WorkspaceRepositoryImpl(), user.id, analysis[0].workspaceId, None)
+        self.notify_user_uc.exec(NotificationRepositoryImpl(),
+                                 {"user_id": user.id, "message": ANALYSIS_INVITE_MESSAGE + " " + analysis[0].title})
 
     def get_users(self, query_options: QueryOptions):
         """Business logic to retrieve all users"""

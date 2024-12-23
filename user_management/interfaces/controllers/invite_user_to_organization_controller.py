@@ -14,6 +14,6 @@ def invite_user_to_organization_controller(request):
     """
     service = UsersServiceImpl()
     invite_user_organization_in = InviteUserIn(data=to_snake_case_data(request.data))
-    return api_response_success("Organization retrieved successfully",
+    return api_response_success("Invite user to organization successfully",
                                 service.invite_user_to_org(invite_user_organization_in),
                                 status.HTTP_200_OK)

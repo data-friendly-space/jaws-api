@@ -1,4 +1,5 @@
 """This module contains the disaggregation Transfer Object"""
+import datetime
 from dataclasses import dataclass
 
 from interac_not_manager.models.notification import Notification
@@ -8,12 +9,12 @@ from common.contract.to.base_to import BaseTO
 @dataclass
 class NotificationTO(BaseTO):
     """Notification TO"""
-    id: str
-    userId = str
-    message = str
-    createdAt = str
-    read = bool
-    type = str
+    id: int
+    userId: str
+    message: str
+    createdAt: datetime
+    read: bool
+    type: str
 
     @classmethod
     def from_model(cls, instance: Notification):
@@ -22,7 +23,7 @@ class NotificationTO(BaseTO):
             return None
         return cls(
             id=instance.id,
-            userId=instance.user_id,
+            userId=str(instance.user_id),
             message=instance.message,
             createdAt=instance.created_at,
             read=instance.read,

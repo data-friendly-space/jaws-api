@@ -1,6 +1,7 @@
 """This module contains the user service"""
 from abc import ABC, abstractmethod
 
+from user_management.contract.io.invite_user_analysis_in import InviteUserAnalysisIn
 from user_management.contract.io.invite_user_in import InviteUserIn
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
@@ -36,6 +37,6 @@ class UsersService(ABC):
         pass
 
     @abstractmethod
-    def invite_user_to_analysis(self, invite_user_in: InviteUserIn):
+    def invite_user_to_analysis(self, invite_user_in: InviteUserAnalysisIn):
         """Invite user to an analysis"""
         pass
