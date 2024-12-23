@@ -54,7 +54,6 @@ class OrganizationServiceImpl(OrganizationService):
                                                                              user_id=user_id)
         return [organization_user.to_dict() for organization_user in organization_users]
 
-
     def get_available_organizations_by_user_id(self, user_id: str):
         """Get available organizations by user_id"""
         user_organizations = self.get_available_organizations_by_user_id_uc.exec(self.organization_repository,

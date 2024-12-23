@@ -36,11 +36,6 @@ class User(AbstractBaseUser):
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True)
     affiliation = models.ForeignKey(Affiliation, on_delete=models.SET_NULL, null=True)
     ui_configuration = models.OneToOneField(UiConfiguration, on_delete=models.SET_NULL, null=True)
-    workspaces = models.ManyToManyField(
-        Workspace,
-        through=UserWorkspaceRole,
-        related_name='users'
-    )
     is_active = models.BooleanField(default=True)
     objects = CustomUserManager()
 

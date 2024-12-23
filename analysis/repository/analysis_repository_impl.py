@@ -5,6 +5,8 @@ from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.helpers.query_options import QueryOptions
+from user_management.contract.to.user_analysis_role_to import UserAnalysisRoleTO
+from user_management.models.user_analysis_role import UserAnalysisRole
 
 
 class AnalysisRepositoryImpl(AnalysisRepository):
@@ -95,3 +97,8 @@ class AnalysisRepositoryImpl(AnalysisRepository):
     def remove_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
         """Add a new administrative division into a analysis"""
         analysis.locations.remove(administrative_division)
+
+    def invite_user_to_analysis(self, user_id: str, analysis_id: str, role_id: str):
+        """Invite user to analysis assigning role"""
+        user_analysis_role = UserAnalysisRole.objects.create(analysis_id=analysis_id, role_id=role_id, user_id=user_id)
+        return UserAnalysisRoleTO.from_model(user_analysis_role)

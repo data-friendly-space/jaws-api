@@ -11,7 +11,8 @@ class OrganizationRepository(BaseRepository, ABC):
     """Organization repository"""
 
     @abstractmethod
-    def get_user_organizations_by_filters(self, query_options: QueryOptions, **kwargs) -> list[UserOrganizationRoleTO | None]:
+    def get_user_organizations_by_filters(self, query_options: QueryOptions, **kwargs) -> list[
+        UserOrganizationRoleTO | None]:
         """Retrieve organization with users and its respective role by filters"""
         pass
 
@@ -19,11 +20,15 @@ class OrganizationRepository(BaseRepository, ABC):
     def get_organizations_users_by_user_id(self, query_options: QueryOptions, **kwargs) -> list[UserOrganizationTO]:
         pass
 
-
     @abstractmethod
     def get_available_organizations_by_user_id(self, user_id: str):
         pass
 
     @abstractmethod
     def get_users_from_organization_by_role(self, organization_id: str, role_id: str):
+        pass
+
+    @abstractmethod
+    def invite_user_to_org(self, user_id: str, organization_id: str, role_id: str):
+        '''Invite user to organization'''
         pass

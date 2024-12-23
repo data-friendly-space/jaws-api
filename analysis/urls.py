@@ -12,9 +12,6 @@ from analysis.interfaces.controllers.get_administrative_division_controller impo
 from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
-from analysis.interfaces.controllers.get_analysis_controller import (
-    get_analysis_controller,
-)
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
     put_analysis_scope_controller,
 )

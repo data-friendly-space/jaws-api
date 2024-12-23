@@ -9,7 +9,7 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 
 
 @dataclass
-class UserAnalysisTO:
+class UserAnalysisRoleTO:
     user: UserTO
     analysis: AnalysisTO
     role: RoleTO

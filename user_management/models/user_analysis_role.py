@@ -3,7 +3,7 @@ from django.db import models
 
 class UserAnalysisRole(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE)
-    analysis = models.ForeignKey('user_management.Analysis', on_delete=models.CASCADE)
+    analysis = models.ForeignKey('analysis.Analysis', on_delete=models.CASCADE)
     role = models.ForeignKey('Role', on_delete=models.CASCADE)
 
     class Meta:
@@ -13,4 +13,4 @@ class UserAnalysisRole(models.Model):
         return f"{self.user} - {self.role} in {self.analysis}"
 
     class Meta:
-        db_table = 'workspace_role'
+        db_table = 'analysis_role'

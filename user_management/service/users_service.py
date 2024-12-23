@@ -1,6 +1,7 @@
 """This module contains the user service"""
 from abc import ABC, abstractmethod
 
+from user_management.contract.io.invite_user_in import InviteUserIn
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
 from common.helpers.query_options import QueryOptions
@@ -28,3 +29,13 @@ class UsersService(ABC):
     @abstractmethod
     def verify_token(self, auth_header):
         """Validate the user's token"""
+
+    @abstractmethod
+    def invite_user_to_org(self, invite_user_in: InviteUserIn):
+        """Invite user to an organization"""
+        pass
+
+    @abstractmethod
+    def invite_user_to_analysis(self, invite_user_in: InviteUserIn):
+        """Invite user to an analysis"""
+        pass

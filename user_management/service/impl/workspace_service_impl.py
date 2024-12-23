@@ -4,7 +4,6 @@ from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
 from common.use_case.get_all_uc import GetAllUC
 from user_management.contract.io.create_workspace_in import CreateWorkspaceIn
-from user_management.contract.io.invite_user_workspace_in import InviteUserWorkspaceIn
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
 from user_management.repository.user_repository_impl import UserRepositoryImpl
 from user_management.repository.workspace_repository_impl import WorkspaceRepositoryImpl
@@ -14,7 +13,6 @@ from user_management.usecases.create_workspace_uc import CreateWorkspaceUC
 from user_management.usecases.get_role_by_role_uc import GetRoleByRoleUC
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 from user_management.usecases.get_user_workspaces_by_filters_uc import GetUserWorkspacesByFiltersUC
-from user_management.usecases.invite_user_to_workspace_uc import InviteUserToWorkspaceUC
 
 
 class WorkspaceServiceImpl(WorkspaceService):
@@ -26,7 +24,6 @@ class WorkspaceServiceImpl(WorkspaceService):
         self.get_user_by_filter_uc = GetUserByFiltersUC.get_instance()
         self.get_role_by_role_uc = GetRoleByRoleUC.get_instance()
         self.get_user_workspaces_by_filter_uc = GetUserWorkspacesByFiltersUC.get_instance()
-        self.invite_user_to_workspace_uc = InviteUserToWorkspaceUC.get_instance()
         self.workspace_repository = WorkspaceRepositoryImpl()
         self.user_repository = UserRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
