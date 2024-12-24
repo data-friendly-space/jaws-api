@@ -49,13 +49,13 @@ class WorkspaceServiceImpl(WorkspaceService):
         data['facilitator_id'] = facilitator.id
         created_workspace = self.create_workspace_uc.exec(self.workspace_repository, data)
         role = self.get_role_by_role_uc.exec(self.role_repository, role="FACILITATOR")
-        return self.add_user_to_workspace_uc.exec(self.workspace_repository, creator_id, created_workspace.id,
-                                                  role.id).to_dict()
+        user_workspace_role = self.add_user_to_workspace_uc.exec(self.workspace_repository, creator_id,
+                                                               created_workspace.id,
+                                                               role.id)
+        return user_workspace_role.to_dict()
 
     def get_workspaces_by_user_id(self, user_id: str, query_options: QueryOptions):
         """Returns a list of workspaces with user role based on user id """
         workspaces = self.get_user_workspaces_by_filter_uc.exec(self.workspace_repository, query_options,
                                                                 user_id=user_id)
-        if not workspaces:
-            raise NotFoundException("Workspaces not found")
         return [workspace.to_dict() for workspace in workspaces]

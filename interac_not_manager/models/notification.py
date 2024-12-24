@@ -14,3 +14,6 @@ class Notification(models.Model):
     def __str__(self):
         """Table's metadata"""
         return f"Notification for {self.user.username} - {self.type}"
+
+    class Meta:
+        db_table = 'notification'

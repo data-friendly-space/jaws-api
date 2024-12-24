@@ -12,7 +12,6 @@ class NotificationServiceImpl(NotificationService):
 
     def __init__(self):
         self.get_notifications_uc = GetNotificationsUC.get_instance()
-        self.send_notifications_uc = GetNotificationsUC.get_instance()
         self.delete_notification_uc = DeleteNotificationUC.get_instance()
         self.repository = NotificationRepositoryImpl()
 

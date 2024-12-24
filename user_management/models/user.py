@@ -7,8 +7,6 @@ from django.db import models
 from user_management.models.affiliation import Affiliation
 from user_management.models.position import Position
 from user_management.models.ui_configuration import UiConfiguration
-from user_management.models.user_workspace_role import UserWorkspaceRole
-from user_management.models.workspace import Workspace
 
 
 class CustomUserManager(BaseUserManager):

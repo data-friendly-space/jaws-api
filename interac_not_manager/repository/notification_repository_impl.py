@@ -34,6 +34,5 @@ class NotificationRepositoryImpl(NotificationRepository):
         """Retrieves all notifications"""
         filters = {key: value for key, value in kwargs.items() if value is not None}
         notifications = Notification.objects.filter(**filters)
-        if query_options:
-            notifications = query_options.filter_and_exec_queryset(notifications, model=Notification)
+
         return [] if not notifications or len(notifications) == 0 else NotificationTO.from_models(notifications)

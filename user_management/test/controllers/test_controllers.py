@@ -1,4 +1,5 @@
 """Contains the tests for the controllers"""
+import urllib
 from datetime import timedelta
 from unittest.mock import MagicMock
 from urllib.parse import urlencode
@@ -7,7 +8,6 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-import urllib
 
 from common.test_utils import create_logged_in_client
 from user_management.models.user import User
@@ -125,6 +125,7 @@ class UserTestCase(TestCase):
         self.assertEqual(response.data["status"], status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["message"], "Refresh token is required.")
 
+
 class SignInWithAccessToken(TestCase):
     """Test the controller for signing in with an access token"""
 
@@ -138,11 +139,10 @@ class SignInWithAccessToken(TestCase):
         )
         self.url = reverse("sign_in_with_access_token")
 
-
     def test_sign_in_with_valid_token(self):
         """Test that signing in with a valid access token works"""
         valid_token = AccessToken.for_user(self.user)
-        token_encoded =urllib.parse.quote(str(valid_token))
+        token_encoded = urllib.parse.quote(str(valid_token))
         url = f"{self.url}?access_token={token_encoded}"
         response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
@@ -151,12 +151,11 @@ class SignInWithAccessToken(TestCase):
     def test_sign_in_with_invalid_token(self):
         """Test that signing in with an invalid token fails"""
         invalid_token = "asd"
-        token_encoded =urllib.parse.quote(str(invalid_token))
+        token_encoded = urllib.parse.quote(str(invalid_token))
         url = f"{self.url}?access_token={token_encoded}"
         response = self.client.post(url)
         print(response.data, flush=True)
         self.assertIn(response.status_code, [401, 403])
-
 
     def test_sign_in_missing_token(self):
         """Test that signing in without an access token fails"""
