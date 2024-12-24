@@ -20,14 +20,14 @@ class AnalysisTO(BaseTO):
     objectives: str
     createdOn: datetime | None
     endDate: date | None
-    sectors: Optional[dict]
+    sectors: Optional[list[SectorTO]]
     workspaceId: str | None
     lastChange: datetime | None
     disaggregations: Optional[dict] = None,
     startDate: date | None = None,
     creator: Optional[str] = None,
-    locations: Optional[str] = None
-    analysisSteps: Optional[str] = None
+    locations: Optional[list[AdministrativeDivisionTO]] = None
+    analysisSteps: Optional[list[AnalysisStepTO]] = None
 
 
     @classmethod

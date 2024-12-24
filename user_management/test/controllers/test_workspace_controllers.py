@@ -1,10 +1,6 @@
-import uuid
-from unittest.mock import patch, MagicMock
-
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from analysis.models.analysis import Analysis
 from common.test_utils import create_logged_in_client
@@ -15,11 +11,7 @@ from user_management.models import Organization, Role, Workspace
 
 
 class WorkspaceTestCase(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        pass
-
+    """Test Workspace Controllers"""
     def setUp(self):
         self.client, self.user = create_logged_in_client()
         self.org = Organization.objects.create(name="TestOrganization5")

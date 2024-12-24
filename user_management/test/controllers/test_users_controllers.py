@@ -1,10 +1,6 @@
-import uuid
-from unittest.mock import patch, MagicMock
-
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from analysis.models.analysis import Analysis
 from common.test_utils import create_logged_in_client
@@ -14,11 +10,8 @@ from user_management.models import Organization, Role, Workspace, UserWorkspaceR
 # Create your tests here.
 
 
-class WorkspaceTestCase(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        pass
+class UserTestCase(TestCase):
+    """UserTestCase"""
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
@@ -53,3 +46,94 @@ class WorkspaceTestCase(TestCase):
 
         self.assertEqual(response.data['status'], status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Organizations retrieved successfully')
+
+
+class InviteUserOrgTestCase(TestCase):
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.org = Organization.objects.create(name="TestOrganization1")
+        self.url = reverse("invite_user_to_organization")
+        self.role = Role.objects.get_or_create(role="ADMIN")
+        self.invite_user_in = {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+            "id": str(self.org.id)
+        }
+
+    def test_invite_user_to_organization(self):
+        response = self.client.post(self.url, self.invite_user_in, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Invite user to organization successfully')
+
+    def test_invite_user_to_org_bad_request(self):
+        """Test invite user to org request not valid"""
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertIsNotNone(response.data['errors'])
+
+    def test_invite_user_to_org_user_not_found(self):
+        """Test invite user to org request not valid"""
+        response = self.client.post(self.url, {
+            "email": "notfound@test.com",
+            "roleId": self.role[0].id,
+            "id": self.org.id
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], "User not found")
+
+
+class InviteUserAnalysisTestCase(TestCase):
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.org = Organization.objects.create(name="TestOrganization1")
+        self.url = reverse("invite_user_to_analysis")
+        self.workspace = Workspace.objects.create(title="TestWorkspace4", organization=self.org,
+                                                  facilitator_id=self.user.id, creator_id=self.user.id)
+        self.role = Role.objects.get_or_create(role="ADMIN")
+        self.role = Role.objects.get_or_create(role="FACILITATOR")
+        self.analysis = Analysis.objects.create(title="TestAnalysis1", workspace_id=self.workspace.id,
+                                                end_date='2024-12-17', creator_id=self.user.id)
+
+    def test_invite_user_to_analysis(self):
+        """Test invite user to analysis """
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+            "id": self.analysis.id
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Invite user to organization successfully')
+
+    def test_invite_user_to_analysis_bad_request(self):
+        """Test invite user to analysis request not valid"""
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_400_BAD_REQUEST)
+        self.assertIsNotNone(response.data['errors'])
+
+    def test_invite_user_to_analysis_user_not_found(self):
+        """Test invite user to analysis request not valid"""
+        response = self.client.post(self.url, {
+            "email": "notfound@test.com",
+            "roleId": self.role[0].id,
+            "id": self.analysis.id
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], "User not found")
+
+    def test_invite_user_to_analysis_analysis_not_found(self):
+        """Test invite user to analysis request not valid"""
+        response = self.client.post(self.url, {
+            "email": self.user.email,
+            "roleId": self.role[0].id,
+            "id": 2
+        }, content_type="application/json")
+        self.assertEqual(response.data['status'], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], "Analysis not found")

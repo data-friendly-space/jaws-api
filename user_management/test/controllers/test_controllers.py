@@ -1,4 +1,5 @@
 """Contains the tests for the controllers"""
+import urllib
 from datetime import timedelta
 from unittest.mock import MagicMock
 from urllib.parse import urlencode
@@ -7,7 +8,6 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-import urllib
 
 from common.test_utils import create_logged_in_client
 from user_management.models.user import User
@@ -15,9 +15,6 @@ from user_management.models.user import User
 
 class UserTestCase(TestCase):
     """Contains the controller's tests"""
-    @classmethod
-    def setUpTestData(cls):
-        pass
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
@@ -38,23 +35,25 @@ class UserTestCase(TestCase):
         self.url_refresh = reverse("token_refresh")
 
     def test_get_users(self):
+        """ Test get users"""
         response = self.client.get(reverse("get_users"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_sign_up(self):
+        """Test sign up"""
         response = self.client.post(reverse("sign_up"), self.mockUser)
         self.assertEqual(response.data["status"], status.HTTP_201_CREATED)
         self.assertEqual(response.data["message"], "User successfully created")
 
     def test_sign_up_missing_field(self):
-        # Bad request Exception caused by missing value
+        """Bad request Exception caused by missing value"""
         self.mockUser["password"] = ""
         response = self.client.post(reverse("sign_up"), self.mockUser)
         self.assertEqual(response.data["status"], status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["message"], "All fields are mandatory")
 
     def test_sign_up_user_already_exists(self):
-        # Bad request Exception caused by User already exists
+        """Bad request Exception caused by User already exists"""
         self.client.post(reverse("sign_up"), self.mockUser)
         mocked_user = MagicMock()
         mocked_user.email = "test@example.com"
@@ -73,6 +72,7 @@ class UserTestCase(TestCase):
         self.assertEqual(response.data["message"], "User authenticated")
 
     def test_sign_in_bad_credentials(self):
+        """Test sign in with bad credentials"""
         response = self.client.post(
             reverse("sign_in"), {"email": self.user.email, "password": "testpass"}
         )
@@ -80,6 +80,7 @@ class UserTestCase(TestCase):
         self.assertEqual(response.data["message"], "Incorrect email or password")
 
     def test_session_verify_valid_token(self):
+        """ Test session verify valid token"""
         response = self.client.get(
             self.url_session_verify, HTTP_AUTHORIZATION=f"Bearer {self.access_token}"
         )
@@ -89,6 +90,7 @@ class UserTestCase(TestCase):
         self.assertTrue(response.data["payload"]["isAuthenticated"])
 
     def test_session_verify_invalid_token(self):
+        """ Test session verify invalid token"""
         response = self.client.get(
             self.url_session_verify, HTTP_AUTHORIZATION="Bearer invalid.token.here"
         )
@@ -98,6 +100,7 @@ class UserTestCase(TestCase):
         self.assertFalse(response.data["errors"]["is_authenticated"])
 
     def test_refresh_token_valid(self):
+        """ Test refresh token"""
         response = self.client.post(
             self.url_refresh, {"refresh": self.refresh_token}, format="json"
         )
@@ -107,6 +110,7 @@ class UserTestCase(TestCase):
         self.assertIn("jwt_access_token", response.data["payload"])
 
     def test_refresh_token_invalid(self):
+        """ Test refresh token invalid"""
         response = self.client.post(
             self.url_refresh, {"refresh": "invalid.token.here"}, format="json"
         )
@@ -115,10 +119,12 @@ class UserTestCase(TestCase):
         self.assertEqual(response.data["errors"], "Token is invalid or expired")
 
     def test_refresh_token_missing(self):
+        """ Test refresh token invalid"""
         response = self.client.post(self.url_refresh, {"refresh": ""}, format="json")
 
         self.assertEqual(response.data["status"], status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["message"], "Refresh token is required.")
+
 
 class SignInWithAccessToken(TestCase):
     """Test the controller for signing in with an access token"""
@@ -133,11 +139,10 @@ class SignInWithAccessToken(TestCase):
         )
         self.url = reverse("sign_in_with_access_token")
 
-
     def test_sign_in_with_valid_token(self):
         """Test that signing in with a valid access token works"""
         valid_token = AccessToken.for_user(self.user)
-        token_encoded =urllib.parse.quote(str(valid_token))
+        token_encoded = urllib.parse.quote(str(valid_token))
         url = f"{self.url}?access_token={token_encoded}"
         response = self.client.post(url)
         self.assertEqual(response.status_code, 200)
@@ -146,12 +151,11 @@ class SignInWithAccessToken(TestCase):
     def test_sign_in_with_invalid_token(self):
         """Test that signing in with an invalid token fails"""
         invalid_token = "asd"
-        token_encoded =urllib.parse.quote(str(invalid_token))
+        token_encoded = urllib.parse.quote(str(invalid_token))
         url = f"{self.url}?access_token={token_encoded}"
         response = self.client.post(url)
         print(response.data, flush=True)
         self.assertIn(response.status_code, [401, 403])
-
 
     def test_sign_in_missing_token(self):
         """Test that signing in without an access token fails"""

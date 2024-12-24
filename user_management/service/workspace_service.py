@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 
 from common.helpers.query_options import QueryOptions
 from user_management.contract.io.create_workspace_in import CreateWorkspaceIn
-from user_management.contract.io.invite_user_workspace_in import InviteUserWorkspaceIn
 
 
 class WorkspaceService(ABC):
