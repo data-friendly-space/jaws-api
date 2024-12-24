@@ -57,6 +57,7 @@ CUSTOM_APPS = [
     'common',
     'user_management',
     'health_checks',
+    'file_management',
     'analysis',
 ]
 INSTALLED_APPS = [
