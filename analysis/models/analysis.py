@@ -5,6 +5,7 @@ from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
+from file_management.models.dataset import Dataset
 
 
 class Analysis(models.Model):
@@ -25,6 +26,7 @@ class Analysis(models.Model):
     last_change = models.DateTimeField(auto_now=True)
     locations = models.ManyToManyField(AdministrativeDivision)
     analysis_steps = models.ManyToManyField(AnalysisStep)
+    datasets = models.ManyToManyField(Dataset)
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
