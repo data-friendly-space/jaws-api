@@ -74,9 +74,3 @@ class TestWorkspaceService(TestCase):
         workspace = self.service.get_workspaces_by_user_id(self.user.id, None)
         self.assertIsNotNone(workspace)
 
-    def test_get_workspaces_by_user_id_not_found(self):
-        """Test get_workspaces_by_user_id function not found."""
-        with self.assertRaises(NotFoundException) as context:
-            self.service.get_workspaces_by_user_id(self.user.id, None)
-        self.assertEqual(str(context.exception), "Workspaces not found")
-

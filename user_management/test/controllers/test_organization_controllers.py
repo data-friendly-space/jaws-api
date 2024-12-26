@@ -14,19 +14,9 @@ from user_management.models.user_organization_role import UserOrganizationRole
 class OrganizationTestCase(TestCase):
     """OrganizationController test cases"""
 
-    @classmethod
-    def setUpTestData(cls):
-        pass
-
     def setUp(self):
         """OrganizationControllerTestCase.setUpTestData()"""
         self.client, self.user = create_logged_in_client()
-        self.mockUser = {
-            "name": "TestName1",
-            "lastname": "TestLastname1",
-            "email": "test1@test.com",
-            "password": "testpassword1"
-        }
         self.org = Organization.objects.create(name="TestOrganization3")
         self.workspace = Workspace.objects.create(title="TestWorkspace3", organization=self.org,
                                                   facilitator_id=self.user.id, creator_id=self.user.id)

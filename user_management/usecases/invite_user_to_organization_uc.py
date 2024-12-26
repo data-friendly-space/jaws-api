@@ -19,6 +19,6 @@ class InviteUserToOrganizationUC:
             InviteUserToOrganizationUC()
         return InviteUserToOrganizationUC._instance
 
-    def exec(self, repository: OrganizationRepository, data):
+    def exec(self, repository: OrganizationRepository, user_id: str, organization_id: str, role_id: str):
         """Execute the use case"""
-        return repository.invite_user_to_organization(data)
+        return repository.invite_user_to_org(user_id, organization_id, role_id)

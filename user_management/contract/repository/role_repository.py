@@ -11,9 +11,9 @@ class RoleRepository(BaseRepository, ABC):
     @abstractmethod
     def get_roles(self, exclusions):
         """Retrieve all roles"""
-        pass
+        
 
     @abstractmethod
     def get_role_by_role(self, role) -> RoleTO:
         """Retrieve role by role"""
-        pass
+        

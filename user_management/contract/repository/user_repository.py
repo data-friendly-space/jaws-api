@@ -12,14 +12,12 @@ class UserRepository(BaseRepository, ABC):
         """
         Create new user.
         """
-        pass
 
     @abstractmethod
     def get_user_by_email(self, email):
         """
         Retrieve user from the database by email address.
         """
-        pass
 
     @abstractmethod
     def get_user_by_filters(self, **kwargs):
@@ -27,4 +25,3 @@ class UserRepository(BaseRepository, ABC):
            Get users based on dynamic filters.
            Accepts any combination of filter arguments.
            """
-        pass

@@ -59,7 +59,6 @@ class OrganizationRepositoryImpl(OrganizationRepository):
         """Retrieves all organizations"""
         return OrganizationTO.from_models(Organization.objects.all())
 
-
     def get_available_organizations_by_user_id(self, user_id: str):
         organization_users = UserOrganizationRole.objects.filter(user_id=user_id)
         return [OrganizationTO.from_model(organization_user.organization) for organization_user in organization_users]
@@ -67,3 +66,9 @@ class OrganizationRepositoryImpl(OrganizationRepository):
     def get_users_from_organization_by_role(self, organization_id: str, role_id: str):
         organization_users = UserOrganizationRole.objects.filter(organization_id=organization_id, role_id=role_id)
         return [UserTO.from_model(organization_user.user) for organization_user in organization_users]
+
+    def invite_user_to_org(self, user_id: str, organization_id: str, role_id: str):
+        """Invite user to organization assigning role"""
+        user_organization_role = UserOrganizationRole.objects.create(organization_id=organization_id, role_id=role_id,
+                                                                     user_id=user_id)
+        return UserOrganizationRoleTO.from_model(user_organization_role)

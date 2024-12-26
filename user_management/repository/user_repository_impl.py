@@ -32,7 +32,7 @@ class UserRepositoryImpl(UserRepository):
         users = query_options.filter_and_exec_queryset(
             users_query, model=User, exclude_fields=exclude_fields
         )
-        return UserTO.from_models(users)
+        return [] if not users or len(users) == 0 else UserTO.from_models(users)
 
     def get_by_id(self, obj_id):
         try:

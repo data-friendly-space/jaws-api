@@ -8,6 +8,8 @@ from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
 from common.helpers.query_options import QueryOptions
+from user_management.contract.to.user_analysis_role_to import UserAnalysisRoleTO
+from user_management.models.user_analysis_role import UserAnalysisRole
 
 
 class AnalysisRepositoryImpl(AnalysisRepository):
@@ -104,7 +106,7 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         steps = AnalysisStep.objects.all()
         steps_to = AnalysisStepTO.from_models(steps)
         return steps_to
-    
+
     def get_steps_by_ids(self, ids):
         """Return analysis steps based on a list of ids"""
         steps = AnalysisStep.objects.filter(id__in=ids)
@@ -116,3 +118,8 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         analysis = Analysis.objects.filter(id=analysis_id).first()
         steps = AnalysisStep.objects.filter(id__in=step_ids)
         analysis.analysis_steps.set(steps)
+
+    def invite_user_to_analysis(self, user_id: str, analysis_id: str, role_id: str):
+        """Invite user to analysis assigning role"""
+        user_analysis_role = UserAnalysisRole.objects.create(analysis_id=analysis_id, role_id=role_id, user_id=user_id)
+        return UserAnalysisRoleTO.from_model(user_analysis_role)
