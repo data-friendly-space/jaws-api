@@ -1,10 +1,13 @@
 """This module contains the organization model"""
+import uuid
+
 from django.db import models
 
 
 class Organization(models.Model):
     """Organization model"""
-    name = models.CharField(max_length=100)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return str(self.name)

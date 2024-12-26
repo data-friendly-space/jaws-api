@@ -1,4 +1,7 @@
 """This module contains the get users use case"""
+from user_management.contract.repository.user_repository import UserRepository
+
+
 class GetUsersUC:
     """Retrieves the users"""
     _instance = None
@@ -16,6 +19,6 @@ class GetUsersUC:
             GetUsersUC()
         return GetUsersUC._instance
 
-    def exec(self, repository, query_options):
+    def exec(self, repository:UserRepository, query_options):
         """Execute the use case"""
         return repository.get_all(query_options)

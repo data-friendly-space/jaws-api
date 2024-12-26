@@ -1,17 +1,17 @@
 """This module contains the user model"""
+import uuid
+
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
 from user_management.models.affiliation import Affiliation
-from user_management.models.ui_configuration import UiConfiguration
-from user_management.models.organization import Organization
 from user_management.models.position import Position
-from user_management.models.user_workspace_role import UserWorkspaceRole
-from user_management.models.workspace import Workspace
+from user_management.models.ui_configuration import UiConfiguration
 
 
 class CustomUserManager(BaseUserManager):
     """Handles the user management"""
+
     def create_user(self, email, password=None, **extra_fields):
         """Normalize and validate data before creating a user"""
         if not email:
@@ -25,6 +25,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     """User model"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
@@ -32,13 +33,7 @@ class User(AbstractBaseUser):
     profile_image = models.URLField(blank=True, null=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True)
     affiliation = models.ForeignKey(Affiliation, on_delete=models.SET_NULL, null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL, null=True)
     ui_configuration = models.OneToOneField(UiConfiguration, on_delete=models.SET_NULL, null=True)
-    workspaces = models.ManyToManyField(
-        Workspace,
-        through=UserWorkspaceRole,
-        related_name='users'
-    )
     is_active = models.BooleanField(default=True)
     objects = CustomUserManager()
 
