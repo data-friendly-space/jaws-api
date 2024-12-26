@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view
 
 from common.exceptions.exceptions import BadRequestException
 from common.helpers.api_responses import api_response_success
+from common.serializer.CamelCaseMixin import to_snake_case_data
+from file_management.contract.io.create_presigned_url_upload_file import CreatePresignedUrlUploadFileIn
 from file_management.service.impl.file_management_service_impl import (
     FileManagementServiceImpl,
 )
@@ -14,11 +16,10 @@ def create_presigned_url_upload_file_controller(request):
     """Create a presigned URL to upload files"""
 
     service = FileManagementServiceImpl()
-    filename = request.query_params.get("filename", None)
-    analysis_id = request.query_params.get("analysisId", None)
-    if not filename:
-        raise BadRequestException("The filename is required")
-    if not analysis_id:
-        raise BadRequestException("The analysis id is required")
-    url = service.create_presigned_url_upload_file(request.user, filename)
+    data = CreatePresignedUrlUploadFileIn(data=to_snake_case_data(request.data))
+    if not data or not data.is_valid():
+        raise BadRequestException("All fields are required")
+    filename = data.validated_data['filename']
+    analysis_id = data.validated_data['analysis_id']
+    url = service.create_presigned_url_upload_file(request.user, filename, analysis_id)
     return api_response_success(data=url)

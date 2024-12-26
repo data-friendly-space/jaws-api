@@ -17,3 +17,7 @@ class RoleRepository(BaseRepository, ABC):
     def get_role_by_role(self, role) -> RoleTO:
         """Retrieve role by role"""
         
+    @abstractmethod
+    def get_user_role_in_analysis(self, user_id, analysis_id) -> RoleTO:
+        """Retrieve the role of an user within an analysis"""
+
