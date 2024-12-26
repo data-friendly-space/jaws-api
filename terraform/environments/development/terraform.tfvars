@@ -1,6 +1,6 @@
 #-------------------------------COMMON VARIABLES--------------------------
 aws_region  = "us-east-1"
-aws_profile = "841162704359_ExternalDeveloper"
+aws_profile = "jaws-dfs"
 environment = "development"
 tags = {
   "project"     = "jaws"
@@ -18,7 +18,6 @@ it_public_subnets  = ["subnet-017b0144f753b8028", "subnet-0a1fa7026dc5ba396", "s
 it_public_subnet   = "subnet-017b0144f753b8028"
 
 zone_name               = "jawsdev.com"
-company_asset_zone_name = ""
 
 #-------------------------------jaws-api VARIABLES--------------------------
 jaws_api_cluster_name                  = "jaws"

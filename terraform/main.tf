@@ -7,7 +7,7 @@ terraform {
   backend "s3" {
     key     = "jaws.terraform.tfstate"
     region  = "us-east-1"
-    profile = "841162704359_ExternalDeveloper"
+    profile = "jaws-dfs"
     encrypt = true
   }
 
