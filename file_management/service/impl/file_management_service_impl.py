@@ -2,12 +2,15 @@
 
 import urllib
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
-from common.exceptions.exceptions import BadRequestException
+from common.exceptions.exceptions import BadRequestException, NotFoundException
+from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 from file_management.repository.file_management_repository_impl import (
     FileManagementRepositoryImpl,
 )
 from file_management.service.file_management_service import FileManagementService
-from file_management.use_cases.create_dataset_uc import CreateDatasetUC
+from file_management.use_cases.create_presigned_url_download_file_uc import (
+    CreatePresignedUrlDownloadFileUC,
+)
 from file_management.use_cases.create_presigned_url_upload_file_uc import (
     CreatePresignedUrlUploadFileUC,
 )
@@ -27,7 +30,9 @@ class FileManagementServiceImpl(FileManagementService):
         )
         self.get_user_role_in_analysis_uc = GetUserRoleInAnalysisUC.get_instance()
         self.attach_file_to_analysis_uc = AttachFileToAnalysisUC.get_instance()
-        self.create_dataset_uc = CreateDatasetUC.get_instance()
+        self.create_presigned_url_download_file_uc = (
+            CreatePresignedUrlDownloadFileUC.get_instance()
+        )
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -40,22 +45,29 @@ class FileManagementServiceImpl(FileManagementService):
             analysis_id
         )  # Raise 404 if analysis doesn't exist
 
-        response = self.create_presigned_url_upload_file_uc.exec(
-            self.repository, filename, analysis_id
+        presigned_url, dataset = self.create_presigned_url_upload_file_uc.exec(
+            self.repository, filename, user.id
         )
-        if not response or not response['url'] or not response['fields']:
+        if not presigned_url or not presigned_url.url or not presigned_url.fields:
             raise BadRequestException()
-        object_key = urllib.parse.quote(response.fields.key)
-        file_url = f"{response.url}{object_key}"
 
-        dataset = self.create_dataset_uc.exec(
-            self.repository,
-            file_url,
-            str(user.id),
-            filename)
-        self.attach_file_to_analysis_uc.exec(
-            self.repository,
-            dataset.id,
-            analysis_id)
+        self.attach_file_to_analysis_uc.exec(self.repository, dataset.id, analysis_id)
 
-        return response.to_dict()
+        return presigned_url.to_dict()
+
+    def create_presigned_url_download_file(
+        self, user, dataset_id: str
+    ) -> str:
+        # TODO: validate if the user have access to the dataset
+
+        dataset = self.repository.get_dataset_by_id(dataset_id)
+        if not dataset:
+            raise NotFoundException("The dataset doesn't exist")
+
+        response = self.create_presigned_url_download_file_uc.exec(
+            self.repository, dataset_id
+        )
+
+        if not response:
+            raise BadRequestException()
+        return response

@@ -1,12 +1,16 @@
 """Contains the use case for getting the administrative divisions"""
 
 from common.use_case.base_use_case import BaseUseCase
+from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
-from file_management.contract.repository.file_management_repository import FileManagementRepository
+from file_management.contract.repository.file_management_repository import (
+    FileManagementRepository,
+)
 
 
 class CreatePresignedUrlUploadFileUC(BaseUseCase):
     """Singleton use case for getting the administrative divisions"""
+
     _instance = None
 
     def __init__(self):
@@ -22,6 +26,8 @@ class CreatePresignedUrlUploadFileUC(BaseUseCase):
             CreatePresignedUrlUploadFileUC()
         return CreatePresignedUrlUploadFileUC._instance
 
-    def exec(self, repository: FileManagementRepository, filename: str, analysis_id: int) -> S3PresignedUrlTO:
-        presigned_url = repository.create_presigned_url_upload_file(filename, analysis_id)
+    def exec(
+        self, repository: FileManagementRepository, dataset_id: str, user_id: str
+    ) -> tuple[S3PresignedUrlTO, DatasetTO]:
+        presigned_url = repository.create_presigned_url_upload_file(dataset_id, user_id)
         return presigned_url
