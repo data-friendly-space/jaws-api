@@ -22,6 +22,6 @@ class CreatePresignedUrlUploadFileUC(BaseUseCase):
             CreatePresignedUrlUploadFileUC()
         return CreatePresignedUrlUploadFileUC._instance
 
-    def exec(self, repository: FileManagementRepository, filename: str) -> S3PresignedUrlTO:
-        presigned_url = repository.create_presigned_url_upload_file(filename)
+    def exec(self, repository: FileManagementRepository, filename: str, analysis_id: int) -> S3PresignedUrlTO:
+        presigned_url = repository.create_presigned_url_upload_file(filename, analysis_id)
         return presigned_url
