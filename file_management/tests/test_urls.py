@@ -9,6 +9,9 @@ from file_management.interfaces.controllers.create_presigned_url_download_file_c
 from file_management.interfaces.controllers.create_presigned_url_upload_file_controller import (
     create_presigned_url_upload_file_controller,
 )
+from file_management.interfaces.controllers.get_analysis_datasets_controller import (
+    get_analysis_datasets_controller,
+)
 
 
 class TestUrls(SimpleTestCase):
@@ -22,4 +25,11 @@ class TestUrls(SimpleTestCase):
     def test_create_presigned_url_download_files(self):
         """Test that create presigned url for upload files works"""
         url = reverse("get_download_file_url")
-        self.assertEqual(resolve(url).func, create_presigned_url_download_file_controller)
+        self.assertEqual(
+            resolve(url).func, create_presigned_url_download_file_controller
+        )
+
+    def test_get_datasets_by_analysis(self):
+        """Test that getting the datasets from an anlysis works"""
+        url = reverse("get_analysis_datasets")
+        self.assertEqual(resolve(url).func, get_analysis_datasets_controller)
