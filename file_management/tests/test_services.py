@@ -3,8 +3,7 @@
 from unittest.mock import MagicMock
 from django.test import SimpleTestCase
 
-from common.exceptions.exceptions import BadRequestException, NotFoundException
-from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
+from common.exceptions.exceptions import NotFoundException
 from file_management.service.impl.file_management_service_impl import (
     FileManagementServiceImpl,
 )
@@ -17,7 +16,6 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         self.service = FileManagementServiceImpl()
         self.service.analysis_service = MagicMock()
         self.service.create_presigned_url_upload_file_uc = MagicMock()
-        self.service.create_dataset_uc = MagicMock()
         self.service.attach_file_to_analysis_uc = MagicMock()
 
         self.user = MagicMock()
@@ -28,16 +26,17 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
 
     def test_create_presigned_url_success(self):
         """Test that the create presigned url service works"""
-        mock_response = MagicMock()
-        mock_response.fields.key = "mock_key"
-        mock_response.url = "https://mockurl.com/"
+        presigned_url_mock = MagicMock()
+        presigned_url_mock.fields.key = "mock_key"
+        presigned_url_mock.url = "https://mockurl.com/"
+        dataset_mock = MagicMock()
+        dataset_mock.id = 123
         self.service.create_presigned_url_upload_file_uc.exec.return_value = (
-            mock_response
+            presigned_url_mock, dataset_mock
         )
 
         mock_dataset = MagicMock()
         mock_dataset.id = 456
-        self.service.create_dataset_uc.exec.return_value = mock_dataset
 
         response = self.service.create_presigned_url_upload_file(
             self.user, self.filename, self.analysis_id
@@ -47,11 +46,10 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
             self.analysis_id
         )
         self.service.create_presigned_url_upload_file_uc.exec.assert_called_once()
-        self.service.create_dataset_uc.exec.assert_called_once()
         self.service.attach_file_to_analysis_uc.exec.assert_called_once_with(
-            self.service.repository, mock_dataset.id, self.analysis_id
+            self.service.repository, dataset_mock.id, self.analysis_id
         )
-        self.assertEqual(response, mock_response.to_dict())
+        self.assertEqual(response, presigned_url_mock.to_dict())
 
     def test_analysis_not_found(self):
         """Test that if the analysis was not found a not found exception is raised"""
@@ -60,15 +58,6 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         )
 
         with self.assertRaises(NotFoundException):
-            self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id
-            )
-
-    def test_bad_request_exception(self):
-        """Tests that if the response from"""
-        self.service.create_presigned_url_upload_file_uc.exec.return_value = None
-
-        with self.assertRaises(BadRequestException):
             self.service.create_presigned_url_upload_file(
                 self.user, self.filename, self.analysis_id
             )
