@@ -12,8 +12,11 @@ from user_management.contract.to.user_to import UserTO
 class DatasetTO(BaseTO):
     """Contains the fields for a dataset"""
     id: str | None
-    uploadedBy: UserTO | None
-    createdOn: datetime | None
+    uploadedBy: str | None
+    sizeBytes: int | None
+    createdAt: datetime | None
+    updatedAt: datetime | None
+    mimeType: str | None
     url: str | None
     filename: str | None
 
@@ -24,9 +27,12 @@ class DatasetTO(BaseTO):
         if not instance:
             return None
         return cls(
-            uploadedBy=instance.uploaded_by,
-            createdOn=instance.created_on,
+            uploadedBy=instance.uploaded_by.id,
+            createdAt=instance.created_at,
             id=instance.id,
+            sizeBytes=instance.size_bytes,
+            mimeType=instance.mime_type,
+            updatedAt=instance.updated_at,
             filename=instance.filename,
             url=instance.url
         )

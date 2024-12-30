@@ -1,6 +1,7 @@
 """This module contains the analysis repository"""
 
 import logging
+from typing import List
 import urllib
 from datetime import timedelta
 from os import getenv
@@ -9,6 +10,7 @@ from botocore.exceptions import ClientError
 from django.db import transaction
 
 from analysis.models.analysis import Analysis
+from common.helpers.get_mime_type_from_extension import get_mimetype_from_extension
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 from file_management.contract.repository.file_management_repository import (
@@ -23,7 +25,7 @@ bucket_name = getenv("AWS_STORAGE_BUCKET_NAME")
 class FileManagementRepositoryImpl(FileManagementRepository):
     """Analysis repository"""
 
-    def create_presigned_url_upload_file(self, filename: str, user_id: str):
+    def create_presigned_url_upload_file(self, filename: str, user_id: str, size_bytes: int):
         s3_client = boto3.client("s3")
         expires_in = timedelta(hours=1).seconds
         user = User.objects.filter(id=user_id).first()
@@ -31,7 +33,10 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         try:
             with transaction.atomic():
                 new_dataset = Dataset.objects.create(
-                    filename=filename, uploaded_by=user
+                    filename=filename,
+                    uploaded_by=user,
+                    size_bytes=size_bytes,
+                    mime_type=get_mimetype_from_extension(filename)
                 )
                 object_name = f"datasets/{str(new_dataset.id)}"
                 response = s3_client.generate_presigned_post(
@@ -70,3 +75,8 @@ class FileManagementRepositoryImpl(FileManagementRepository):
     def get_dataset_by_id(self, dataset_id: str) -> DatasetTO:
         dataset = Dataset.objects.filter(id=dataset_id).first()
         return DatasetTO.from_model(dataset)
+
+    def get_analysis_datasets(self, analysis_id: int) -> List[DatasetTO]:
+        analysis = Analysis.objects.filter(id=analysis_id).first()
+        datasets = analysis.datasets.all()
+        return DatasetTO.from_models(datasets)
