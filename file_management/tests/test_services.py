@@ -31,6 +31,7 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         presigned_url_mock.url = "https://mockurl.com/"
         dataset_mock = MagicMock()
         dataset_mock.id = 123
+        size_bytes = 12345
         self.service.create_presigned_url_upload_file_uc.exec.return_value = (
             presigned_url_mock, dataset_mock
         )
@@ -39,7 +40,7 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         mock_dataset.id = 456
 
         response = self.service.create_presigned_url_upload_file(
-            self.user, self.filename, self.analysis_id
+            self.user, self.filename, self.analysis_id, size_bytes
         )
 
         self.service.analysis_service.get_analysis_by_id.assert_called_once_with(
@@ -56,8 +57,9 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         self.service.analysis_service.get_analysis_by_id.side_effect = (
             NotFoundException()
         )
+        size_bytes = 12345
 
         with self.assertRaises(NotFoundException):
             self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id
+                self.user, self.filename, self.analysis_id, size_bytes
             )
