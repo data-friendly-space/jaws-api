@@ -35,6 +35,10 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
             presigned_url_mock, dataset_mock
         )
 
+        mock_dataset = MagicMock()
+        mock_dataset.id = 456
+        self.service.create_dataset_uc.exec.return_value = mock_dataset
+
         response = self.service.create_presigned_url_upload_file(
             self.user, self.filename, self.analysis_id
         )

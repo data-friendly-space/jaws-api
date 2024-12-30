@@ -4,7 +4,6 @@ import logging
 import urllib
 from datetime import timedelta
 from os import getenv
-
 import boto3
 from botocore.exceptions import ClientError
 from django.db import transaction
