@@ -38,7 +38,7 @@ class FileManagementRepositoryImpl(FileManagementRepository):
                     size_bytes=size_bytes,
                     mime_type=get_mimetype_from_extension(filename)
                 )
-                object_name = f"datasets/{str(new_dataset.id)}"
+                object_name = f"datasets/{filename}"
                 response = s3_client.generate_presigned_post(
                     bucket_name,
                     object_name,
