@@ -29,5 +29,5 @@ class CreatePresignedUrlUploadFileUC(BaseUseCase):
     def exec(
         self, repository: FileManagementRepository, dataset_id: str, user_id: str
     ) -> tuple[S3PresignedUrlTO, DatasetTO]:
-        presigned_url = repository.create_presigned_url_upload_file(dataset_id, user_id)
-        return presigned_url
+        presigned_url, dataset = repository.create_presigned_url_upload_file(dataset_id, user_id)
+        return presigned_url, dataset

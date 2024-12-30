@@ -1,8 +1,11 @@
 """Tests of the urls within analysis"""
 
 from django.test import SimpleTestCase
-from django.urls import reverse, resolve
+from django.urls import resolve, reverse
 
+from file_management.interfaces.controllers.create_presigned_url_download_file_controller import (
+    create_presigned_url_download_file_controller,
+)
 from file_management.interfaces.controllers.create_presigned_url_upload_file_controller import (
     create_presigned_url_upload_file_controller,
 )
@@ -15,3 +18,8 @@ class TestUrls(SimpleTestCase):
         """Test that create presigned url for upload files works"""
         url = reverse("get_upload_file_url")
         self.assertEqual(resolve(url).func, create_presigned_url_upload_file_controller)
+
+    def test_create_presigned_url_download_files(self):
+        """Test that create presigned url for upload files works"""
+        url = reverse("get_download_file_url")
+        self.assertEqual(resolve(url).func, create_presigned_url_download_file_controller)

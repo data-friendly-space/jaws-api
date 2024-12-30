@@ -48,8 +48,6 @@ class FileManagementServiceImpl(FileManagementService):
         presigned_url, dataset = self.create_presigned_url_upload_file_uc.exec(
             self.repository, filename, user.id
         )
-        if not presigned_url or not presigned_url.url or not presigned_url.fields:
-            raise BadRequestException()
 
         self.attach_file_to_analysis_uc.exec(self.repository, dataset.id, analysis_id)
 
