@@ -40,3 +40,14 @@ class UsersService(ABC):
     def invite_user_to_analysis(self, invite_user_in: InviteUserAnalysisIn):
         """Invite user to an analysis"""
         pass
+
+    @abstractmethod
+    def is_user_in_analysis(self, user_id: str, analysis_id: int) -> bool:
+        """Validate if a user belongs to an analysis
+        
+        Keyword arguments:
+        user_id -- the id of the user
+        analysis_id -- the id of the analysis
+        Return: True if the user belongs and False if not
+        """
+        

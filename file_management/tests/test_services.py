@@ -1,12 +1,20 @@
 """This module contains the tests for the services"""
 
 from unittest.mock import MagicMock
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
-from common.exceptions.exceptions import NotFoundException
+from analysis.models.analysis import Analysis
+from common.constants.constants import DATASET_MAX_SIZE
+from common.exceptions.exceptions import BadRequestException, ForbiddenException, NotFoundException
+from file_management.models.dataset import Dataset
 from file_management.service.impl.file_management_service_impl import (
     FileManagementServiceImpl,
 )
+from user_management.models.organization import Organization
+from user_management.models.role import Role
+from user_management.models.user import User
+from user_management.models.user_analysis_role import UserAnalysisRole
+from user_management.models.workspace import Workspace
 
 
 class TestGetPresignedUrlFileUpload(SimpleTestCase):
@@ -31,6 +39,7 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         presigned_url_mock.url = "https://mockurl.com/"
         dataset_mock = MagicMock()
         dataset_mock.id = 123
+        size_bytes = 12345
         self.service.create_presigned_url_upload_file_uc.exec.return_value = (
             presigned_url_mock, dataset_mock
         )
@@ -39,7 +48,7 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         mock_dataset.id = 456
 
         response = self.service.create_presigned_url_upload_file(
-            self.user, self.filename, self.analysis_id
+            self.user, self.filename, self.analysis_id, size_bytes
         )
 
         self.service.analysis_service.get_analysis_by_id.assert_called_once_with(
@@ -56,8 +65,108 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         self.service.analysis_service.get_analysis_by_id.side_effect = (
             NotFoundException()
         )
+        size_bytes = 12345
 
         with self.assertRaises(NotFoundException):
             self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id
+                self.user, self.filename, self.analysis_id, size_bytes
             )
+
+    def test_file_too_big(self):
+        """Test that if the file size is too big raises a bad request exception"""
+        size_bytes = DATASET_MAX_SIZE + 1
+        with self.assertRaises(BadRequestException):
+            self.service.create_presigned_url_upload_file(
+                self.user, self.filename, self.analysis_id, size_bytes
+            )
+
+class TestCreatePresignedUrlDownloadFile(SimpleTestCase):
+    """Contains the test cases for creating a presigned url for file downloading"""
+    def setUp(self):
+        self.service = FileManagementServiceImpl()
+        self.service.repository = MagicMock()
+        self.service.create_presigned_url_download_file_uc = MagicMock()
+
+    def test_invalid_dataset_id(self):
+        """Test that usign a invalid dataset raises a NotFoundException"""
+        user = MagicMock()
+        user.id = 1
+        dataset_id = "12345"
+
+        self.service.repository.get_dataset_by_id.return_value = None
+        with self.assertRaises(NotFoundException):
+            self.service.create_presigned_url_download_file(user, dataset_id)
+
+    def test_not_response(self):
+        """Test that if the response from aws is empty raises a bad request"""
+        user = MagicMock()
+        user.id = 1
+        dataset_id = "12345"
+
+        self.service.create_presigned_url_download_file_uc.exec.return_value = None
+        with self.assertRaises(BadRequestException):
+            self.service.create_presigned_url_download_file(user, dataset_id)
+
+    def test_success_with_valid_data(self):
+        """Test that if the dataset is valid and aws returns something it doesnt fails"""
+        user = MagicMock()
+        user.id = 1
+        dataset_id = "12345"
+
+        self.service.create_presigned_url_download_file_uc.exec.return_value = "https://some-url"
+
+        response = self.service.create_presigned_url_download_file(user, dataset_id)
+        self.assertEqual(response, "https://some-url")
+
+
+class TestGetAnalysisDatasets(TestCase):  # noqa: F821
+    """Contains the test cases for getting the datasets of a given analysis"""
+    def setUp(self):
+        self.service = FileManagementServiceImpl()
+        self.user = User.objects.create(
+            name="TestName",
+            lastname="TestLastname",
+            email="test@test.com",
+            password="testpassword",
+        )
+        self.org = Organization.objects.create(name="TestOrganization2")
+        self.workspace = Workspace.objects.create(
+            title="TestWorksp2ace1",
+            organization=self.org,
+            facilitator_id=self.user.id,
+            creator_id=self.user.id,
+        )
+        self.test_analysis = Analysis.objects.create(
+            title="TestAnalysis1",
+            workspace_id=self.workspace.id,
+            end_date="2024-12-17",
+            creator_id=self.user.id,
+        )
+        self.dataset = Dataset.objects.create(
+            filename="test.csv",
+            url="http://testurl/test.csv",
+            uploaded_by=self.user,
+            size_bytes=12345
+        )
+        self.test_analysis.datasets.add(self.dataset)
+
+    def test_invalid_analysis_fails(self):
+        """Test that using an invalid analysis id raises an exception"""
+        invalid_analysis_id = 12345
+        with self.assertRaises(NotFoundException):
+            self.service.get_analysis_datasets(self.user, invalid_analysis_id)
+
+    def test_user_not_in_analysis_fails(self):
+        """Tests that if the user doesnt belong to the analysis it raises a forbidden exception"""
+        with self.assertRaises(ForbiddenException):
+            self.service.get_analysis_datasets(self.user, self.test_analysis.id)
+
+    def test_valid_data(self):
+        """Test that if the analysis exists and the user belong to it then it return an array with datasets"""
+        UserAnalysisRole.objects.create(
+            analysis=self.test_analysis,
+            user=self.user,
+            role=Role.objects.first()
+        )
+        response = self.service.get_analysis_datasets(self.user, self.test_analysis.id)
+        self.assertEqual(response[0]['id'], self.dataset.id)

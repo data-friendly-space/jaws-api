@@ -1,6 +1,7 @@
 """This module contains the File Management repository"""
 
 from abc import abstractmethod
+from typing import List
 
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
@@ -11,7 +12,7 @@ class FileManagementRepository:
 
     @abstractmethod
     def create_presigned_url_upload_file(
-        self, filename: str, user_id: str
+        self, filename: str, user_id: str, size_bytes: int
     ) -> tuple[S3PresignedUrlTO, DatasetTO]:
         """
         Create a presigned URL to allow the frontend to upload a file
@@ -37,4 +38,13 @@ class FileManagementRepository:
     def get_dataset_by_id(self, dataset_id) -> DatasetTO:
         """
         Retrieve a dataset by id
+        """
+
+    @abstractmethod
+    def get_analysis_datasets(self, analysis_id: int) -> List[DatasetTO]:
+        """Retrieve the datasets of the analysis
+        
+        Keyword arguments:
+        analysis_id -- the id of the analysis
+        Return: A list of DatasetTO
         """

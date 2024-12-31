@@ -23,5 +23,6 @@ def create_presigned_url_upload_file_controller(request):
         raise BadRequestException("All fields are required")
     filename = data.validated_data["filename"]
     analysis_id = data.validated_data["analysis_id"]
-    url = service.create_presigned_url_upload_file(request.user, filename, analysis_id)
+    size_bytes = data.validated_data["size_bytes"]
+    url = service.create_presigned_url_upload_file(request.user, filename, analysis_id, size_bytes)
     return api_response_success(data=url)

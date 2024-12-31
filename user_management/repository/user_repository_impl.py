@@ -4,6 +4,7 @@ from common.helpers.query_options import QueryOptions
 from user_management.contract.repository.user_repository import UserRepository
 from user_management.contract.to.user_to import UserTO
 from user_management.models import User
+from user_management.models.user_analysis_role import UserAnalysisRole
 
 
 class UserRepositoryImpl(UserRepository):
@@ -64,3 +65,7 @@ class UserRepositoryImpl(UserRepository):
         """
         user = User.objects.create(**data)
         return user
+
+    def is_user_in_analysis(self, user_id: str, analysis_id: int) -> bool:
+        is_user_in_analysis = UserAnalysisRole.objects.filter(user_id=user_id, analysis_id=analysis_id).exists()
+        return is_user_in_analysis

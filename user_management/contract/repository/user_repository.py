@@ -25,3 +25,13 @@ class UserRepository(BaseRepository, ABC):
            Get users based on dynamic filters.
            Accepts any combination of filter arguments.
            """
+
+    @abstractmethod
+    def is_user_in_analysis(self, user_id: str, analysis_id: int) -> bool:
+        """Verify if an user belongs to an analysis 
+        
+        Keyword arguments:
+        user_id -- the id of the user
+        analysis_id -- the id of the analysis
+        Return: True if the user belongs and False if not
+        """
