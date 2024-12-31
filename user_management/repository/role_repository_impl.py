@@ -4,6 +4,7 @@ from user_management.contract.repository.role_repository import RoleRepository
 from user_management.contract.to.permission_to import PermissionTO
 from user_management.contract.to.role_to import RoleTO
 from user_management.models import Role
+from user_management.models.user_analysis_role import UserAnalysisRole
 
 
 class RoleRepositoryImpl(RoleRepository):
@@ -44,4 +45,7 @@ class RoleRepositoryImpl(RoleRepository):
         roles = Role.objects.exclude(role__in=exclusions)
         return RoleTO.from_models(roles)
 
-
+    def get_user_role_in_analysis(self, user_id, analysis_id) -> RoleTO:
+        result = UserAnalysisRole.objects.filter(user__id=user_id, analysis__id=analysis_id).first()
+        role = result.role
+        return RoleTO.from_model(role)
