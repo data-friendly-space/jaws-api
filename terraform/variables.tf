@@ -59,6 +59,12 @@ variable "zone_name" {
   type        = string
 }
 
+variable "zone_comment" {
+  description = "Zone comment for Route53"
+  type        = string
+  default     = "Route53 Domain"
+}
+
 
 
 ##------------------- SERVICES VARIABLES ----------------##   

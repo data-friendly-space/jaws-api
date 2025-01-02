@@ -9,8 +9,8 @@ variable "environment" {
   default = "dev"
 }
 
-variable "domain_name" {
-  description = "The domain name to be used in the certificate"
+variable "route53_zone_id" {
+  description = "Id of the route53 zone"
   type        = string
 }
 

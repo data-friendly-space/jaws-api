@@ -75,8 +75,17 @@ module "jaws_api_resource_group" {
   tags        = var.tags
 }
 
+module "jaws_frontend" {
+  source = "./modules/s3/frontend"
+
+  app_name    = var.jaws_api_ecs_app_name
+  environment = var.environment
+  tags        = var.tags
+  bucket_name = var.zone_name
+}
+
 module "jaws_s3_datasets" {
-  source = "./modules/s3"
+  source = "./modules/s3/datasets"
 
   app_name         = var.jaws_api_ecs_app_name
   environment      = var.environment
@@ -90,4 +99,24 @@ module "jaws_ecr" {
   environment = var.environment
   tags        = var.tags
   ecr_name    = var.jaws_ecr_name
+}
+
+module "jaws_route53" {
+  source = "./modules/route53"
+
+  environment        = var.environment
+  tags               = var.tags
+  zone_name          = var.zone_name
+  comment            = var.zone_comment
+  app_name           = var.jaws_api_ecs_app_name
+  frontend_bucket_id = module.jaws_frontend.bucket_id
+}
+
+module "jaws_certs" {
+  source = "./modules/certificates"
+
+  environment = var.environment
+  tags        = var.tags
+  app_name    = var.jaws_api_ecs_app_name
+  route53_zone_id = module.jaws_route53.zone_id
 }

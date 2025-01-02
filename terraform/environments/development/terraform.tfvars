@@ -17,12 +17,13 @@ availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
 it_public_subnets  = ["subnet-017b0144f753b8028", "subnet-0a1fa7026dc5ba396", "subnet-01dd0044f6a1c4bad"]
 it_public_subnet   = "subnet-017b0144f753b8028"
 
-zone_name               = "jawsdev.com"
+zone_name    = "jawsdev.com"
+zone_comment = "Jaws development domain"
 
 #-------------------------------jaws-api VARIABLES--------------------------
 jaws_api_cluster_name                  = "jaws"
 jaws_api_ecs_app_name                  = "jaws-api"
-jaws_s3_datasets_name                  = "jaws-datasets"
+jaws_s3_datasets_name                  = "jaws-dataset"
 jaws_ecr_name                          = "jaws-ecr"
 ecs_jaws_api_container_image           = "jaws-api:latest"
 ecs_jaws_api_container_name            = "jaws-api"

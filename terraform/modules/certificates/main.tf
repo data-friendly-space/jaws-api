@@ -1,9 +1,9 @@
-data "aws_route53_zone" "existing" {
-  name = var.domain_name
+data "aws_route53_zone" "main" {
+  zone_id = var.route53_zone_id
 }
 
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "${var.app_name}.${data.aws_route53_zone.existing.name}"
+  domain_name       = "${var.app_name}.${data.aws_route53_zone.main.name}"
   validation_method = "DNS"
 
   lifecycle {
@@ -11,7 +11,7 @@ resource "aws_acm_certificate" "cert" {
   }
 
   tags = merge(var.tags, {
-    Name        = "${var.environment}-${data.aws_route53_zone.existing.name}-cert"
+    Name        = "${var.environment}-${data.aws_route53_zone.main.name}-cert"
     Environment = var.environment
   })
 }
@@ -21,7 +21,7 @@ resource "aws_route53_record" "cert_validation" {
   name            = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_name
   records         = [tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_value]
   type            = tolist(aws_acm_certificate.cert.domain_validation_options)[0].resource_record_type
-  zone_id         = data.aws_route53_zone.existing.zone_id
+  zone_id         = data.aws_route53_zone.main.zone_id
   ttl             = 60
 }
 

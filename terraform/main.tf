@@ -28,18 +28,11 @@ module "network_it_vpc" {
   vpc_id         = var.vpc_id
 }
 
-#module "it_private_subnets" {
-#  source = "./modules/network/IT/subnets/private"
-#  private_subnet_ids = var.it_private_subnets
-#}
-
 module "it_public_subnets" {
   source = "./modules/network/IT/subnets/public"
 
   public_subnet_ids = var.it_public_subnets
 }
-
-
 
 module "policy" {
   source = "./modules/policy"
