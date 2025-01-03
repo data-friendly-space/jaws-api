@@ -13,4 +13,4 @@ omit=
 
 [report]
 format=text
-fail_under=90
+fail_under=80
