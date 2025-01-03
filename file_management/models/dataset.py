@@ -4,8 +4,7 @@ from django.db import models
 
 class Dataset(models.Model):
     """Dataset model"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    filename = models.CharField(max_length=255)
+    filename = models.CharField(primary_key=True, max_length=255)
     url = models.URLField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
