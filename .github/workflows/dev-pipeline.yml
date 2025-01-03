@@ -55,4 +55,5 @@ jobs:
         DATABASE_ENGINE: django.db.backends.postgresql
 
       run: |
-        python3 manage.py test
+        coverage run manage.py test
+        coverage report

@@ -10,4 +10,4 @@ source=
 
 [report]
 format=text
-
+fail_under=80
