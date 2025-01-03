@@ -82,3 +82,7 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         analysis = Analysis.objects.filter(id=analysis_id).first()
         datasets = analysis.datasets.all()
         return DatasetTO.from_models(datasets)
+
+    def get_dataset_by_filename(self, filename):
+        dataset = Dataset.objects.filter(filename=filename).first()
+        return dataset

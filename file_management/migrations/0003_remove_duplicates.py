@@ -14,6 +14,9 @@ def remove_duplicates(apps, schema_editor):
     duplicates = Dataset.objects.exclude(id__in=Subquery(subquery))
     duplicates.delete()
 
+def _(apps, schema_editor):
+    pass
+
 class Migration(migrations.Migration):
     """Migrate"""
 
@@ -22,5 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(remove_duplicates, None)
+        migrations.RunPython(remove_duplicates, _)
     ]
