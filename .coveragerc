@@ -8,6 +8,9 @@ source=
     health_checks
     analysis
 
+omit=
+    */migrations/*
+
 [report]
 format=text
 fail_under=80
