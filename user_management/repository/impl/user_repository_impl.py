@@ -1,7 +1,7 @@
 from django.contrib.auth.hashers import make_password
 
 from common.helpers.query_options import QueryOptions
-from user_management.contract.repository.user_repository import UserRepository
+from user_management.repository.user_repository import UserRepository
 from user_management.contract.to.user_to import UserTO
 from user_management.models import User
 from user_management.models.user_analysis_role import UserAnalysisRole

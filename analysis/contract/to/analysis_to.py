@@ -4,7 +4,9 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Optional
 
-from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
+from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.contract.to.sector_to import SectorTO
@@ -28,6 +30,8 @@ class AnalysisTO(BaseTO):
     creator: Optional[str] = None,
     locations: Optional[list[AdministrativeDivisionTO]] = None
     analysisSteps: Optional[list[AnalysisStepTO]] = None
+    analysisQuestions: Optional[list[AnalysisQuestionTO]] = None
+    analysisFramework: Optional[AnalysisFrameworkTO] = None
 
 
     @classmethod
@@ -50,10 +54,13 @@ class AnalysisTO(BaseTO):
             locations=AdministrativeDivisionTO.from_models(
                 instance.locations,
                 include_hierarchy=True),
-            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps)
+            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps),
+            analysisFramework=AnalysisFrameworkTO.from_model(instance.analysis_framework),
+            analysisQuestions=AnalysisQuestionTO.from_models(instance.analysis_questions.all()),
+
         )
 
-    def to_dict(self):
-        if self.locations:
-            self.locations = [location.to_dict() for location in self.locations]
-        return asdict(self)
+#    def to_dict(self):
+#        if self.locations:
+#            self.locations = [location.to_dict() for location in self.locations]
+#        return asdict(self)

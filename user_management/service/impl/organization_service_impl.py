@@ -4,8 +4,8 @@ from common.exceptions.exceptions import BadRequestException
 from common.helpers.query_options import QueryOptions
 from common.use_case.get_all_uc import GetAllUC
 from user_management.contract.io.create_organization_in import CreateOrganizationIn
-from user_management.repository.organization_repository_impl import OrganizationRepositoryImpl
-from user_management.repository.role_repository_impl import RoleRepositoryImpl
+from user_management.repository.impl.organization_repository_impl import OrganizationRepositoryImpl
+from user_management.repository.impl.role_repository_impl import RoleRepositoryImpl
 from user_management.service.organization_service import OrganizationService
 from user_management.usecases.create_organization_uc import CreateOrganizationUC
 from user_management.usecases.get_available_organizations_by_user_id_uc import GetAvailableOrganizationsByUserIdUC

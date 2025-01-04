@@ -1,0 +1,16 @@
+[run]
+branch=true
+source=
+    common
+    file_management
+    user_management
+    interac_not_manager
+    health_checks
+    analysis
+
+omit=
+    */migrations/*
+
+[report]
+format=text
+fail_under=80

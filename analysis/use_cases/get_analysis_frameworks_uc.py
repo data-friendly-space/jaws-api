@@ -1,5 +1,4 @@
-from analysis.contract.repository.analysis_framework_repository import AnalysisFrameworkRepository
-from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.repository.analysis_framework_repository import AnalysisFrameworkRepository
 from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from common.helpers.query_options import QueryOptions
 from common.use_case.base_use_case import BaseUseCase

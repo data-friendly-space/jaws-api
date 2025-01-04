@@ -1,7 +1,12 @@
 """This module contains the implementation of analysis repository"""
 from typing import List
-from analysis.contract.repository.analysis_repository import AnalysisRepository
-from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+
+from django.shortcuts import get_object_or_404
+
+from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
+from analysis.models.analysis_question import AnalysisQuestion
+from analysis.repository.analysis_repository import AnalysisRepository
+from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.sector_to import SectorTO
@@ -16,6 +21,23 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
+
+    def update_analysis_questions(self, analysis_id: int, content: str) -> AnalysisQuestionTO:
+        """Assign or update analysis questions"""
+        return AnalysisQuestionTO.from_model(
+            AnalysisQuestion.objects.update_or_create(content=content, analysis_id=analysis_id))
+
+    def assign_or_update_framework_to_analysis(self, analysis_id: int, framework_id: int) -> AnalysisTO:
+        """
+                Update the analysis_framework field for a specific Analysis instance.
+
+                :param analysis_id: ID of the Analysis to update.
+                :param framework_id: ID of the AnalysisFramework to set.
+                :return: Number of rows updated.
+                """
+        # Perform the update query
+        Analysis.objects.filter(id=analysis_id).update(analysis_framework=framework_id)
+        return AnalysisTO.from_model(Analysis.objects.get(id=analysis_id))
 
     def get_all(self, query_options: QueryOptions, **kwargs):
         """

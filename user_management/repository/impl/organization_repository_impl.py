@@ -1,6 +1,6 @@
 """This module contains the implementation of Organization repository"""
 from common.helpers.query_options import QueryOptions
-from user_management.contract.repository.organization_repository import OrganizationRepository
+from user_management.repository.organization_repository import OrganizationRepository
 from user_management.contract.to.organization_to import OrganizationTO
 from user_management.contract.to.user_organization_role_to import UserOrganizationRoleTO
 from user_management.contract.to.user_organization_to import UserOrganizationTO

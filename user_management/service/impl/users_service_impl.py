@@ -7,7 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
+from analysis.repository.impl.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from common.exceptions.exceptions import (
     NotFoundException,
@@ -33,11 +33,11 @@ from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.interfaces.serializers.user_serializer import UserSerializer
-from user_management.repository.organization_repository_impl import (
+from user_management.repository.impl.organization_repository_impl import (
     OrganizationRepositoryImpl,
 )
-from user_management.repository.user_repository_impl import UserRepositoryImpl
-from user_management.repository.workspace_repository_impl import WorkspaceRepositoryImpl
+from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
+from user_management.repository.impl.workspace_repository_impl import WorkspaceRepositoryImpl
 from user_management.service.users_service import UsersService
 from user_management.usecases.add_user_to_workspace_uc import AddUserToWorkspaceUC
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC

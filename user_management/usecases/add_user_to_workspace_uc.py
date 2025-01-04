@@ -1,5 +1,5 @@
 """This module contains the get users use case"""
-from user_management.contract.repository.workspace_repository import WorkspaceRepository
+from user_management.repository.workspace_repository import WorkspaceRepository
 from user_management.contract.to.user_workspace_role_to import UserWorkspaceRoleTO
 
 

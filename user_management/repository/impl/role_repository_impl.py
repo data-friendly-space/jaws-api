@@ -1,7 +1,6 @@
 """This module contains the implementation of Role repository"""
 from common.helpers.query_options import QueryOptions
-from user_management.contract.repository.role_repository import RoleRepository
-from user_management.contract.to.permission_to import PermissionTO
+from user_management.repository.role_repository import RoleRepository
 from user_management.contract.to.role_to import RoleTO
 from user_management.models import Role
 from user_management.models.user_analysis_role import UserAnalysisRole

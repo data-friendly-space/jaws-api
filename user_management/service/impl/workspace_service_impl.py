@@ -4,9 +4,9 @@ from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
 from common.use_case.get_all_uc import GetAllUC
 from user_management.contract.io.create_workspace_in import CreateWorkspaceIn
-from user_management.repository.role_repository_impl import RoleRepositoryImpl
-from user_management.repository.user_repository_impl import UserRepositoryImpl
-from user_management.repository.workspace_repository_impl import WorkspaceRepositoryImpl
+from user_management.repository.impl.role_repository_impl import RoleRepositoryImpl
+from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
+from user_management.repository.impl.workspace_repository_impl import WorkspaceRepositoryImpl
 from user_management.service.workspace_service import WorkspaceService
 from user_management.usecases.add_user_to_workspace_uc import AddUserToWorkspaceUC
 from user_management.usecases.create_workspace_uc import CreateWorkspaceUC

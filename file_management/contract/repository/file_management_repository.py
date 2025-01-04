@@ -48,3 +48,12 @@ class FileManagementRepository:
         analysis_id -- the id of the analysis
         Return: A list of DatasetTO
         """
+
+    @abstractmethod
+    def get_dataset_by_filename(self, filename: str) -> DatasetTO | None:
+        """Search a dataset based on a filename
+        
+        Keyword arguments:
+        filename -- The name to search for
+        Return: DatasetTO or None if the dataset was not found
+        """

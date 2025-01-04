@@ -1,7 +1,8 @@
 """This module contains the implementation of analysis repository"""
-from analysis.contract.repository.analysis_framework_repository import AnalysisFrameworkRepository
+from analysis.contract.to.analysis_to import AnalysisTO
+from analysis.repository.analysis_framework_repository import AnalysisFrameworkRepository
 from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
-from analysis.models.analysis import AnalysisFramework
+from analysis.models.analysis import AnalysisFramework, Analysis
 from common.helpers.query_options import QueryOptions
 
 

@@ -1,4 +1,4 @@
-from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.repository.analysis_repository import AnalysisRepository
 from analysis.contract.to.sector_to import SectorTO
 from common.helpers.query_options import QueryOptions
 from common.use_case.base_use_case import BaseUseCase

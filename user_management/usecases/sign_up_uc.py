@@ -1,6 +1,6 @@
 """This module contains the sign up use case"""
 from common.use_case.base_use_case import BaseUseCase
-from user_management.contract.repository.user_repository import UserRepository
+from user_management.repository.user_repository import UserRepository
 
 
 class SignUpUC(BaseUseCase):

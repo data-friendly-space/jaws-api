@@ -2,7 +2,6 @@
 from django.db import models
 
 
-
 class AnalysisQuestion(models.Model):
     """Analysis Question"""
     content = models.CharField(max_length=240)

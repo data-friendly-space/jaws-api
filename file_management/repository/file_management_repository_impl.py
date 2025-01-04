@@ -32,11 +32,13 @@ class FileManagementRepositoryImpl(FileManagementRepository):
 
         try:
             with transaction.atomic():
-                new_dataset = Dataset.objects.create(
+                new_dataset = Dataset.objects.update_or_create(
                     filename=filename,
-                    uploaded_by=user,
-                    size_bytes=size_bytes,
-                    mime_type=get_mimetype_from_extension(filename)
+                    defaults={
+                        'uploaded_by': user,
+                        'size_bytes': size_bytes,
+                        'mime_type': get_mimetype_from_extension(filename)
+                    }
                 )
                 object_name = f"datasets/{filename}"
                 response = s3_client.generate_presigned_post(
@@ -80,3 +82,7 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         analysis = Analysis.objects.filter(id=analysis_id).first()
         datasets = analysis.datasets.all()
         return DatasetTO.from_models(datasets)
+
+    def get_dataset_by_filename(self, filename):
+        dataset = Dataset.objects.filter(filename=filename).first()
+        return dataset

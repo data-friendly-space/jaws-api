@@ -78,7 +78,7 @@ class AnalysisService(BaseService):
         """
 
     @abstractmethod
-    def update_analysis_questions(self, analysis_questions):
+    def update_analysis_questions(self, analysis_id: int, content: str):
         """
         Updates analysis questions
         """

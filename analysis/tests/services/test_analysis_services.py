@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 
-from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
@@ -305,3 +305,29 @@ class TestGetAllSectors(TestCase):
     def test_get_analysis_frameworks(self):
         sectors = self.service.get_all_sectors(QueryOptions())
         self.assertIsNotNone(sectors)
+
+
+class TestAssignOrUpdateAnalysisFramework(TestCase):
+    """Test that get all sectors works as expected"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.service = AnalysisServiceImpl()
+        self.org = Organization.objects.create(name="TestOrganization2")
+        self.workspace = Workspace.objects.create(
+            title="TestWorksp2ace1",
+            organization=self.org,
+            facilitator_id=self.user.id,
+            creator_id=self.user.id,
+        )
+        self.analysis = Analysis.objects.create(
+            title="TestAnalysis1",
+            workspace_id=self.workspace.id,
+            end_date="2024-12-17",
+            creator_id=self.user.id,
+        )
+
+    def test_create_or_update_analysis_framework(self):
+        analysis_updated = self.service.update_analysis_framework(1,1)
+        self.assertIsNotNone(analysis_updated)
+        self.assertEqual(analysis_updated.content, "content")

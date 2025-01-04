@@ -5,6 +5,10 @@ from django.urls import reverse, resolve
 from analysis.interfaces.controllers.add_location_controller import (
     add_location_controller,
 )
+from analysis.interfaces.controllers.assign_or_update_analysis_framework_controller import \
+    assign_or_update_analysis_framework_controller
+from analysis.interfaces.controllers.create_or_update_analysis_question_controller import \
+    create_or_update_analysis_question_controller
 from analysis.interfaces.controllers.get_administrative_division_controller import (
     get_administrative_division_controller,
 )
@@ -52,7 +56,6 @@ class TestUrls(SimpleTestCase):
         url = reverse("add_location", args=['some-analysis-id', 'some-p-code'])
         self.assertEqual(resolve(url).func, add_location_controller)
 
-
     def test_remove_location_resolves(self):
         """Test that the url for removing a location works"""
         url = reverse("remove_location", args=["some-analysis-id", "some-p-code"])
@@ -73,3 +76,12 @@ class TestUrls(SimpleTestCase):
         url = reverse("get_all_sectors_controller")
         self.assertEqual(resolve(url).func, get_all_sectors_controller)
 
+    def test_assign_or_update_analysis_framework_controller_resolves(self):
+        """Test that the url for assign or update analysis framework controllers works"""
+        url = reverse("assign_or_update_analysis_framework_controller", args=[1, 1])
+        self.assertEqual(resolve(url).func, assign_or_update_analysis_framework_controller)
+
+    def test_create_or_update_analysis_question_controller_resolves(self):
+        """Test that the url for create or update analysis question"""
+        url = reverse("create_or_update_analysis_question_controller", args=[1])
+        self.assertEqual(resolve(url).func, create_or_update_analysis_question_controller)

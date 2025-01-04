@@ -1,5 +1,5 @@
 """Contains the use case for adding a administrative divisions into a analysis"""
-from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.repository.analysis_repository import AnalysisRepository
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.use_case.base_use_case import BaseUseCase

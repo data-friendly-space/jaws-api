@@ -14,7 +14,7 @@ from file_management.use_cases.create_presigned_url_upload_file_uc import (
     CreatePresignedUrlUploadFileUC,
 )
 from file_management.use_cases.get_analysis_datasets_uc import GetAnalysisDatasetsUC
-from user_management.repository.role_repository_impl import RoleRepositoryImpl
+from user_management.repository.impl.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 from user_management.usecases.attach_file_to_analysis_uc import AttachFileToAnalysisUC
 from user_management.usecases.get_user_role_in_analysis_uc import (

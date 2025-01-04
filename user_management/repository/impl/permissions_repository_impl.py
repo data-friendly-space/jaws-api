@@ -1,5 +1,5 @@
 """This module contains the implementation of Permission repository"""
-from user_management.contract.repository.permission_repository import PermissionRepository
+from user_management.repository.permission_repository import PermissionRepository
 
 from common.helpers.query_options import QueryOptions
 from user_management.contract.to.permission_to import PermissionTO

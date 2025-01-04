@@ -1,6 +1,7 @@
 """This module contains the analysis repository"""
 from abc import abstractmethod
 
+from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.models import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.helpers.query_options import QueryOptions
@@ -44,3 +45,16 @@ class AnalysisRepository(BaseRepository):
     @abstractmethod
     def get_steps_by_ids(self, ids):
         """Return analysis steps based on a list of ids"""
+
+    @abstractmethod
+    def update_analysis_questions(self, analysis_id: int, content: str) -> AnalysisTO:
+        """Assign or update analysis questions"""
+
+    @abstractmethod
+    def assign_or_update_framework_to_analysis(self, analysis_id: int, framework_id: int) -> AnalysisTO:
+        """
+        Update the analysis_framework field for a specific Analysis instance.
+        :param analysis_id: ID of the Analysis to update.
+        :param framework_id: ID of the AnalysisFramework to set.
+        :return: Number of rows updated.
+        """

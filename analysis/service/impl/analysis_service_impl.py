@@ -8,14 +8,15 @@ from analysis.interfaces.serializers.administrative_division_serializer import (
 )
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
-from analysis.models.analysis_question import AnalysisQuestion
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
-from analysis.repository.analysis_framework_repository_impl import AnalysisFrameworkRepositoryImpl
-from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
+from analysis.repository.impl.analysis_framework_repository_impl import AnalysisFrameworkRepositoryImpl
+from analysis.repository.impl.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.service.analysis_service import AnalysisService
 from analysis.use_cases.add_location_uc import AddLocationUC
+from analysis.use_cases.assign_or_update_analysis_framework_uc import AssignOrUpdateAnalysisFrameworkUC
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
+from analysis.use_cases.create_or_update_analysis_question_uc import CreateOrUpdateAnalysisQuestionUC
 from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionsUC, \
     GetAdministrativeDivisionByIdUC
 from analysis.use_cases.get_all_sectors_uc import GetAllSectorsUC
@@ -28,13 +29,12 @@ from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from analysis.use_cases.update_analysis_steps_uc import UpdateAnalysisStepsUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
-from user_management.repository.user_repository_impl import UserRepositoryImpl
+from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 
 
 class AnalysisServiceImpl(AnalysisService):
     """Implementation of AnalysisService. Contains the business logic"""
-
 
     def __init__(self):
         self.create_analysis_uc = CreateAnalysisUC.get_instance()
@@ -56,20 +56,24 @@ class AnalysisServiceImpl(AnalysisService):
         self.user_repository = UserRepositoryImpl()
         self.get_all_analysis_frameworks_uc = GetAnalysisFrameworkUC.get_instance()
         self.get_all_sectors_uc = GetAllSectorsUC.get_instance()
+        self.assign_or_update_analysis_framework_uc = AssignOrUpdateAnalysisFrameworkUC.get_instance()
+        self.create_or_update_analysis_question_uc = CreateOrUpdateAnalysisQuestionUC.get_instance()
 
     def get_all_analysis_frameworks(self, query_options: QueryOptions):
         """Get all analysis frameworks"""
         analysis_frameworks = self.get_all_analysis_frameworks_uc.exec(AnalysisFrameworkRepositoryImpl(), query_options)
         return [analysis_framework.to_dict() for analysis_framework in analysis_frameworks]
 
-
     def update_analysis_framework(self, analysis_id: int, analysis_framework_id: int):
         """ Updates analysis framework"""
-        pass
+        analysis = self.assign_or_update_analysis_framework_uc.exec(self.repository, analysis_id,
+                                                                    analysis_framework_id)
+        return analysis.to_dict()
 
-    def update_analysis_questions(self, analysis_questions):
+    def update_analysis_questions(self, analysis_id: int, content: str):
         """Update analysis questions"""
-        pass
+        analysis_question = self.create_or_update_analysis_question_uc.exec(self.repository, analysis_id, content)
+        return analysis_question.to_dict()
 
     def get_all_sectors(self, query_options: QueryOptions):
         """Get all sectors"""

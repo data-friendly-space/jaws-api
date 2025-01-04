@@ -2,11 +2,12 @@
 from django.db import models, transaction
 
 from analysis.models.administrative_division import AdministrativeDivision
+from analysis.models.analysis_framework import AnalysisFramework
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from file_management.models.dataset import Dataset
-from analysis.models.analysis_framework import AnalysisFramework
+
 
 class Analysis(models.Model):
     """Analysis model"""
@@ -26,9 +27,11 @@ class Analysis(models.Model):
     last_change = models.DateTimeField(auto_now=True)
     locations = models.ManyToManyField(AdministrativeDivision)
     analysis_steps = models.ManyToManyField(AnalysisStep)
-    datasets = models.ManyToManyField(Dataset)
+    datasets = models.ManyToManyField(
+        Dataset,
+        through="AnalysisDataset")
     analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE, null=True,
-                                           blank=True)
+                                           blank=True, related_name="analysis_framework")
     def save(self, *args, **kwargs):
         is_new = self.pk is None
 
@@ -50,3 +53,13 @@ class Analysis(models.Model):
         for location in self.locations.all():
             locations_with_hierarchy[location.id] = location.get_hierarchy()
         return locations_with_hierarchy
+
+class AnalysisDataset(models.Model):
+    """Many to many table for datasets within an analysis"""
+
+    analysis = models.ForeignKey(Analysis, on_delete=models.CASCADE)
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+
+    class Meta:
+        """Table's metadata"""
+        db_table = 'analysis_datasets'
