@@ -58,7 +58,6 @@ class FileManagementRepository:
         filename -- The name to search for
         Return: DatasetTO or None if the dataset was not found
         """
-
     @abstractmethod
     def get_dataset_file(self, filename: str):
         """Search the dataset in the storage
