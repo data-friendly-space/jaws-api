@@ -102,13 +102,13 @@ class FileManagementRepositoryImpl(FileManagementRepository):
 
     def create_columns(self, dataset_id, columns: List[str]) -> List[ColumnConfigurationTO]:
         dataset = Dataset.objects.get(id=dataset_id)
-        columns = ColumnConfiguration.objects.bulk_create(
-            [
-                ColumnConfiguration(
+        column_configurations = []
+        for col in columns:
+            new_column_config, _ = ColumnConfiguration.objects.update_or_create(
                     dataset=dataset,
                     original_name=col
                 )
-                for col in columns
-            ]
-        )
-        return ColumnConfigurationTO.from_models(columns)
+            column_configurations.append(
+                new_column_config
+            )
+        return ColumnConfigurationTO.from_models(column_configurations)

@@ -60,20 +60,12 @@ class FileManagementServiceImpl(FileManagementService):
         self.user_service = UsersServiceImpl()
 
     def create_presigned_url_upload_file(
-        self, user, filename: str, analysis_id: int, size_bytes: int
+        self, user, filename: str, analysis_id
     ) -> str:
         # TODO: validate if the user is in ['FACILITATOR', 'DATA MANAGER']
-        if size_bytes > DATASET_MAX_SIZE:
-            raise BadRequestException(
-                f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
-            )
-
-        self.analysis_service.get_analysis_by_id(
-            analysis_id
-        )  # Raise 404 if analysis doesn't exist
-
+        # TODO: check if the analysis id is needed to store the dataset in the s3
         presigned_url = self.create_presigned_url_upload_file_uc.exec(
-            self.repository, filename, user.id, size_bytes
+            self.repository, filename
         )
         return presigned_url.to_dict()
 
@@ -110,15 +102,22 @@ class FileManagementServiceImpl(FileManagementService):
             raise NotFoundException("The dataset doesn't exist")
 
         # If exists create the Dataset record
+        size_bytes = dataset_file.ContentLength
+        
+        if size_bytes > DATASET_MAX_SIZE:
+            raise BadRequestException(
+                f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
+            )
         dataset = self.create_dataset_uc.exec(
-            self.repository, filename, dataset_file.ContentLength, user.id
+            self.repository, filename, size_bytes, user.id
         )
 
         # Attach the dataset to the analysis
         self.attach_file_to_analysis_uc.exec(self.repository, dataset.id, analysis_id)
 
         # Create the column configurations for each dataset column
-        dataset_df = pd.read_csv(dataset_file.Body)
+        dataset_blob = dataset_file.Body
+        dataset_df = pd.read_csv(dataset_blob)
         column_configurations = self.create_dataset_column_configurations_uc.exec(
             self.repository, dataset.id, dataset_df
         )

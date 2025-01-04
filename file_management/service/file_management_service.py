@@ -14,7 +14,7 @@ class FileManagementService(BaseService):
     """Service for file management"""
 
     @abstractmethod
-    def create_presigned_url_upload_file(self, user, filename: str) -> S3PresignedUrlTO:
+    def create_presigned_url_upload_file(self, user, filename: str, analysis_id: int) -> S3PresignedUrlTO:
         """Generate a presigned URL for uplading files"""
 
     @abstractmethod
