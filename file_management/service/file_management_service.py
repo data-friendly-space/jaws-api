@@ -3,6 +3,8 @@
 from abc import abstractmethod
 from typing import List
 
+from pandas import DataFrame
+
 from common.service.base_service import BaseService
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
@@ -24,3 +26,7 @@ class FileManagementService(BaseService):
         """
         Retrieve all the datasets from the given analysis if the user has the required permissions
         """
+
+    @abstractmethod
+    def save_dataset_columns(self, dataset: DataFrame):
+        """Take the columns from the dataset and save the column configuration in the database using the first row to parse the data types"""

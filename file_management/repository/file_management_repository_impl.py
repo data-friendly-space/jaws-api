@@ -6,6 +6,8 @@ import urllib
 from datetime import timedelta
 from os import getenv
 import boto3
+import boto3.exceptions
+import boto3.s3
 from botocore.exceptions import ClientError
 from django.db import transaction
 
@@ -85,4 +87,16 @@ class FileManagementRepositoryImpl(FileManagementRepository):
 
     def get_dataset_by_filename(self, filename):
         dataset = Dataset.objects.filter(filename=filename).first()
+        return dataset
+
+    def get_dataset_file(self, filename):
+        s3_client = boto3.client("s3")
+        try:
+            dataset = s3_client.get_object(
+                Bucket=bucket_name,
+                Key=f"datasets/{filename}"
+            )
+        except ClientError as e:
+            logging.error(e)
+            raise e
         return dataset

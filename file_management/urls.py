@@ -11,6 +11,7 @@ from file_management.interfaces.controllers.create_presigned_url_upload_file_con
 from file_management.interfaces.controllers.get_analysis_datasets_controller import (
     get_analysis_datasets_controller,
 )
+from file_management.interfaces.controllers.testeando import testeando
 
 urlpatterns = [
     path(
@@ -28,4 +29,9 @@ urlpatterns = [
         get_analysis_datasets_controller,
         name="get_analysis_datasets",
     ),
+    path(
+        "testeando",
+        testeando,
+        name="testeando"
+    )
 ]

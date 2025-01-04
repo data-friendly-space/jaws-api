@@ -35,6 +35,9 @@ class FileManagementServiceImpl(FileManagementService):
         self.create_presigned_url_download_file_uc = (
             CreatePresignedUrlDownloadFileUC.get_instance()
         )
+        self.create_dataset_column_configurations_uc = (
+            CreateDatasetColumnConfigurations.get_instance()
+        )
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -84,3 +87,6 @@ class FileManagementServiceImpl(FileManagementService):
             self.repository, analysis_id
         )
         return [dataset.to_dict() for dataset in datasets]
+    
+    def save_dataset_columns(self, dataset):
+        return 

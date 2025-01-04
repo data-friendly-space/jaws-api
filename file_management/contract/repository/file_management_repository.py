@@ -57,3 +57,19 @@ class FileManagementRepository:
         filename -- The name to search for
         Return: DatasetTO or None if the dataset was not found
         """
+
+    def get_dataset_file(self, filename: str):
+        """Search the dataset in the storage
+        
+        Keyword arguments:
+        filename -- the filename of the dataset
+        """
+
+    @abstractmethod
+    def create_columns(self, columns):
+        """Create the column configurations of a dataset
+        
+        Keyword arguments:
+        columns -- to be defined
+        """
+        #TODO: define the columns type
