@@ -11,6 +11,7 @@ from common.constants.constants import DATASET_MAX_SIZE
 from common.exceptions.exceptions import BadRequestException, ForbiddenException, NotFoundException
 from common.test_utils import create_test_analysis
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
 from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
@@ -228,3 +229,42 @@ class TestConfirmDatasetUploaded(TestCase):
 
         self.assertEqual(dataset.total_columns, 2)
         self.assertEqual(dataset.total_rows, 2)
+
+class TestGetDatasetColumns(TestCase):
+    """Test the method for getting the dataset columns"""
+
+    def setUp(self):
+        self.service = FileManagementServiceImpl()
+
+        self.user = User.objects.create(
+            name="TestName",
+            lastname="TestLastname",
+            email="test@test.com",
+            password="testpassword", 
+        )
+        self.dataset = Dataset.objects.create(
+            filename="test.csv",
+            url="http://testurl/test.csv",
+            uploaded_by=self.user,
+            size_bytes=12345,
+            total_rows=1,
+            total_columns=1
+        )
+
+        self.column = ColumnConfiguration.objects.create(
+            dataset=self.dataset,
+            original_name="test"
+        )
+
+    def test_dataset_not_found(self):
+        """Test that the method raises a not found if the dataset doesn't exists"""
+        invalid_dataset_id = 1
+
+        with self.assertRaises(NotFoundException):
+            self.service.get_dataset_columns(self.user, invalid_dataset_id)
+
+    def test_dataset_found(self):
+        """Test that the method return the dataset columns"""
+        columns = self.service.get_dataset_columns(self.user, self.dataset.id)
+        columns_dict = [ColumnConfigurationTO.from_model(self.column).to_dict()]
+        self.assertEqual(columns, columns_dict)
