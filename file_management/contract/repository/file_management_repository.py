@@ -3,6 +3,7 @@
 from abc import abstractmethod
 from typing import List
 
+from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 
@@ -12,8 +13,8 @@ class FileManagementRepository:
 
     @abstractmethod
     def create_presigned_url_upload_file(
-        self, filename: str, user_id: str, size_bytes: int
-    ) -> tuple[S3PresignedUrlTO, DatasetTO]:
+        self, filename: str
+    ) -> S3PresignedUrlTO:
         """
         Create a presigned URL to allow the frontend to upload a file
         """
@@ -58,6 +59,7 @@ class FileManagementRepository:
         Return: DatasetTO or None if the dataset was not found
         """
 
+    @abstractmethod
     def get_dataset_file(self, filename: str):
         """Search the dataset in the storage
         
@@ -66,10 +68,21 @@ class FileManagementRepository:
         """
 
     @abstractmethod
-    def create_columns(self, columns):
+    def create_dataset(self, filename: str, size_bytes: int, user_id: str) -> DatasetTO:
+        """Create a new Dataset record
+        
+        Keyword arguments:
+        filename -- The filename of the dataset
+        size_byes -- The size of the file in bytes
+        uder_id -- The id of the user who have uploaded the dataset
+        Return: A data transfer object of the dataset record
+        """
+
+    @abstractmethod
+    def create_columns(self, dataset_id: str, columns: List[str]) -> List[ColumnConfigurationTO]:
         """Create the column configurations of a dataset
         
         Keyword arguments:
-        columns -- to be defined
+        dataset_id -- The id of the dataset
+        columns -- List of the column names as string
         """
-        #TODO: define the columns type

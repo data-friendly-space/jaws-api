@@ -11,7 +11,9 @@ from file_management.interfaces.controllers.create_presigned_url_upload_file_con
 from file_management.interfaces.controllers.get_analysis_datasets_controller import (
     get_analysis_datasets_controller,
 )
-from file_management.interfaces.controllers.testeando import testeando
+from file_management.interfaces.controllers.confirm_dataset_uploaded_controller import (
+    confirm_dataset_uploaded_controller,
+)
 
 urlpatterns = [
     path(
@@ -30,8 +32,8 @@ urlpatterns = [
         name="get_analysis_datasets",
     ),
     path(
-        "testeando",
-        testeando,
-        name="testeando"
-    )
+        "confirm-dataset-uploaded",
+        confirm_dataset_uploaded_controller,
+        name="confirm_dataset_uploaded",
+    ),
 ]

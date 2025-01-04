@@ -6,7 +6,7 @@ class Dataset(models.Model):
     """Dataset model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     filename = models.CharField(max_length=255, unique=True)
-    url = models.URLField(null=True)
+    url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey('user_management.User', on_delete=models.CASCADE)

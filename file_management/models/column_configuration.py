@@ -8,14 +8,12 @@ from file_management.models.dataset import Dataset
 class ColumnConfiguration(models.Model):
     """Dataset Column configuration model"""
 
-    dataset = models.ForeignKey(
-        Dataset,
-        primary_key=True,
-        on_delete=models.CASCADE)
     original_name = models.CharField(
-        primary_key=True,
         max_length=255
     )
+    dataset = models.ForeignKey(
+        Dataset,
+        on_delete=models.CASCADE)
     include = models.BooleanField(default=True)
     alias = models.CharField(max_length=255, null=True, blank=True)
     data_type = models.ForeignKey(DataType, null=True, on_delete=models.SET_NULL)
@@ -25,3 +23,9 @@ class ColumnConfiguration(models.Model):
     class Meta:
         """Table's metadata"""
         db_table="column_configurations"
+        constraints = [
+            models.UniqueConstraint(
+                fields=[ "dataset", "original_name"],
+                name="unique_col_per_dataset"
+            )
+        ]

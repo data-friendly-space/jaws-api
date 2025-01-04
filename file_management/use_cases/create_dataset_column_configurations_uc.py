@@ -29,10 +29,12 @@ class CreateDatasetColumnConfigurationsUC(BaseUseCase):
     def exec(
         self,
         repository: FileManagementRepository,
+        dataset_id: str,
         dataset: DataFrame,
     ) -> dict:
         columns = list(dataset.columns)
         column_configurations = repository.create_columns(
+            dataset_id,
             columns
         )
         return column_configurations

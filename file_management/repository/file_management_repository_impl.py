@@ -2,22 +2,24 @@
 
 import logging
 from typing import List
-import urllib
 from datetime import timedelta
 from os import getenv
 import boto3
 import boto3.exceptions
 import boto3.s3
 from botocore.exceptions import ClientError
-from django.db import transaction
+import urllib
 
 from analysis.models.analysis import Analysis
 from common.helpers.get_mime_type_from_extension import get_mimetype_from_extension
+from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.contract.dto.dataset_to import DatasetTO
+from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 from file_management.contract.repository.file_management_repository import (
     FileManagementRepository,
 )
+from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
 from user_management.models.user import User
 
@@ -27,34 +29,20 @@ bucket_name = getenv("AWS_STORAGE_BUCKET_NAME")
 class FileManagementRepositoryImpl(FileManagementRepository):
     """Analysis repository"""
 
-    def create_presigned_url_upload_file(self, filename: str, user_id: str, size_bytes: int):
+    def create_presigned_url_upload_file(self, filename: str):
         s3_client = boto3.client("s3")
         expires_in = timedelta(hours=1).seconds
-        user = User.objects.filter(id=user_id).first()
-
         try:
-            with transaction.atomic():
-                new_dataset = Dataset.objects.update_or_create(
-                    filename=filename,
-                    defaults={
-                        'uploaded_by': user,
-                        'size_bytes': size_bytes,
-                        'mime_type': get_mimetype_from_extension(filename)
-                    }
-                )
-                object_name = f"datasets/{filename}"
-                response = s3_client.generate_presigned_post(
-                    bucket_name,
-                    object_name,
-                    ExpiresIn=expires_in,
-                )
-
-                new_dataset.url = f"{response['url']}{urllib.parse.quote(object_name)}"
-                new_dataset.save()
+            object_name = f"datasets/{filename}"
+            response = s3_client.generate_presigned_post(
+                bucket_name,
+                object_name,
+                ExpiresIn=expires_in,
+            )
         except ClientError as e:
             logging.error(e)
             raise e
-        return S3PresignedUrlTO.from_model(response), DatasetTO.from_model(new_dataset)
+        return S3PresignedUrlTO.from_model(response)
 
     def create_presigned_url_download_file(self, dataset_id: str) -> str:
         s3_client = boto3.client("s3")
@@ -92,11 +80,35 @@ class FileManagementRepositoryImpl(FileManagementRepository):
     def get_dataset_file(self, filename):
         s3_client = boto3.client("s3")
         try:
-            dataset = s3_client.get_object(
+            s3_object = s3_client.get_object(
                 Bucket=bucket_name,
                 Key=f"datasets/{filename}"
             )
         except ClientError as e:
             logging.error(e)
             raise e
-        return dataset
+        return S3ObjectAttributesTO.from_model(s3_object)
+
+    def create_dataset(self, filename: str, size_bytes: int, user_id: str):
+        user = User.objects.get(id=user_id)
+        new_dataset, _ = Dataset.objects.update_or_create(
+            filename=filename,
+            size_bytes=size_bytes,
+            uploaded_by=user,
+            mime_type=get_mimetype_from_extension(filename),
+            url=f"https://{bucket_name}.s3.amazonaws.com/datasets/{urllib.parse.quote(filename)}"
+        )
+        return DatasetTO.from_model(new_dataset)
+
+    def create_columns(self, dataset_id, columns: List[str]) -> List[ColumnConfigurationTO]:
+        dataset = Dataset.objects.get(id=dataset_id)
+        columns = ColumnConfiguration.objects.bulk_create(
+            [
+                ColumnConfiguration(
+                    dataset=dataset,
+                    original_name=col
+                )
+                for col in columns
+            ]
+        )
+        return ColumnConfigurationTO.from_models(columns)

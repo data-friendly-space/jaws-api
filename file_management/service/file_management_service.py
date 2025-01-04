@@ -28,5 +28,6 @@ class FileManagementService(BaseService):
         """
 
     @abstractmethod
-    def save_dataset_columns(self, dataset: DataFrame):
-        """Take the columns from the dataset and save the column configuration in the database using the first row to parse the data types"""
+    def confirm_dataset_uploaded(self, user, filename: str, analysis_id: int):
+        """Validate that the dataset was succesfully uploaded to the storage and if so, create the corresponding column configurations
+        Also attach the dataset to the analysis"""

@@ -1,8 +1,7 @@
 """Contains the use case for getting the dataset's file from the storage"""
 
 from common.use_case.base_use_case import BaseUseCase
-from file_management.contract.dto.dataset_to import DatasetTO
-from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
+from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
 from file_management.contract.repository.file_management_repository import (
     FileManagementRepository,
 )
@@ -30,8 +29,8 @@ class GetDatasetFileUC(BaseUseCase):
         self,
         repository: FileManagementRepository,
         filename: str,
-    ) -> dict:
-        presigned_url, dataset = repository.get_dataset_file(
+    ) -> S3ObjectAttributesTO:
+        dataset = repository.get_dataset_file(
             filename
         )
-        return presigned_url, dataset
+        return dataset
