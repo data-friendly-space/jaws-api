@@ -1,11 +1,18 @@
 """This module contains the tests for the services"""
 
 from unittest.mock import MagicMock
+import boto3
 from django.test import SimpleTestCase, TestCase
+
+from moto import mock_aws
 
 from analysis.models.analysis import Analysis
 from common.constants.constants import DATASET_MAX_SIZE
 from common.exceptions.exceptions import BadRequestException, ForbiddenException, NotFoundException
+from common.test_utils import create_test_analysis
+from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
+from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
 from file_management.service.impl.file_management_service_impl import (
     FileManagementServiceImpl,
@@ -140,3 +147,74 @@ class TestGetAnalysisDatasets(TestCase):  # noqa: F821
         )
         response = self.service.get_analysis_datasets(self.user, self.test_analysis.id)
         self.assertEqual(response[0]['id'], self.dataset.id)
+
+class TestConfirmDatasetUploaded(TestCase):
+    """Test the method for confirming that a dataset was uploaded"""
+
+    @mock_aws
+    def setUp(self):
+        self.service = FileManagementServiceImpl()
+        self.service.get_dataset_file_uc = MagicMock()
+        self.user = User.objects.create(
+            name="TestName",
+            lastname="TestLastname",
+            email="test@test.com",
+            password="testpassword",
+        )
+        self.analysis = create_test_analysis(self.user)
+        self.filename = "test.csv"
+        self.analysis_id = 1
+
+    def test_dataset_not_found(self):
+        """Test that if the dataset was not found it raises a not found exception"""
+        self.service.get_dataset_file_uc.exec.return_value = None
+
+        with self.assertRaises(NotFoundException):
+            self.service.confirm_dataset_uploaded(
+                self.user,
+                self.filename,
+                self.analysis_id
+            )
+        self.service.get_dataset_file_uc.exec.assert_called_once()
+
+    def test_size_bytes_too_big(self):
+        """Test that if the dataset size is too big it raises a bad request"""
+        self.service.get_dataset_file_uc.exec.return_value = S3ObjectAttributesTO(
+            ContentLength=DATASET_MAX_SIZE + 1,
+            Body=MagicMock()
+        )
+
+        with self.assertRaises(BadRequestException):
+            self.service.confirm_dataset_uploaded(
+                self.user,
+                self.filename,
+                self.analysis_id
+            )
+        self.service.get_dataset_file_uc.exec.assert_called_once()
+
+    @mock_aws
+    def test_valid_size_and_dataset(self):
+        """Test that with valid size and dataset it create the dataset, the column configurations and attach the dataset to the analysis, returning the column configurations"""
+        s3 = boto3.client("s3")
+        s3.create_bucket(Bucket="testbucket")
+        csv_content = "column1,column2\nvalue1,value2\nvalue3,value4"
+        s3.put_object(Bucket="testbucket", Key=self.filename, Body=csv_content)
+        self.service.get_dataset_file_uc.exec.return_value = S3ObjectAttributesTO.from_model(
+            s3.get_object(
+                Bucket="testbucket", Key=self.filename
+            )
+        )
+
+        response = self.service.confirm_dataset_uploaded(self.user, self.filename, self.analysis.id)
+
+        dataset = Dataset.objects.first()
+
+        column_configurations = ColumnConfiguration.objects.all()
+
+        self.assertEqual(dataset.filename, self.filename)
+        self.assertEqual(self.analysis.datasets.first(), dataset)
+        self.assertEqual(len(column_configurations), 2)
+
+        column_configuration_to = ColumnConfigurationTO.from_models(column_configurations)
+        column_configurations_dict = [col.to_dict() for col in column_configuration_to]
+        self.assertEqual(column_configurations_dict, response)

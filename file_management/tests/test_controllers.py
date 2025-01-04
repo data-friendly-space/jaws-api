@@ -6,7 +6,9 @@ from django.urls import reverse
 
 from analysis.models.analysis import Analysis
 from common.exceptions.exceptions import BadRequestException
-from common.test_utils import create_logged_in_client
+from common.test_utils import create_logged_in_client, create_test_analysis
+from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
 from user_management.models.organization import Organization
 from user_management.models.role import Role
@@ -162,3 +164,83 @@ class TestGetDatasetsFromAnalysis(TestCase):
         response = self.client.get(self.url + f"?analysis_id={self.analysis.id}")
 
         self.assertEqual(response.status_code, 200)
+class TestConfirmDatasetUploaded(TestCase):
+    """Test the controller for confirming that a dataset was uploaded"""
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("confirm_dataset_uploaded")
+        self.test_analysis = create_test_analysis(self.user)
+        self.test_filename = "test.csv"
+
+    def test_missing_filename(self):
+        """Test that if the filename is missing the response is a bad request"""
+        response = self.client.post(f"{self.url}?analysis_id={self.test_analysis.id}")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_missing_analysis_id(self):
+        """Test that if the analysis id is missing the response is a bad request"""
+        response = self.client.post(f"{self.url}?filename={self.test_filename}")
+
+        self.assertEqual(response.status_code, 400)
+
+    @patch(
+        "file_management.interfaces.controllers.confirm_dataset_uploaded_controller.FileManagementServiceImpl"
+    )
+    def test_valid_data(self, mock_service):
+        """Test that if the filename and the analysis are present it works"""
+        mock_service_instance = MagicMock()
+        mock_service.return_value = mock_service_instance
+        mock_service_instance.confirm_dataset_uploaded.return_value = {}
+
+        response = self.client.post(
+            f"{self.url}?analysis_id={self.test_analysis.id}&filename={self.test_filename}"
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+class TestGetDatasetColumns(TestCase):
+    """Test the controller for getting a dataset's columns"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+
+        self.dataset = Dataset.objects.create(
+            filename="test.csv",
+            url="http://testurl/test.csv",
+            uploaded_by=self.user,
+            size_bytes=12345
+        )
+
+        self.column_config = ColumnConfiguration.objects.create(
+            dataset=self.dataset,
+            original_name="Test"
+        )
+        self.url = reverse("get_dataset_columns")
+
+    def test_call_without_dataset_id_fails(self):
+        """Test that calling the endpoint without a dataset id fails"""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_dataset_id_invalid_uuid(self):
+        """Test that calling the endpoint with a invalid dataset id fails"""
+        invalid_id = "asd"
+        response = self.client.get(f"{self.url}?dataset_id={invalid_id}")
+
+        self.assertEqual(response.status_code, 500)
+
+    def test_dataset_id_valid(self):
+        """Test that calling the endpoint with a valid dataset id returns the expected response object"""
+        response = self.client.get(f"{self.url}?dataset_id={self.dataset.id}")
+        self.assertEqual(response.status_code, 200)
+
+        column_config_to = ColumnConfigurationTO.from_model(self.column_config)
+        self.assertEqual(
+            response.data['payload'],
+            [
+                column_config_to.to_dict()
+            ]
+        )
+

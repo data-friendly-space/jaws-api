@@ -3,6 +3,7 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
+from file_management.interfaces.controllers.confirm_dataset_uploaded_controller import confirm_dataset_uploaded_controller
 from file_management.interfaces.controllers.create_presigned_url_download_file_controller import (
     create_presigned_url_download_file_controller,
 )
@@ -12,6 +13,7 @@ from file_management.interfaces.controllers.create_presigned_url_upload_file_con
 from file_management.interfaces.controllers.get_analysis_datasets_controller import (
     get_analysis_datasets_controller,
 )
+from file_management.interfaces.controllers.get_dataset_columns_controller import get_dataset_columns_controller
 
 
 class TestUrls(SimpleTestCase):
@@ -33,3 +35,14 @@ class TestUrls(SimpleTestCase):
         """Test that getting the datasets from an anlysis works"""
         url = reverse("get_analysis_datasets")
         self.assertEqual(resolve(url).func, get_analysis_datasets_controller)
+
+    def test_confirm_dataset_uploaded(self):
+        """Test that the url for confirming that a dataset was uploaded works"""
+        url = reverse("confirm_dataset_uploaded")
+        self.assertEqual(resolve(url).func, confirm_dataset_uploaded_controller)
+
+    def test_get_dataset_columns(self):
+        """Test that getting the dataset's c
+        olumns works"""
+        url = reverse("get_dataset_columns")
+        self.assertEqual(resolve(url).func, get_dataset_columns_controller)
