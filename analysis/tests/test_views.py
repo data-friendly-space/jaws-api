@@ -62,6 +62,36 @@ class TestGetSteps(TestCase):
         self.assertEqual(len(steps_found), 2)
 
 
+class TestGetAnalysisFrameworks(TestCase):
+    """Test controller get analysis frameworks"""
+
+    def setUp(self):
+        """set up analysis frameworks"""
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("get_analysis_frameworks_controller")
+
+    def test_get_analysis_frameworks(self):
+        """Test that the endpoint retrieves the analysis frameworks"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        analysis_frameworks = response.data["payload"]
+        self.assertIsNotNone(analysis_frameworks)
+
+class TestGetAllSectors(TestCase):
+    """Test controller get analysis frameworks"""
+
+    def setUp(self):
+        """set up analysis frameworks"""
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("get_analysis_frameworks_controller")
+
+    def test_get_analysis_frameworks(self):
+        """Test that the endpoint retrieves the analysis frameworks"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        analysis_frameworks = response.data["payload"]
+        self.assertIsNotNone(analysis_frameworks)
+
 class TestUpdateAnalysisSteps(TestCase):
     """Test the controller update_analysis_steps"""
 

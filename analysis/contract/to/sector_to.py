@@ -8,7 +8,7 @@ from common.contract.to.base_to import BaseTO
 @dataclass
 class SectorTO(BaseTO):
     """Sector DTO"""
-    id: str
+    id: int
     name: str
 
     @classmethod
@@ -23,7 +23,7 @@ class SectorTO(BaseTO):
 
     @classmethod
     def from_models(cls, sectors):
-        """Creatre a sector TO based on a database model"""
+        """Create a sector TO based on a database model"""
         if sectors is None or sectors.count() <= 0:
             return None
         return [cls.from_model(sector) for sector in sectors.all()]

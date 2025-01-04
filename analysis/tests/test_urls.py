@@ -14,6 +14,8 @@ from analysis.interfaces.controllers.create_analysis_controller import (
 from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
+from analysis.interfaces.controllers.get_analysis_frameworks_controller import get_analysis_frameworks_controller
+from analysis.interfaces.controllers.get_sectors_controller import get_all_sectors_controller
 from analysis.interfaces.controllers.get_steps_controller import get_steps_controller
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
     put_analysis_scope_controller,
@@ -65,3 +67,9 @@ class TestUrls(SimpleTestCase):
         """Test that the url for getting the analysis steps works"""
         url = reverse("get_steps")
         self.assertEqual(resolve(url).func, get_steps_controller)
+
+    def test_get_all_sectors_controller_resolves(self):
+        """Test that the url for getting the sectors works"""
+        url = reverse("get_all_sectors_controller")
+        self.assertEqual(resolve(url).func, get_all_sectors_controller)
+

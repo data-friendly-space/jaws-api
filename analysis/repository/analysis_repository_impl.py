@@ -4,9 +4,11 @@ from analysis.contract.repository.analysis_repository import AnalysisRepository
 from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
+from analysis.contract.to.sector_to import SectorTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
+from analysis.models.sector import Sector
 from common.helpers.query_options import QueryOptions
 from user_management.contract.to.user_analysis_role_to import UserAnalysisRoleTO
 from user_management.models.user_analysis_role import UserAnalysisRole
@@ -123,3 +125,15 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         """Invite user to analysis assigning role"""
         user_analysis_role = UserAnalysisRole.objects.create(analysis_id=analysis_id, role_id=role_id, user_id=user_id)
         return UserAnalysisRoleTO.from_model(user_analysis_role)
+
+    def get_all_sectors(self, query_options: QueryOptions, **kwargs):
+        """
+        Retrieve all sectors from the database.
+        """
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        sectors = Sector.objects.filter(**filters)
+        if query_options:
+            sectors = query_options.filter_and_exec_queryset(sectors, model=Analysis)
+        if not sectors or len(sectors) == 0:
+            return []
+        return SectorTO.from_models(sectors)

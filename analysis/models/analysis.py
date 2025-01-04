@@ -6,7 +6,7 @@ from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from file_management.models.dataset import Dataset
-
+from analysis.models.analysis_framework import AnalysisFramework
 
 class Analysis(models.Model):
     """Analysis model"""
@@ -27,7 +27,8 @@ class Analysis(models.Model):
     locations = models.ManyToManyField(AdministrativeDivision)
     analysis_steps = models.ManyToManyField(AnalysisStep)
     datasets = models.ManyToManyField(Dataset)
-
+    analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE, null=True,
+                                           blank=True)
     def save(self, *args, **kwargs):
         is_new = self.pk is None
 

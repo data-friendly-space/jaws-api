@@ -8,16 +8,20 @@ from analysis.interfaces.serializers.administrative_division_serializer import (
 )
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from analysis.models.analysis_question import AnalysisQuestion
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
+from analysis.repository.analysis_framework_repository_impl import AnalysisFrameworkRepositoryImpl
 from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.service.analysis_service import AnalysisService
 from analysis.use_cases.add_location_uc import AddLocationUC
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
 from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionsUC, \
     GetAdministrativeDivisionByIdUC
+from analysis.use_cases.get_all_sectors_uc import GetAllSectorsUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
-from analysis.use_cases.get_analysis_uc import GetAnalysisUC
+from analysis.use_cases.get_analyses_uc import GetAnalysesUC
+from analysis.use_cases.get_analysis_frameworks_uc import GetAnalysisFrameworkUC
 from analysis.use_cases.get_steps_uc import GetStepsUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
@@ -31,10 +35,11 @@ from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersU
 class AnalysisServiceImpl(AnalysisService):
     """Implementation of AnalysisService. Contains the business logic"""
 
+
     def __init__(self):
         self.create_analysis_uc = CreateAnalysisUC.get_instance()
         self.put_analysis_scope_uc = PutAnalysisScopeUC.get_instance()
-        self.get_analysis_uc = GetAnalysisUC.get_instance()
+        self.get_analysis_uc = GetAnalysesUC.get_instance()
         self.get_analysis_by_id_uc = GetAnalysisByIdUC.get_instance()
         self.get_administrative_divisions_uc = (
             GetAdministrativeDivisionsUC.get_instance()
@@ -49,8 +54,30 @@ class AnalysisServiceImpl(AnalysisService):
         self.update_analysis_steps_uc = UpdateAnalysisStepsUC.get_instance()
         self.repository = AnalysisRepositoryImpl()
         self.user_repository = UserRepositoryImpl()
+        self.get_all_analysis_frameworks_uc = GetAnalysisFrameworkUC.get_instance()
+        self.get_all_sectors_uc = GetAllSectorsUC.get_instance()
+
+    def get_all_analysis_frameworks(self, query_options: QueryOptions):
+        """Get all analysis frameworks"""
+        analysis_frameworks = self.get_all_analysis_frameworks_uc.exec(AnalysisFrameworkRepositoryImpl(), query_options)
+        return [analysis_framework.to_dict() for analysis_framework in analysis_frameworks]
+
+
+    def update_analysis_framework(self, analysis_id: int, analysis_framework_id: int):
+        """ Updates analysis framework"""
+        pass
+
+    def update_analysis_questions(self, analysis_questions):
+        """Update analysis questions"""
+        pass
+
+    def get_all_sectors(self, query_options: QueryOptions):
+        """Get all sectors"""
+        sectors = self.get_all_sectors_uc.exec(AnalysisRepositoryImpl(), query_options)
+        return [sector.to_dict() for sector in sectors]
 
     def create_analysis(self, analysis: CreateAnalysisIn, creator_id):
+        """Create analysis business logic"""
         if not self.get_user_by_filter_uc.exec(self.user_repository, id=creator_id):
             raise BadRequestException("Analysis creator doens't exists")
         if not analysis.is_valid():
@@ -179,9 +206,8 @@ class AnalysisServiceImpl(AnalysisService):
             raise BadRequestException("The location is not present in the analysis")
         self.remove_location_uc.exec(self.repository, existing_analysis, administrative_division)
 
-
     def update_steps(self, analysis_id: int, step_ids: List[int]):
-        self.get_analysis_by_id(analysis_id) #if analysis doesn't exist raises 404
+        self.get_analysis_by_id(analysis_id)  # if analysis doesn't exist raises 404
         if not step_ids or len(step_ids) <= 0:
             raise BadRequestException("Step ids required")
         steps = self.repository.get_steps_by_ids(step_ids)
@@ -191,7 +217,6 @@ class AnalysisServiceImpl(AnalysisService):
         if not set(mandatory_step_ids).issubset(step_ids):
             raise BadRequestException("You can't delete mandatory steps")
         self.update_analysis_steps_uc.exec(self.repository, analysis_id, step_ids)
-
 
     def get_steps(self):
         steps = self.get_steps_uc.exec(self.repository)

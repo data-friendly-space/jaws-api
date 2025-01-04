@@ -140,13 +140,7 @@ def add_steps(apps, schema_editor):
     for step in substeps:
         AnalysisStep.objects.create(**step)
 
-    existing_analyses = Analysis.objects.all()
-    mandatory_steps = AnalysisStep.objects.filter(
-        models.Q(step_parent__isnull=True, mandatory=True)
-        | models.Q(step_parent__mandatory=True, mandatory=True)
-    )
-    for analysis in existing_analyses:
-        analysis.analysis_steps.set(mandatory_steps)
+
 
 
 def remove_steps(apps, schema_editor):

@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 
+from common.helpers.query_options import QueryOptions
 from common.service.base_service import BaseService
 
 
@@ -16,7 +17,7 @@ class AnalysisService(BaseService):
         """
 
     @abstractmethod
-    def get_analysis(self):
+    def get_analysis(self, workspace_id, query_options: QueryOptions):
         """Retrieve all the analysis that a user can access"""
 
     @abstractmethod
@@ -62,4 +63,28 @@ class AnalysisService(BaseService):
     def get_mandatory_step_ids(self):
         """
         Return the required steps
+        """
+
+    @abstractmethod
+    def get_all_analysis_frameworks(self, query_options: QueryOptions):
+        """
+        Return the all analysis frameworks
+        """
+
+    @abstractmethod
+    def get_all_sectors(self, query_options: QueryOptions):
+        """
+        Return the all sectors
+        """
+
+    @abstractmethod
+    def update_analysis_questions(self, analysis_questions):
+        """
+        Updates analysis questions
+        """
+
+    @abstractmethod
+    def update_analysis_framework(self, analysis_id: int, analysis_framework_id: int):
+        """
+        Updates analysis framework
         """

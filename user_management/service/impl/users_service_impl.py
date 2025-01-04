@@ -8,7 +8,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
-from analysis.use_cases.get_analysis_uc import GetAnalysisUC
+from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from common.exceptions.exceptions import (
     NotFoundException,
     UnauthorizedException,
@@ -57,7 +57,7 @@ class UsersServiceImpl(UsersService):
         self.sign_in_uc = SignInUC.get_instance()
         self.sign_up_uc = SignUpUC.get_instance()
         self.get_user_by_filters = GetUserByFiltersUC.get_instance()
-        self.get_analysis_uc = GetAnalysisUC.get_instance()
+        self.get_analysis_uc = GetAnalysesUC.get_instance()
         self.notify_user_uc = SendNotificationToUserUC.get_instance()
         self.invite_user_to_org_uc = InviteUserToOrganizationUC.get_instance()
         self.invite_user_to_analysis_uc = InviteUserToAnalysisUC.get_instance()

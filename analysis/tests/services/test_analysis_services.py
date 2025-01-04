@@ -13,6 +13,7 @@ from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
 from common.exceptions.exceptions import BadRequestException, NotFoundException
+from common.helpers.query_options import QueryOptions
 from common.test_utils import create_logged_in_client
 from user_management.models import Organization, Workspace, Role
 
@@ -280,3 +281,27 @@ class TestUpdateAnalysisSteps(TestCase):
         new_step_ids = [step.id for step in self.analysis.analysis_steps.all()]
 
         self.assertEqual(valid_step_ids, new_step_ids)
+
+
+class TestGetAnalysisFrameworks(TestCase):
+    """Test that get analysis's frameworks works as expected"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.service = AnalysisServiceImpl()
+
+    def test_get_analysis_frameworks(self):
+        analysis_frameworks = self.service.get_all_analysis_frameworks(QueryOptions())
+        self.assertIsNotNone(analysis_frameworks)
+
+
+class TestGetAllSectors(TestCase):
+    """Test that get all sectors works as expected"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.service = AnalysisServiceImpl()
+
+    def test_get_analysis_frameworks(self):
+        sectors = self.service.get_all_sectors(QueryOptions())
+        self.assertIsNotNone(sectors)
