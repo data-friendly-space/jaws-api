@@ -3,10 +3,7 @@
 from abc import abstractmethod
 from typing import List
 
-from pandas import DataFrame
-
 from common.service.base_service import BaseService
-from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 
 
@@ -22,7 +19,7 @@ class FileManagementService(BaseService):
         """Generate a presigned URL for downloading files"""
 
     @abstractmethod
-    def get_analysis_datasets(self, user, analysis_id: int) -> List[DatasetTO]:
+    def get_analysis_datasets(self, user, analysis_id: int) -> List[dict]:
         """
         Retrieve all the datasets from the given analysis if the user has the required permissions
         """
@@ -31,3 +28,12 @@ class FileManagementService(BaseService):
     def confirm_dataset_uploaded(self, user, filename: str, analysis_id: int):
         """Validate that the dataset was succesfully uploaded to the storage and if so, create the corresponding column configurations
         Also attach the dataset to the analysis"""
+
+    @abstractmethod
+    def get_dataset_columns(self, user, dataset_id: str) -> List[dict]:
+        """Retrieve the column configurations for the dataset
+        
+        Keyword arguments:
+        dataset_id -- The id of the dataset
+        Return: a list of column configurations
+        """

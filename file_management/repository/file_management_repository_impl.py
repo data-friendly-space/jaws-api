@@ -64,7 +64,7 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         dataset = Dataset.objects.filter(id=dataset_id).first()
         analysis.datasets.add(dataset)
 
-    def get_dataset_by_id(self, dataset_id: str) -> DatasetTO:
+    def get_dataset_by_id(self, dataset_id: str) -> DatasetTO | None:
         dataset = Dataset.objects.filter(id=dataset_id).first()
         return DatasetTO.from_model(dataset)
 
@@ -111,4 +111,10 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             column_configurations.append(
                 new_column_config
             )
+        return ColumnConfigurationTO.from_models(column_configurations)
+
+    def get_dataset_columns(self, dataset_id):
+        column_configurations = ColumnConfiguration.objects.filter(
+            dataset__id=dataset_id
+        ).all()
         return ColumnConfigurationTO.from_models(column_configurations)

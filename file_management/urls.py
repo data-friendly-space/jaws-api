@@ -14,6 +14,7 @@ from file_management.interfaces.controllers.get_analysis_datasets_controller imp
 from file_management.interfaces.controllers.confirm_dataset_uploaded_controller import (
     confirm_dataset_uploaded_controller,
 )
+from file_management.interfaces.controllers.get_dataset_columns_controller import get_dataset_columns_controller
 
 urlpatterns = [
     path(
@@ -36,4 +37,9 @@ urlpatterns = [
         confirm_dataset_uploaded_controller,
         name="confirm_dataset_uploaded",
     ),
+    path(
+        "get-columns",
+        get_dataset_columns_controller,
+        name="get_dataset_columns"
+    )
 ]

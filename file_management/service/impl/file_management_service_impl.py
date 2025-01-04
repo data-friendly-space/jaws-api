@@ -24,6 +24,8 @@ from file_management.use_cases.create_presigned_url_upload_file_uc import (
 )
 from file_management.use_cases.get_analysis_datasets_uc import GetAnalysisDatasetsUC
 from file_management.use_cases.get_dataset_by_filename_uc import GetDatasetByFilenameUC
+from file_management.use_cases.get_dataset_by_id_uc import GetDatasetByIdUC
+from file_management.use_cases.get_dataset_columns_uc import GetDatasetColumnsUC
 from file_management.use_cases.get_dataset_file_uc import GetDatasetFileUC
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
@@ -54,6 +56,8 @@ class FileManagementServiceImpl(FileManagementService):
         )
         self.create_dataset_uc = CreateDatasetUC.get_instance()
         self.get_dataset_file_uc = GetDatasetFileUC.get_instance()
+        self.get_dataset_columns_uc = GetDatasetColumnsUC.get_instance()
+        self.get_dataset_by_id_uc = GetDatasetByIdUC.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -122,3 +126,15 @@ class FileManagementServiceImpl(FileManagementService):
             self.repository, dataset.id, dataset_df
         )
         return [col.to_dict() for col in column_configurations]
+
+    def get_dataset_columns(self, user, dataset_id):
+        # TODO: validate if the user can see the dataset
+        dataset = self.get_dataset_by_id_uc.exec(
+            self.repository, dataset_id
+        )
+        if not dataset:
+            raise NotFoundException("The dataset doesn't exist.")
+        columns = self.get_dataset_columns_uc.exec(
+            self.repository, dataset_id
+        )
+        return [col.to_dict() for col in columns]

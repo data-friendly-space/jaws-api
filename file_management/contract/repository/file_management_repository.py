@@ -85,3 +85,12 @@ class FileManagementRepository:
         dataset_id -- The id of the dataset
         columns -- List of the column names as string
         """
+
+    @abstractmethod
+    def get_dataset_columns(self, dataset_id: str) -> List[ColumnConfigurationTO]:
+        """Find the dataset columns for a given dataset id
+        
+        Keyword arguments:
+        dataset_id -- The id of the dataset
+        Return: a list of column configurations
+        """
