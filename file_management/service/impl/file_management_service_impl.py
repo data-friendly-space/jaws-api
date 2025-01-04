@@ -27,6 +27,7 @@ from file_management.use_cases.get_dataset_by_filename_uc import GetDatasetByFil
 from file_management.use_cases.get_dataset_by_id_uc import GetDatasetByIdUC
 from file_management.use_cases.get_dataset_columns_uc import GetDatasetColumnsUC
 from file_management.use_cases.get_dataset_file_uc import GetDatasetFileUC
+from file_management.use_cases.get_dataset_rows_uc import GetDatasetRowsUC
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 from user_management.usecases.attach_file_to_analysis_uc import AttachFileToAnalysisUC
@@ -58,6 +59,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.get_dataset_file_uc = GetDatasetFileUC.get_instance()
         self.get_dataset_columns_uc = GetDatasetColumnsUC.get_instance()
         self.get_dataset_by_id_uc = GetDatasetByIdUC.get_instance()
+        self.get_dataset_rows_uc = GetDatasetRowsUC.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -146,3 +148,19 @@ class FileManagementServiceImpl(FileManagementService):
             self.repository, dataset_id
         )
         return [col.to_dict() for col in columns]
+
+    def get_dataset_rows(self, user, dataset_id, query_options):
+        dataset = self.get_dataset_by_id_uc.exec(
+            self.repository, dataset_id
+        )
+        if not dataset:
+            raise NotFoundException("The dataset doesn't exist.")
+
+        dataset_file = self.get_dataset_file_uc.exec(
+            self.repository, dataset.filename
+        )
+
+        rows = self.get_dataset_rows_uc.exec(
+            dataset_file, query_options
+        )
+        return rows

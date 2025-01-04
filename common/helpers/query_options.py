@@ -1,8 +1,10 @@
 """This module contains the query options"""
 import ast
+from math import ceil
 from typing import List, Optional, Type
 from django.core.paginator import Paginator
 from django.db.models import Q, QuerySet, Model
+from pandas import DataFrame
 from rest_framework import serializers
 
 
@@ -111,3 +113,38 @@ class QueryOptions(serializers.Serializer):
             return page.object_list
         else:
             return list(queryset)
+
+    def paginate_and_filter_dataframe(self, dataframe: DataFrame):
+        """Return the specified rows of a dataframe"""
+        page_number = max(int(self.page_number), 1)
+        page_size = max(int(self.page_size), 1)
+
+        if self.search_term:
+            dataframe = dataframe[
+                dataframe.apply(
+                    lambda row: row.astype(str).str.contains(
+                        self.search_term, case=False
+                    ).any(), axis=1
+                )
+            ]
+
+        if self.order_by:
+            for column, direction in self.order_by.items():
+                dataframe = dataframe.sort_values(
+                    by=column, ascending=(direction.lower() == 'asc')
+                )
+
+        total_records = len(dataframe)
+        total_pages = ceil(total_records / page_size)
+
+        start_idx = (page_number - 1) * page_size
+        end_idx = start_idx + page_size
+        paginated_data = dataframe.iloc[start_idx:end_idx]
+
+        return {
+            "data": paginated_data,
+            "total_records": total_records,
+            "total_pages": total_pages,
+            "current_page": page_number,
+            "page_size": page_size,
+        }
