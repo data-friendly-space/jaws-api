@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from common.exceptions.exceptions import BadRequestException
 from common.helpers.api_responses import api_response_success
 from common.serializer.CamelCaseMixin import to_snake_case_data
-from file_management.contract.io.create_presigned_url_upload_file_in import (
+from file_management.contract.requests.create_presigned_url_upload_file_in import (
     CreatePresignedUrlUploadFileIn,
 )
 from file_management.service.impl.file_management_service_impl import (
