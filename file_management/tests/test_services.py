@@ -37,41 +37,18 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         presigned_url_mock = MagicMock()
         presigned_url_mock.fields.key = "mock_key"
         presigned_url_mock.url = "https://mockurl.com/"
-        size_bytes = 12345
         self.service.create_presigned_url_upload_file_uc.exec.return_value = presigned_url_mock
 
         mock_dataset = MagicMock()
         mock_dataset.id = 456
 
         response = self.service.create_presigned_url_upload_file(
-            self.user, self.filename, self.analysis_id, size_bytes
+            self.user, self.filename, self.analysis_id
         )
 
-        self.service.analysis_service.get_analysis_by_id.assert_called_once_with(
-            self.analysis_id
-        )
         self.service.create_presigned_url_upload_file_uc.exec.assert_called_once()
         self.assertEqual(response, presigned_url_mock.to_dict())
 
-    def test_analysis_not_found(self):
-        """Test that if the analysis was not found a not found exception is raised"""
-        self.service.analysis_service.get_analysis_by_id.side_effect = (
-            NotFoundException()
-        )
-        size_bytes = 12345
-
-        with self.assertRaises(NotFoundException):
-            self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id, size_bytes
-            )
-
-    def test_file_too_big(self):
-        """Test that if the file size is too big raises a bad request exception"""
-        size_bytes = DATASET_MAX_SIZE + 1
-        with self.assertRaises(BadRequestException):
-            self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id, size_bytes
-            )
 
 class TestCreatePresignedUrlDownloadFile(SimpleTestCase):
     """Contains the test cases for creating a presigned url for file downloading"""

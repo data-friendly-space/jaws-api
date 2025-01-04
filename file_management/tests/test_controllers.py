@@ -31,14 +31,14 @@ class TestCreatePresignedUrlFileUploadController(TestCase):
         mock_service_instance.create_presigned_url_upload_file.return_value = {
             "url": "https://example.com/upload"
         }
-        valid_data = {"filename": "test.csv", "analysisId": 1, "sizeBytes": 12345}
+        valid_data = {"filename": "test.csv", "analysisId": 1}
         response = self.client.post(self.url, valid_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data["payload"], {"url": "https://example.com/upload"}
         )
         mock_service_instance.create_presigned_url_upload_file.assert_called_once_with(
-            self.user, "test.csv", 1, 12345
+            self.user, "test.csv", 1
         )
 
     def test_missing_fields(self):
