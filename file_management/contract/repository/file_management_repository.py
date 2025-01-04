@@ -67,13 +67,21 @@ class FileManagementRepository:
         """
 
     @abstractmethod
-    def create_dataset(self, filename: str, size_bytes: int, user_id: str) -> DatasetTO:
+    def create_dataset(
+        self,
+        filename: str,
+        size_bytes: int,
+        user_id: str,
+        total_rows: int,
+        total_columns: int) -> DatasetTO:
         """Create a new Dataset record
         
         Keyword arguments:
         filename -- The filename of the dataset
         size_byes -- The size of the file in bytes
         uder_id -- The id of the user who have uploaded the dataset
+        total_rows -- count of rows
+        total_columns -- count of columns
         Return: A data transfer object of the dataset record
         """
 

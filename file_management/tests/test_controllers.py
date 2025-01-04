@@ -145,7 +145,9 @@ class TestGetDatasetsFromAnalysis(TestCase):
                 filename="test.csv",
                 url="http://testurl/test.csv",
                 uploaded_by=self.user,
-                size_bytes=12345
+                size_bytes=12345,
+                total_columns=1,
+                total_rows=1
             )
         )
         UserAnalysisRole.objects.create(
@@ -209,7 +211,9 @@ class TestGetDatasetColumns(TestCase):
             filename="test.csv",
             url="http://testurl/test.csv",
             uploaded_by=self.user,
-            size_bytes=12345
+            size_bytes=12345,
+            total_rows=1,
+            total_columns=1
         )
 
         self.column_config = ColumnConfiguration.objects.create(

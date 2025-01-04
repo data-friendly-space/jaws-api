@@ -89,14 +89,22 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             raise e
         return S3ObjectAttributesTO.from_model(s3_object)
 
-    def create_dataset(self, filename: str, size_bytes: int, user_id: str):
+    def create_dataset(
+            self,
+            filename: str,
+            size_bytes: int,
+            user_id: str,
+            total_rows: int,
+            total_columns: int):
         user = User.objects.get(id=user_id)
         new_dataset, _ = Dataset.objects.update_or_create(
             filename=filename,
             size_bytes=size_bytes,
             uploaded_by=user,
             mime_type=get_mimetype_from_extension(filename),
-            url=f"https://{bucket_name}.s3.amazonaws.com/datasets/{urllib.parse.quote(filename)}"
+            url=f"https://{bucket_name}.s3.amazonaws.com/datasets/{urllib.parse.quote(filename)}",
+            total_rows=total_rows,
+            total_columns=total_columns
         )
         return DatasetTO.from_model(new_dataset)
 

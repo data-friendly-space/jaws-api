@@ -107,24 +107,32 @@ class FileManagementServiceImpl(FileManagementService):
 
         # If exists create the Dataset record
         size_bytes = dataset_file.ContentLength
-        
+        dataset_blob = dataset_file.Body
+        dataset_df = pd.read_csv(dataset_blob)
+
+        total_rows = len(dataset_df)
+        total_columns = len(dataset_df.columns)
+
         if size_bytes > DATASET_MAX_SIZE:
             raise BadRequestException(
                 f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
             )
         dataset = self.create_dataset_uc.exec(
-            self.repository, filename, size_bytes, user.id
+            self.repository,
+            filename,
+            size_bytes,
+            user.id,
+            total_rows,
+            total_columns
+        )
+        # Create the column configurations for each dataset column
+        column_configurations = self.create_dataset_column_configurations_uc.exec(
+            self.repository, dataset.id, dataset_df
         )
 
         # Attach the dataset to the analysis
         self.attach_file_to_analysis_uc.exec(self.repository, dataset.id, analysis_id)
 
-        # Create the column configurations for each dataset column
-        dataset_blob = dataset_file.Body
-        dataset_df = pd.read_csv(dataset_blob)
-        column_configurations = self.create_dataset_column_configurations_uc.exec(
-            self.repository, dataset.id, dataset_df
-        )
         return [col.to_dict() for col in column_configurations]
 
     def get_dataset_columns(self, user, dataset_id):

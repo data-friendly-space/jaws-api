@@ -11,7 +11,9 @@ class Dataset(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey('user_management.User', on_delete=models.CASCADE)
     mime_type = models.CharField(null=False, default="text/csv")
-    size_bytes = models.IntegerField(default=0)
+    size_bytes = models.IntegerField()
+    total_rows = models.IntegerField()
+    total_columns = models.IntegerField()
 
     class Meta:
         """Table's metadata"""

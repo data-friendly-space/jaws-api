@@ -31,11 +31,15 @@ class CreateDatasetUC(BaseUseCase):
         repository: FileManagementRepository,
         filename: str,
         size_bytes: int,
-        user_id: str
+        user_id: str,
+        total_rows: int,
+        total_columns: int
     ) -> DatasetTO:
         dataset = repository.create_dataset(
             filename,
             size_bytes,
-            user_id
+            user_id,
+            total_rows,
+            total_columns
         )
         return dataset
