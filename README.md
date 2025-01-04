@@ -59,3 +59,59 @@ In order to set up de development environment using docker compose run the follo
 **2. Run the migrations inside the api container**
     `docker exec jaws-api python3 manage.py migrate`
     With that command python will create all the database schema up-to-date
+
+## Libraries
+
+### 1. **boto3**
+   - Python library for interacting with AWS services like S3, EC2, and DynamoDB. Enables programmatic cloud resource management.
+
+### 2. **botocore**
+   - Low-level library used by `boto3`, containing configurations and request handling functionalities for AWS services.
+
+### 3. **charset-normalizer**
+   - Tool for detecting and handling text encoding. Serves as a lightweight alternative to `chardet` and is compatible with Python 3.
+
+### 4. **Django**
+   - High-level, open-source web framework for Python that encourages rapid development and clean, pragmatic design. Ideal for building robust, scalable web applications.
+
+### 5. **django-health-check**
+   - Extension for Django that facilitates creating endpoints to monitor the health of services like the database, cache, and storage.
+
+### 6. **djangorestframework**
+   - Known as DRF, a powerful and flexible toolkit for building RESTful APIs using Django.
+
+### 7. **psycopg2**
+   - Popular PostgreSQL adapter for Python, used for connecting and executing queries on PostgreSQL databases.
+
+### 8. **python-dotenv**
+   - Library that loads environment variables from a `.env` file, useful for managing sensitive configurations like API keys.
+
+### 9. **pandas**
+   - Essential library for data manipulation and analysis. Provides data structures like DataFrames and Series.
+
+### 10. **requests**
+   - Simple and elegant library for making HTTP requests in Python. Supports methods like GET, POST, PUT, DELETE, among others.
+
+### 11. **djangorestframework-simplejwt**
+   - Extension for DRF that adds support for authentication based on JSON Web Tokens (JWT), providing a secure way to handle user sessions.
+
+### 12. **django-axes**
+   - Tool for managing failed authentication attempts in Django applications, allowing blocking users or IPs after multiple failures.
+
+### 13. **psycopg2-binary**
+   - Prepackaged version of `psycopg2` that includes precompiled binaries for easier installation and deployment.
+
+### 14. **django-cors-headers**
+   - Middleware to handle CORS (Cross-Origin Resource Sharing) policies in Django applications, necessary to allow APIs to be consumed across different domains.
+
+### 15. **debugpy**
+   - Tool for remote debugging in Python. Compatible with IDEs like Visual Studio Code for analyzing code during runtime.
+
+### 16. **pylint**
+   - Static code analyzer that checks Python code quality, detecting errors and promoting best practices.
+
+### 17. **social-auth-app-django**
+   - Extension for Django that facilitates integration with authentication through social networks like Google, Facebook, and GitHub.
+
+### 18. **coverage**
+   - Tool that measures test coverage of Python code, showing which parts of the code are executed during tests and which are not.
