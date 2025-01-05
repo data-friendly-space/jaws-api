@@ -47,7 +47,7 @@ def undo_analysis_init_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [('analysis', '0007_analysis_framework'), ]
+    dependencies = [('analysis', '0006_analysisframework_analysisdataset_and_more'), ]
 
     operations = [
         migrations.RunPython(analysis_module_init_data, undo_analysis_init_data),
