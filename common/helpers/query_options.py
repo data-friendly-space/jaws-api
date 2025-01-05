@@ -136,6 +136,7 @@ class QueryOptions(serializers.Serializer):
 
         total_records = len(dataframe)
         total_pages = ceil(total_records / page_size)
+        total_columns = len(dataframe.columns)
 
         start_idx = (page_number - 1) * page_size
         end_idx = start_idx + page_size
@@ -143,8 +144,9 @@ class QueryOptions(serializers.Serializer):
 
         return {
             "data": paginated_data,
-            "total_records": total_records,
-            "total_pages": total_pages,
-            "current_page": page_number,
-            "page_size": page_size,
+            "totalRows": total_records,
+            "totalColumns": total_columns,
+            "totalPages": total_pages,
+            "currentPage": page_number,
+            "pageSize": page_size,
         }
