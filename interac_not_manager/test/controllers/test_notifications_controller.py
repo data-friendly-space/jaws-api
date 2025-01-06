@@ -1,8 +1,8 @@
 from django.urls import reverse
 from django.test import TestCase
 from common.test_utils import create_logged_in_client
-from interaction_notification_mngr.models.notification import Notification
-from interaction_notification_mngr.service.utils.messages import ORGANIZATION_INVITE_MESSAGE
+from interac_not_manager.models.notification import Notification
+from interac_not_manager.service.utils.messages import ORGANIZATION_INVITE_MESSAGE
 
 
 class GetNotificationsControllerTests(TestCase):

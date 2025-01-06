@@ -1,6 +1,6 @@
 """This module contains the get notifications use case"""
 from common.helpers.query_options import QueryOptions
-from interaction_notification_mngr.contract.repository.notification_repository import NotificationRepository
+from interac_not_manager.contract.repository.notification_repository import NotificationRepository
 
 
 class DeleteNotificationUC:

@@ -2,7 +2,7 @@
 import datetime
 from dataclasses import dataclass
 
-from interaction_notification_mngr.models.notification import Notification
+from interac_not_manager.models.notification import Notification
 from common.contract.to.base_to import BaseTO
 
 

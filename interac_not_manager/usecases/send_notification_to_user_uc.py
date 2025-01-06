@@ -1,5 +1,5 @@
 """This module contains the get users use case"""
-from interaction_notification_mngr.contract.repository.notification_repository import NotificationRepository
+from interac_not_manager.contract.repository.notification_repository import NotificationRepository
 
 
 class SendNotificationToUserUC:

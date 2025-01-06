@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('interaction_notification_mngr', '0001_initial'),
+        ('interac_not_manager', '0001_initial'),
     ]
 
     operations = [
