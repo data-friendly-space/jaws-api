@@ -19,6 +19,6 @@ class GetAllSectorsUC(BaseUseCase):
             GetAllSectorsUC()
         return GetAllSectorsUC._instance
 
-    def exec(self, repository: AnalysisRepository, query_options: QueryOptions, **kwargs) -> list[
+    def exec(self, repository: AnalysisRepository, **kwargs) -> list[
         SectorTO]:
-        return repository.get_all_sectors(query_options, **kwargs)
+        return repository.get_all_sectors(**kwargs)

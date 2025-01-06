@@ -18,7 +18,7 @@ class AnalysisRepository(BaseRepository):
         """Invite user to analysis"""
 
     @abstractmethod
-    def get_all_sectors(self, query_options: QueryOptions, **kwargs):
+    def get_all_sectors(self, **kwargs):
         """Get all sectors"""
 
     @abstractmethod

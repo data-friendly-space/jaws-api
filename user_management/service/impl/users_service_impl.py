@@ -98,7 +98,7 @@ class UsersServiceImpl(UsersService):
         analysis = self.get_analysis_uc.exec(
             AnalysisRepositoryImpl(), None, id=data["id"]
         )
-        if analysis is None or len(analysis) != 1:
+        if analysis.results is None or len(analysis.results) != 1:
             raise NotFoundException("Analysis not found")
         self.invite_user_to_analysis_uc.exec(
             AnalysisRepositoryImpl(), user.id, data["id"], data["role_id"]

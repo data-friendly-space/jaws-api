@@ -24,16 +24,33 @@ class AnalysisFrameworkRepositoryImpl(AnalysisFrameworkRepository):
         Create analysis framework from the database.
         """
 
-    def get_all(self, query_options: QueryOptions, **kwargs):
+    def get_all(self, query_options: QueryOptions = None, **kwargs):
         """
-        Retrieve all analysis from the database.
+        Retrieve all analysis frameworks from the database with optional filtering, ordering, and pagination.
         """
+        # Build filters dynamically based on provided kwargs
         filters = {key: value for key, value in kwargs.items() if value is not None}
+
+        # Query the database with the filters
         analyses = AnalysisFramework.objects.filter(**filters)
+
+        # Apply query_options if provided
         if query_options:
+            # Apply filtering, ordering, and pagination
             analyses = query_options.filter_and_exec_queryset(analyses, model=AnalysisFramework)
-        if not analyses or len(analyses) == 0:
+
+            # Check if results exist after filtering and pagination
+            if not analyses['results']:
+                return []
+
+            # Return results as transfer objects
+            return AnalysisFrameworkTO.from_models(analyses['results'])
+
+        # If query_options is None, return all results without pagination
+        if not analyses.exists():  # Ensure there are results before processing
             return []
+
+        # Transform all results to transfer objects
         return AnalysisFrameworkTO.from_models(analyses)
 
     def get_by_id(self, obj_id):

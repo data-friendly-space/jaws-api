@@ -65,7 +65,7 @@ class AnalysisServiceImpl(AnalysisService):
     def get_all_analysis_frameworks(self, query_options: QueryOptions):
         """Get all analysis frameworks"""
         analysis_frameworks = self.get_all_analysis_frameworks_uc.exec(AnalysisFrameworkRepositoryImpl(), query_options)
-        return [analysis_framework.to_dict() for analysis_framework in analysis_frameworks]
+        return analysis_frameworks.results
 
     def update_analysis_framework(self, analysis_id: int, analysis_framework_id: int):
         """ Updates analysis framework"""

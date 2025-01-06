@@ -41,20 +41,36 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         Analysis.objects.filter(id=analysis_id).update(analysis_framework=framework_id)
         return AnalysisTO.from_model(Analysis.objects.get(id=analysis_id))
 
-    def get_all(self, query_options: QueryOptions, **kwargs):
+    def get_all(self, query_options: QueryOptions = None, **kwargs):
         """
-        Retrieve all analysis from the database.
+        Retrieve all analyses from the database with optional filtering, ordering, and pagination.
         """
+        # Build filters dynamically based on provided kwargs
         filters = {key: value for key, value in kwargs.items() if value is not None}
         analyses = Analysis.objects.filter(**filters)
 
+        # Handle query_options if provided, otherwise return all records without pagination
         if query_options:
+            # Get searchable fields, including related fields if needed
             query_options.search_fields = query_options.get_queryable_fields(
                 model=Analysis, include_relations=True
             )
+
+            # Apply filters, ordering, and pagination
             analyses = query_options.filter_and_exec_queryset(analyses, model=Analysis)
 
-        return PaginatedResultTO(AnalysisTO.from_models(analyses['results']), analyses['total'])
+            # Return paginated results
+            return PaginatedResultTO(
+                AnalysisTO.from_models(analyses['results']),
+                analyses['total']
+            )
+        else:
+            # If query_options is None, return all results without pagination
+            total = analyses.count()  # Total count for consistency
+            return PaginatedResultTO(
+                AnalysisTO.from_models(analyses),  # No pagination, return all records
+                total
+            )
 
     def get_by_id(self, obj_id) -> AnalysisTO | None:
         """
@@ -166,16 +182,12 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         user_analysis_role = UserAnalysisRole.objects.create(analysis_id=analysis_id, role_id=role_id, user_id=user_id)
         return UserAnalysisRoleTO.from_model(user_analysis_role)
 
-    def get_all_sectors(self, query_options: QueryOptions, **kwargs):
+    def get_all_sectors(self, **kwargs):
         """
         Retrieve all sectors from the database.
         """
         filters = {key: value for key, value in kwargs.items() if value is not None}
         sectors = Sector.objects.filter(**filters)
-        if query_options:
-            sectors = query_options.filter_and_exec_queryset(sectors, model=Analysis)
-        if not sectors or len(sectors) == 0:
-            return []
         return SectorTO.from_models(sectors)
 
     def get_all_disaggregations(self, query_options: QueryOptions, **kwargs):
