@@ -65,7 +65,7 @@ class AnalysisServiceImpl(AnalysisService):
     def get_all_analysis_frameworks(self, query_options: QueryOptions):
         """Get all analysis frameworks"""
         analysis_frameworks = self.get_all_analysis_frameworks_uc.exec(AnalysisFrameworkRepositoryImpl(), query_options)
-        return analysis_frameworks.results
+        return [analysis_framework.to_dict() for analysis_framework in analysis_frameworks]
 
     def update_analysis_framework(self, analysis_id: int, analysis_framework_id: int):
         """ Updates analysis framework"""
@@ -78,9 +78,9 @@ class AnalysisServiceImpl(AnalysisService):
         analysis_question = self.create_or_update_analysis_question_uc.exec(self.repository, analysis_id, content)
         return analysis_question.to_dict()
 
-    def get_all_sectors(self, query_options: QueryOptions, **kwargs):
+    def get_all_sectors(self, **kwargs):
         """Get all sectors"""
-        sectors = self.get_all_sectors_uc.exec(AnalysisRepositoryImpl(), query_options, **kwargs)
+        sectors = self.get_all_sectors_uc.exec(AnalysisRepositoryImpl(), **kwargs)
         return [sector.to_dict() for sector in sectors]
 
     def create_analysis(self, analysis: CreateAnalysisIn, creator_id):

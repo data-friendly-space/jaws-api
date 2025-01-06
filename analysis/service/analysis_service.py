@@ -72,7 +72,7 @@ class AnalysisService(BaseService):
         """
 
     @abstractmethod
-    def get_all_sectors(self, query_options: QueryOptions):
+    def get_all_sectors(self):
         """
         Return the all sectors
         """

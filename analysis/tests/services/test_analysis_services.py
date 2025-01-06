@@ -66,7 +66,7 @@ class TestAnalysisService(TestCase):
 
     def test_get_sectors_with_valid_sectors(self):
         """Tests that get sectors with valid sectors works"""
-        sectors = self.service.get_all_sectors(None, pk__in=[1])
+        sectors = self.service.get_all_sectors(pk__in=[1])
         self.assertEqual(SectorTO.from_model(self.test_sector).to_dict(), sectors[0])
 
     def test_get_disaggregations_with_valid_disaggregations(self):
@@ -307,7 +307,7 @@ class TestGetAllSectors(TestCase):
         self.service = AnalysisServiceImpl()
 
     def test_get_all_sectors(self):
-        sectors = self.service.get_all_sectors(QueryOptions())
+        sectors = self.service.get_all_sectors()
         self.assertIsNotNone(sectors)
 
 

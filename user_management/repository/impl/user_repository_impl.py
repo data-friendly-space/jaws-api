@@ -27,13 +27,10 @@ class UserRepositoryImpl(UserRepository):
         user = User.objects.filter(email=email).first()
         return UserTO.from_model(user)
 
-    def get_all(self, query_options: QueryOptions):
-        users_query = User.objects.all()
-        exclude_fields = ["password"]
-        users = query_options.filter_and_exec_queryset(
-            users_query, model=User, exclude_fields=exclude_fields
-        )
-        return [] if not users or len(users) == 0 else UserTO.from_models(users)
+    def get_all(self, query_options: QueryOptions, **kwargs):
+        users_query = User.objects.all().defer("password")
+
+        return [] if not users_query or len(users_query) == 0 else UserTO.from_models(users_query)
 
     def get_by_id(self, obj_id):
         try:

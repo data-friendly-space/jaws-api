@@ -47,11 +47,11 @@ class OrganizationServiceImpl(OrganizationService):
                                                                        user_id=user_id)
         return [organization.to_dict() for organization in organizations]
 
-    def get_organizations_users_by_user_id(self, user_id: str, query_options: QueryOptions):
+    def get_organizations_users_by_user_id(self, user_id: str, organization_id: str, query_options: QueryOptions):
         """Returns a list of organizations based on organization id """
         results = self.get_organizations_users_by_user_id_uc.exec(self.organization_repository,
-                                                                             query_options,
-                                                                             user_id=user_id)
+                                                                  query_options,
+                                                                  user_id=user_id, organization_id=organization_id)
         return results.to_dict()
 
     def get_available_organizations_by_user_id(self, user_id: str):

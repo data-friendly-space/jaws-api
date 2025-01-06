@@ -21,21 +21,57 @@ class OrganizationRepositoryImpl(OrganizationRepository):
             return []
         return UserOrganizationRoleTO.from_models(organization_users)
 
-    def get_organizations_users_by_user_id(self, query_options: QueryOptions, **kwargs):
-
+    def get_organizations_users_by_user_id(self, query_options: QueryOptions = None, **kwargs):
+        """
+        Retrieve distinct organization users by user ID with optional filtering, ordering, and pagination.
+        Ensures no duplicate results by selecting distinct organization_id directly in the query.
+        Excludes fields like 'id', 'password', 'role', and 'is_active' from searches and filters.
+        """
+        # Build filters dynamically based on provided kwargs
         filters = {key: value for key, value in kwargs.items() if value is not None}
-        user_organizations = UserOrganizationRole.objects.filter(**filters)
-        organization_users = UserOrganizationRole.objects.filter(
-            organization__id__in=user_organizations.values_list('organization', flat=True)).select_related('user',
-                                                                                                           'role',
-                                                                                                           'organization')
-        if query_options:
-            query_options.search_fields = query_options.get_queryable_fields(
-                model=UserOrganizationRole, include_relations=True
-            )
-            organization_users = query_options.filter_and_exec_queryset(organization_users, model=UserOrganizationRole)
 
-        return PaginatedResultTO(UserOrganizationTO.from_models(organization_users['results']), organization_users['total'])
+        # Query user organizations
+        user_organizations = UserOrganizationRole.objects.filter(**filters)
+
+        # Create base queryset with DISTINCT
+        base_queryset = (
+            UserOrganizationRole.objects
+            .filter(organization__id__in=user_organizations.values_list('organization', flat=True))
+            .select_related('user', 'role', 'organization')  # Include related data
+        )
+
+        # Ensure query_options exists
+        if not query_options:
+            query_options = QueryOptions(
+                page_number=0,
+                page_size=10,
+                order_by={"organization__id": "asc"}  # Default ordering by organization__id
+            )
+
+        query_options.add_order_by({"organization__id": "asc"})
+
+        # Apply query_options filters and ordering
+        if query_options:
+            # Get searchable fields, excluding sensitive fields
+            query_options.search_fields = [
+                field for field in query_options.get_queryable_fields(
+                    model=UserOrganizationRole, include_relations=True
+                )
+                if all(excluded not in field for excluded in ['id', 'password', 'role', 'is_active'])
+                # Exclude sensitive fields
+            ]
+
+            # Apply filtering, ordering, and pagination
+            filtered_queryset = query_options.filter_and_exec_queryset(
+                base_queryset.distinct("organization__id"), model=UserOrganizationRole
+            )
+
+
+        return PaginatedResultTO(
+            UserOrganizationTO.from_models(filtered_queryset['results']),
+            filtered_queryset['total']  # Use distinct count
+        )
+
 
     def delete_by_id(self, obj_id):
         """Delete organization by id"""
@@ -64,7 +100,7 @@ class OrganizationRepositoryImpl(OrganizationRepository):
         return OrganizationTO.from_models(Organization.objects.all())
 
     def get_available_organizations_by_user_id(self, user_id: str):
-        organization_users = UserOrganizationRole.objects.filter(user_id=user_id)
+        organization_users = UserOrganizationRole.objects.filter(user_id=user_id).order_by("organization__name")
         return [OrganizationTO.from_model(organization_user.organization) for organization_user in organization_users]
 
     def get_users_from_organization_by_role(self, organization_id: str, role_id: str):

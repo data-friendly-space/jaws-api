@@ -10,7 +10,7 @@ from user_management.interfaces.controllers.get_users_from_organization_by_role_
 urlpatterns = [
     path('create', create_organization_controller, name='create-organization'),
     #path('invite', invite_user_to_organization_controller, name='invite_organization_to_workspace'),
-    path('users', get_organizations_users_by_user_id_controller, name='get-organizations-users-by-user-id'),
+    path('<slug:organization_id>/users', get_organizations_users_by_user_id_controller, name='get-organizations-users-by-user-id'),
     path('<str:organization_id>/users/role/<str:role>', get_users_from_organization_by_role_controller,
          name='get_users_from_organization_by_role_controller'),
 ]

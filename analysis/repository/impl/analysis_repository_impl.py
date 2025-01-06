@@ -47,7 +47,17 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         """
         # Build filters dynamically based on provided kwargs
         filters = {key: value for key, value in kwargs.items() if value is not None}
-        analyses = Analysis.objects.filter(**filters)
+        analyses = Analysis.objects.filter(**filters).distinct("id")
+
+        # Ensure query_options exists
+        if not query_options:
+            query_options = QueryOptions(
+                page_number=0,
+                page_size=10,
+                order_by={"id": "asc"}  # Default ordering by id
+            )
+
+        query_options.add_order_by({"id": "asc"})
 
         # Handle query_options if provided, otherwise return all records without pagination
         if query_options:
@@ -59,18 +69,11 @@ class AnalysisRepositoryImpl(AnalysisRepository):
             # Apply filters, ordering, and pagination
             analyses = query_options.filter_and_exec_queryset(analyses, model=Analysis)
 
-            # Return paginated results
-            return PaginatedResultTO(
-                AnalysisTO.from_models(analyses['results']),
-                analyses['total']
-            )
-        else:
-            # If query_options is None, return all results without pagination
-            total = analyses.count()  # Total count for consistency
-            return PaginatedResultTO(
-                AnalysisTO.from_models(analyses),  # No pagination, return all records
-                total
-            )
+        return PaginatedResultTO(
+            AnalysisTO.from_models(analyses['results']),
+            analyses['total']  # Total count with DISTINCT
+        )
+
 
     def get_by_id(self, obj_id) -> AnalysisTO | None:
         """

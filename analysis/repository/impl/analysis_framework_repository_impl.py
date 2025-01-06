@@ -34,18 +34,6 @@ class AnalysisFrameworkRepositoryImpl(AnalysisFrameworkRepository):
         # Query the database with the filters
         analyses = AnalysisFramework.objects.filter(**filters)
 
-        # Apply query_options if provided
-        if query_options:
-            # Apply filtering, ordering, and pagination
-            analyses = query_options.filter_and_exec_queryset(analyses, model=AnalysisFramework)
-
-            # Check if results exist after filtering and pagination
-            if not analyses['results']:
-                return []
-
-            # Return results as transfer objects
-            return AnalysisFrameworkTO.from_models(analyses['results'])
-
         # If query_options is None, return all results without pagination
         if not analyses.exists():  # Ensure there are results before processing
             return []

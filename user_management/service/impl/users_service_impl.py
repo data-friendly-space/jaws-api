@@ -104,13 +104,13 @@ class UsersServiceImpl(UsersService):
             AnalysisRepositoryImpl(), user.id, data["id"], data["role_id"]
         )
         self.add_user_to_workspace_uc.exec(
-            WorkspaceRepositoryImpl(), user.id, analysis[0].workspaceId, None
+            WorkspaceRepositoryImpl(), user.id, analysis.results[0]['workspaceId'], None
         )
         self.notify_user_uc.exec(
             NotificationRepositoryImpl(),
             {
                 "user_id": user.id,
-                "message": ANALYSIS_INVITE_MESSAGE + " " + analysis[0].title,
+                "message": ANALYSIS_INVITE_MESSAGE + " " + analysis.results[0]['title'],
             },
         )
 
@@ -119,7 +119,7 @@ class UsersServiceImpl(UsersService):
         users = self.get_users_uc.exec(self.repository, query_options)
         if not users:
             raise NotFoundException("Users not found")
-        return UserSerializer(users, many=True).data
+        return [user.to_dict() for user in users]
 
     def sign_up(self, sign_up_in: SignUpIn):
         """Business logic to sign up user"""

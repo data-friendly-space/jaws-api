@@ -1,6 +1,6 @@
 """This module contains the query options"""
 import ast
-from typing import List, Optional, Type
+from typing import List, Optional, Type, Dict
 from django.core.paginator import Paginator
 from django.db.models import Q, QuerySet, Model
 from rest_framework import serializers
@@ -14,6 +14,7 @@ class QueryOptions(serializers.Serializer):
     search_fields = serializers.ListField(child=serializers.CharField(), required=False)
     order_by = serializers.DictField(child=serializers.CharField(), required=False)
     filters = serializers.DictField(child=serializers.CharField(), required=False)
+
     def __init__(self,
                  page_number=None,
                  page_size=None,
@@ -151,3 +152,12 @@ class QueryOptions(serializers.Serializer):
             "total": total_count,  # Total number of records without pagination
             "results": list(paginated_queryset)  # Paginated results
         }
+
+    def add_order_by(self, order_by):
+        # Prepend 'organization__id' to the order_by dynamically
+        if self.order_by:
+            # Insert 'organization__id' at the beginning if it's not already there
+            self.order_by = {**order_by, **self.order_by}
+        else:
+            # Default ordering if none is provided
+            self.order_by = order_by
