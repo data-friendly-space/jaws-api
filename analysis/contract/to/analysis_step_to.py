@@ -26,10 +26,3 @@ class AnalysisStepTO(BaseTO):
             mandatory=instance.mandatory,
             parentStepId=instance.step_parent.id if instance.step_parent else None
         )
-
-    @classmethod
-    def from_models(cls, steps):
-        """Create multiple analysis step to based on analysis step model"""
-        if steps is None or steps.count() <= 0:
-            return None
-        return [cls.from_model(step) for step in steps.all()]

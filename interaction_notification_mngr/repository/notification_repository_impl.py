@@ -1,8 +1,8 @@
 """This module contains the implementation of Notification repository"""
 from common.helpers.query_options import QueryOptions
-from interac_not_manager.contract.repository.notification_repository import NotificationRepository
-from interac_not_manager.contract.to.notification_to import NotificationTO
-from interac_not_manager.models.notification import Notification
+from interaction_notification_mngr.contract.repository.notification_repository import NotificationRepository
+from interaction_notification_mngr.contract.to.notification_to import NotificationTO
+from interaction_notification_mngr.models.notification import Notification
 
 
 class NotificationRepositoryImpl(NotificationRepository):

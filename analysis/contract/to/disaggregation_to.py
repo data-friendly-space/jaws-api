@@ -20,9 +20,3 @@ class DisaggregationTO(BaseTO):
             name=instance.name
         )
 
-    @classmethod
-    def from_models(cls, disaggregations):
-        """Create a disaggregation to based on a database model"""
-        if disaggregations is None or disaggregations.count() <= 0:
-            return None
-        return [cls.from_model(disaggregation) for disaggregation in disaggregations.all()]

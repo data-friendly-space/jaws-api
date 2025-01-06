@@ -1,7 +1,9 @@
 """This module contains the analysis repository"""
 from abc import abstractmethod
 
+from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
 from analysis.contract.to.analysis_to import AnalysisTO
+from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.models import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.helpers.query_options import QueryOptions
@@ -27,11 +29,11 @@ class AnalysisRepository(BaseRepository):
         """
 
     @abstractmethod
-    def get_administrative_division(self, p_code):
-        """Retrieves a specific administrative division by id"""
+    def get_administrative_division(self, p_code) -> AdministrativeDivisionTO:
+        """Retrieves a specific administrative division by p_code"""
 
     @abstractmethod
-    def add_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+    def add_location(self, analysis_to: AnalysisTO, administrative_division_to: AdministrativeDivisionTO):
         """Add a new administrative division into a analysis"""
 
     @abstractmethod
@@ -58,3 +60,7 @@ class AnalysisRepository(BaseRepository):
         :param framework_id: ID of the AnalysisFramework to set.
         :return: Number of rows updated.
         """
+
+    @abstractmethod
+    def get_all_disaggregations(self, query_options: QueryOptions, **kwargs) -> list[DisaggregationTO]:
+        """Return all disaggregations"""

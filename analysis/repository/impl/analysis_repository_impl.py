@@ -1,19 +1,20 @@
 """This module contains the implementation of analysis repository"""
 from typing import List
 
-from django.shortcuts import get_object_or_404
-
-from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
-from analysis.models.analysis_question import AnalysisQuestion
-from analysis.repository.analysis_repository import AnalysisRepository
 from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
+from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.contract.to.sector_to import SectorTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from analysis.models.analysis_question import AnalysisQuestion
 from analysis.models.analysis_step import AnalysisStep
+from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
+from analysis.repository.analysis_repository import AnalysisRepository
+from common.contract.to.paginated_to import PaginatedResultTO
 from common.helpers.query_options import QueryOptions
 from user_management.contract.to.user_analysis_role_to import UserAnalysisRoleTO
 from user_management.models.user_analysis_role import UserAnalysisRole
@@ -24,8 +25,9 @@ class AnalysisRepositoryImpl(AnalysisRepository):
 
     def update_analysis_questions(self, analysis_id: int, content: str) -> AnalysisQuestionTO:
         """Assign or update analysis questions"""
-        return AnalysisQuestionTO.from_model(
-            AnalysisQuestion.objects.update_or_create(content=content, analysis_id=analysis_id))
+        question = AnalysisQuestion.objects.update_or_create(content=content, analysis_id=analysis_id)
+        return AnalysisQuestionTO.from_model(question[0]
+                                             )
 
     def assign_or_update_framework_to_analysis(self, analysis_id: int, framework_id: int) -> AnalysisTO:
         """
@@ -45,13 +47,16 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         """
         filters = {key: value for key, value in kwargs.items() if value is not None}
         analyses = Analysis.objects.filter(**filters)
-        if query_options:
-            analyses = query_options.filter_and_exec_queryset(analyses, model=Analysis)
-        if not analyses or len(analyses) == 0:
-            return []
-        return AnalysisTO.from_models(analyses)
 
-    def get_by_id(self, obj_id):
+        if query_options:
+            query_options.search_fields = query_options.get_queryable_fields(
+                model=Analysis, include_relations=True
+            )
+            analyses = query_options.filter_and_exec_queryset(analyses, model=Analysis)
+
+        return PaginatedResultTO(AnalysisTO.from_models(analyses['results']), analyses['total'])
+
+    def get_by_id(self, obj_id) -> AnalysisTO | None:
         """
         Retrieve a single user by ID.
         """
@@ -94,9 +99,18 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         """
         Add a new analysis to the database.
         """
+        # Create the analysis instance
+
+        # Extract only the IDs from disaggregations and sectors
+        disaggregation_ids = [d.id for d in disaggregations]  # Extract IDs from disaggregations
+        sector_ids = [s.id for s in sectors]  # Extract IDs from sectors
         analysis = Analysis.objects.create(**data)
-        analysis.disaggregations.set(disaggregations)
-        analysis.sectors.set(sectors)
+
+        # Set the relationships using the IDs
+        analysis.disaggregations.set(disaggregation_ids)  # Assign disaggregations using IDs
+        analysis.sectors.set(sector_ids)  # Assign sectors using IDs
+
+        # Return the analysis as a transfer object
         return AnalysisTO.from_model(analysis)
 
     def get_administrative_divisions(self, parent_p_code):
@@ -116,14 +130,18 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         administrative_division = AdministrativeDivision.objects.filter(p_code=p_code).first()
         return AdministrativeDivisionTO.from_model(administrative_division, include_hierarchy=True)
 
-    def add_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+    def add_location(self, analysis_to: AnalysisTO, location: AdministrativeDivisionTO):
         """Add a new administrative division into a analysis"""
-        analysis.locations.add(administrative_division)
-        return AdministrativeDivisionTO.from_model(administrative_division, include_hierarchy=True)
+        analysis = Analysis.objects.get(id=analysis_to.id)
+        location = AdministrativeDivision.objects.get(p_code=location.pCode)
+        analysis.locations.add(location)
+        return AdministrativeDivisionTO.from_model(location, include_hierarchy=True)
 
-    def remove_location(self, analysis: Analysis, administrative_division: AdministrativeDivision):
+    def remove_location(self, analysis_to: AnalysisTO, location: AdministrativeDivisionTO):
         """Add a new administrative division into a analysis"""
-        analysis.locations.remove(administrative_division)
+        analysis = Analysis.objects.get(id=analysis_to.id)
+        location = AdministrativeDivision.objects.get(p_code=location.pCode)
+        analysis.locations.remove(location)
 
     def get_steps(self):
         """Return the analysis steps"""
@@ -159,3 +177,15 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         if not sectors or len(sectors) == 0:
             return []
         return SectorTO.from_models(sectors)
+
+    def get_all_disaggregations(self, query_options: QueryOptions, **kwargs):
+        """
+        Retrieve all disaggregations from the database.
+        """
+        filters = {key: value for key, value in kwargs.items() if value is not None}
+        disaggregations = Disaggregation.objects.filter(**filters)
+        if query_options:
+            disaggregations = query_options.filter_and_exec_queryset(disaggregations, model=Analysis)
+        if not disaggregations or len(disaggregations) == 0:
+            return []
+        return DisaggregationTO.from_models(disaggregations)

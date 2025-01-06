@@ -1,4 +1,6 @@
 """Contains the use case for adding a administrative divisions into a analysis"""
+from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.repository.analysis_repository import AnalysisRepository
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
@@ -22,6 +24,6 @@ class RemoveLocationUC(BaseUseCase):
             RemoveLocationUC()
         return RemoveLocationUC._instance
 
-    def exec(self, repository: AnalysisRepository, analysis: Analysis, location: AdministrativeDivision):
+    def exec(self, repository: AnalysisRepository, analysis: AnalysisTO, location: AdministrativeDivisionTO):
         """Execute the use case"""
         return repository.remove_location(analysis, location)

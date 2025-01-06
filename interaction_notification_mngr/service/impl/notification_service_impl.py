@@ -1,10 +1,10 @@
 """This module contains the notification service"""
 
 from common.helpers.query_options import QueryOptions
-from interac_not_manager.repository.notification_repository_impl import NotificationRepositoryImpl
-from interac_not_manager.service.notification_service import NotificationService
-from interac_not_manager.usecases.delete_notfication_uc import DeleteNotificationUC
-from interac_not_manager.usecases.get_notifications_uc import GetNotificationsUC
+from interaction_notification_mngr.repository.notification_repository_impl import NotificationRepositoryImpl
+from interaction_notification_mngr.service.notification_service import NotificationService
+from interaction_notification_mngr.usecases.delete_notfication_uc import DeleteNotificationUC
+from interaction_notification_mngr.usecases.get_notifications_uc import GetNotificationsUC
 
 
 class NotificationServiceImpl(NotificationService):

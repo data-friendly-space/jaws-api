@@ -1,4 +1,5 @@
 """This module contains the implementation of Organization repository"""
+from common.contract.to.paginated_to import PaginatedResultTO
 from common.helpers.query_options import QueryOptions
 from user_management.repository.organization_repository import OrganizationRepository
 from user_management.contract.to.organization_to import OrganizationTO
@@ -21,6 +22,7 @@ class OrganizationRepositoryImpl(OrganizationRepository):
         return UserOrganizationRoleTO.from_models(organization_users)
 
     def get_organizations_users_by_user_id(self, query_options: QueryOptions, **kwargs):
+
         filters = {key: value for key, value in kwargs.items() if value is not None}
         user_organizations = UserOrganizationRole.objects.filter(**filters)
         organization_users = UserOrganizationRole.objects.filter(
@@ -28,10 +30,12 @@ class OrganizationRepositoryImpl(OrganizationRepository):
                                                                                                            'role',
                                                                                                            'organization')
         if query_options:
+            query_options.search_fields = query_options.get_queryable_fields(
+                model=UserOrganizationRole, include_relations=True
+            )
             organization_users = query_options.filter_and_exec_queryset(organization_users, model=UserOrganizationRole)
-        if not organization_users or len(organization_users) == 0:
-            return []
-        return UserOrganizationTO.from_models(organization_users)
+
+        return PaginatedResultTO(UserOrganizationTO.from_models(organization_users['results']), organization_users['total'])
 
     def delete_by_id(self, obj_id):
         """Delete organization by id"""

@@ -3,7 +3,7 @@ import uuid
 from django.test import TestCase
 
 from common.test_utils import create_logged_in_client
-from interac_not_manager.service.impl.notification_service_impl import NotificationServiceImpl
+from interaction_notification_mngr.service.impl.notification_service_impl import NotificationServiceImpl
 
 
 class TestNotificationService(TestCase):

@@ -21,9 +21,3 @@ class SectorTO(BaseTO):
             name=instance.name
         )
 
-    @classmethod
-    def from_models(cls, sectors):
-        """Create a sector TO based on a database model"""
-        if sectors is None or sectors.count() <= 0:
-            return None
-        return [cls.from_model(sector) for sector in sectors.all()]

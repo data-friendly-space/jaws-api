@@ -49,7 +49,7 @@ urlpatterns = [
     ),
     path("<slug:id>", get_analysis_by_id_controller, name="get_analysis"),
     path("<slug:analysis_id>/update", put_analysis_scope_controller, name="put_analysis"),
-    path("<int:analysis_id>/framework/<int:analysis_framework_id>", assign_or_update_analysis_framework_controller,
+    path("<int:analysis_id>/frameworks/<int:analysis_framework_id>", assign_or_update_analysis_framework_controller,
          name="assign_or_update_analysis_framework_controller"),
     path("<int:analysis_id>/questions", create_or_update_analysis_question_controller,
          name="create_or_update_analysis_question_controller"),

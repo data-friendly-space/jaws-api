@@ -33,7 +33,6 @@ class AnalysisTO(BaseTO):
     analysisQuestions: Optional[list[AnalysisQuestionTO]] = None
     analysisFramework: Optional[AnalysisFrameworkTO] = None
 
-
     @classmethod
     def from_model(cls, instance: Analysis):
         """Transforms Analysis instance into a AnalysisDTO representation."""
@@ -49,12 +48,12 @@ class AnalysisTO(BaseTO):
             endDate=instance.end_date,
             lastChange=instance.last_change,
             createdOn=instance.created_on,
-            disaggregations=DisaggregationTO.from_models(instance.disaggregations),
-            sectors=SectorTO.from_models(instance.sectors),
+            disaggregations=DisaggregationTO.from_models(instance.disaggregations.all()),
+            sectors=SectorTO.from_models(instance.sectors.all()),
             locations=AdministrativeDivisionTO.from_models(
                 instance.locations,
                 include_hierarchy=True),
-            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps),
+            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps.all()),
             analysisFramework=AnalysisFrameworkTO.from_model(instance.analysis_framework),
             analysisQuestions=AnalysisQuestionTO.from_models(instance.analysis_questions.all()),
 

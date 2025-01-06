@@ -1,5 +1,7 @@
 """Contains the use case for updating the analysis question"""
 from typing import List
+
+from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.repository.analysis_repository import AnalysisRepository
 from common.use_case.base_use_case import BaseUseCase
 
@@ -21,6 +23,6 @@ class CreateOrUpdateAnalysisQuestionUC(BaseUseCase):
             CreateOrUpdateAnalysisQuestionUC()
         return CreateOrUpdateAnalysisQuestionUC._instance
 
-    def exec(self, repository: AnalysisRepository, analysis_id: int, content: str):
+    def exec(self, repository: AnalysisRepository, analysis_id: int, content: str) -> AnalysisTO:
         """Execute the use case"""
         return repository.update_analysis_questions(analysis_id, content)

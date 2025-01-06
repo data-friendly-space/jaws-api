@@ -14,8 +14,7 @@ def get_analysis_frameworks_controller(request):
     """
     service = AnalysisServiceImpl()
 
-    query_options = QueryOptions.from_request(request)
 
     return api_response_success("Analysis frameworks retrieved successfully.",
-                                service.get_all_analysis_frameworks(query_options),
+                                service.get_all_analysis_frameworks(None),
                                 status.HTTP_200_OK)

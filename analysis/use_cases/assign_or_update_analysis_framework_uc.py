@@ -1,5 +1,7 @@
 """Contains the use case for updating the analysis framework"""
 from typing import List
+
+from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.repository.analysis_repository import AnalysisRepository
 from common.use_case.base_use_case import BaseUseCase
 
@@ -21,6 +23,6 @@ class AssignOrUpdateAnalysisFrameworkUC(BaseUseCase):
             AssignOrUpdateAnalysisFrameworkUC()
         return AssignOrUpdateAnalysisFrameworkUC._instance
 
-    def exec(self, repository: AnalysisRepository, analysis_id: int, framework_id: int):
+    def exec(self, repository: AnalysisRepository, analysis_id: int, framework_id: int) -> AnalysisTO :
         """Execute the use case"""
         return repository.assign_or_update_framework_to_analysis(analysis_id, framework_id)

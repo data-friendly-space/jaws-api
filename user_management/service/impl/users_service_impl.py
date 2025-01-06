@@ -17,14 +17,14 @@ from common.exceptions.exceptions import (
 from common.helpers.api_responses import api_response_success
 from common.helpers.query_options import QueryOptions
 from common.use_case.get_all_uc import GetAllUC as GetUsersUC
-from interac_not_manager.repository.notification_repository_impl import (
+from interaction_notification_mngr.repository.notification_repository_impl import (
     NotificationRepositoryImpl,
 )
-from interac_not_manager.service.utils.messages import (
+from interaction_notification_mngr.service.utils.messages import (
     ORGANIZATION_INVITE_MESSAGE,
     ANALYSIS_INVITE_MESSAGE,
 )
-from interac_not_manager.usecases.send_notification_to_user_uc import (
+from interaction_notification_mngr.usecases.send_notification_to_user_uc import (
     SendNotificationToUserUC,
 )
 from user_management.contract.io.invite_user_analysis_in import InviteUserAnalysisIn
