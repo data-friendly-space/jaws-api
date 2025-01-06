@@ -19,7 +19,7 @@ resource "aws_route53_record" "frontend" {
 
   alias {
     name                   = data.aws_s3_bucket.frontend.website_endpoint
-    zone_id                = "Z3AQBSTGFYJSTF"
+    zone_id                = aws_route53_zone.main.zone_id
     evaluate_target_health = false
   }
 }
