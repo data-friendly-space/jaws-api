@@ -18,6 +18,7 @@ class ColumnConfigurationTO(BaseTO):
     lastChange: datetime | None
     dataType: str | None
     dataRole: str | None
+    include: bool | None
 
 
     @classmethod
@@ -32,6 +33,7 @@ class ColumnConfigurationTO(BaseTO):
             lastChange=instance.last_change,
             dataType=DataTypeTO.from_model(instance.data_type),
             dataRole=DataRoleTO.from_model(instance.data_role),
+            include=instance.include
         )
 
     def to_dict(self) -> Dict:
