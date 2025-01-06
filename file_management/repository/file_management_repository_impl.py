@@ -1,14 +1,16 @@
 """This module contains the analysis repository"""
 
 import logging
-from typing import List
+import urllib
 from datetime import timedelta
 from os import getenv
+from typing import List
+from django.db import transaction
+
 import boto3
 import boto3.exceptions
 import boto3.s3
 from botocore.exceptions import ClientError
-import urllib
 
 from analysis.models.analysis import Analysis
 from common.helpers.get_mime_type_from_extension import get_mimetype_from_extension
@@ -126,3 +128,11 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             dataset__id=dataset_id
         ).all()
         return ColumnConfigurationTO.from_models(column_configurations)
+
+    @transaction.atomic
+    def update_columns(self, columns):
+        for column in columns.data:
+            column_configuration = ColumnConfiguration.objects.get(id=column["id"])
+            column_configuration.alias = column["alias"]
+            column_configuration.include = column["include"]
+            column_configuration.save()

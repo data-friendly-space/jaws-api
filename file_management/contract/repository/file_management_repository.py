@@ -6,6 +6,7 @@ from typing import List
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
+from file_management.contract.requests.update_columns_in import ColumnIn
 
 
 class FileManagementRepository:
@@ -101,4 +102,13 @@ class FileManagementRepository:
         Keyword arguments:
         dataset_id -- The id of the dataset
         Return: a list of column configurations
+        """
+
+    @abstractmethod
+    def update_columns(self, columns: ColumnIn) -> None:
+        """Update dataset columns
+        
+        Keyword arguments:
+        columns -- ColumnIn 
+        Return: None
         """

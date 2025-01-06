@@ -28,6 +28,7 @@ from file_management.use_cases.get_dataset_by_id_uc import GetDatasetByIdUC
 from file_management.use_cases.get_dataset_columns_uc import GetDatasetColumnsUC
 from file_management.use_cases.get_dataset_file_uc import GetDatasetFileUC
 from file_management.use_cases.get_dataset_rows_uc import GetDatasetRowsUC
+from file_management.use_cases.update_columns_uc import UpdateColumnsUC
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 from user_management.usecases.attach_file_to_analysis_uc import AttachFileToAnalysisUC
@@ -60,6 +61,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.get_dataset_columns_uc = GetDatasetColumnsUC.get_instance()
         self.get_dataset_by_id_uc = GetDatasetByIdUC.get_instance()
         self.get_dataset_rows_uc = GetDatasetRowsUC.get_instance()
+        self.update_columns_uc = UpdateColumnsUC.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -164,3 +166,14 @@ class FileManagementServiceImpl(FileManagementService):
             dataset_file, query_options
         )
         return rows
+
+    def update_columns(self, user, dataset_id, columns):
+        # TODO: Check if the user can update the column configurations
+        dataset = self.get_dataset_by_id_uc.exec(
+            self.repository, dataset_id
+        )
+        if not dataset:
+            raise NotFoundException("The dataset doesn't exist")
+        self.update_columns_uc.exec(
+            self.repository, columns
+        )

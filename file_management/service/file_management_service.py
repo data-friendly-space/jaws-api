@@ -6,6 +6,7 @@ from typing import List
 from common.helpers.query_options import QueryOptions
 from common.service.base_service import BaseService
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
+from file_management.contract.requests.update_columns_in import ColumnIn
 
 
 class FileManagementService(BaseService):
@@ -48,4 +49,15 @@ class FileManagementService(BaseService):
         dataset_id -- The id of the dataset
         query_options -- options for pagination and filtering
         Return: A list of rows as dict
+        """
+
+    @abstractmethod
+    def update_columns(self, user, dataset_id: int, columns: ColumnIn) -> None:
+        """Update the given column configurations of a dataset
+        
+        Keyword arguments:
+        user -- The user who is trying to update the columns
+        dataset_id -- the id of the dataset
+        columns -- The columns with its values
+        Return: None
         """
