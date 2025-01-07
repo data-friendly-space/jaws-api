@@ -117,10 +117,10 @@ class TestCreateOrUpdateAnalysisQuestions(TestCase):
             creator_id=self.user.id,
             workspace_id=self.workspace.id,
         )
-        self.url = reverse("create_or_update_analysis_question_controller", args=[1])
+        self.url = reverse("create_or_update_analysis_question_controller", args=[self.default_analysis.id])
 
     def test_create_or_update_analysis_question_controller(self):
-        """Test that the endpoint retrieves the analysis frameworks"""
+        """Test that the endpoint retrieves the analysis question"""
         response = self.client.put(self.url, {"content": "question"}, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data["payload"])
