@@ -1,5 +1,5 @@
 """This module contains the get users use case"""
-from user_management.contract.repository.user_repository import UserRepository
+from user_management.repository.user_repository import UserRepository
 
 
 class GetUsersUC:

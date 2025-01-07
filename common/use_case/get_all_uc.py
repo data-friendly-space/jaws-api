@@ -21,6 +21,6 @@ class GetAllUC(BaseUseCase):
             GetAllUC()
         return GetAllUC._instance
 
-    def exec(self, repository, query_options: QueryOptions):
+    def exec(self, repository, query_options: QueryOptions, **kwargs):
         """Execute the use case"""
-        return repository.get_all(query_options)
+        return repository.get_all(query_options, **kwargs)

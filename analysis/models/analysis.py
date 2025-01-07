@@ -2,6 +2,7 @@
 from django.db import models, transaction
 
 from analysis.models.administrative_division import AdministrativeDivision
+from analysis.models.analysis_framework import AnalysisFramework
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
@@ -28,7 +29,9 @@ class Analysis(models.Model):
     analysis_steps = models.ManyToManyField(AnalysisStep)
     datasets = models.ManyToManyField(
         Dataset,
-        through="AnalysisDataset")
+        through="analysis.AnalysisDataset")
+    analysis_framework = models.ForeignKey(AnalysisFramework, on_delete=models.CASCADE, null=True,
+                                           blank=True, related_name="analysis_framework")
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
@@ -51,6 +54,7 @@ class Analysis(models.Model):
         for location in self.locations.all():
             locations_with_hierarchy[location.id] = location.get_hierarchy()
         return locations_with_hierarchy
+
 
 class AnalysisDataset(models.Model):
     """Many to many table for datasets within an analysis"""

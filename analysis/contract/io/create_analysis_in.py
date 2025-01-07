@@ -17,3 +17,4 @@ class CreateAnalysisIn(serializers.Serializer):
     start_date = serializers.DateField()
     end_date = serializers.DateField()
     workspace_id = serializers.CharField()
+

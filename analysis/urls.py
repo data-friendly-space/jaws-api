@@ -3,15 +3,22 @@
 from django.urls import path
 
 from analysis.interfaces.controllers.add_location_controller import add_location_controller
+from analysis.interfaces.controllers.assign_or_update_analysis_framework_controller import \
+    assign_or_update_analysis_framework_controller
 from analysis.interfaces.controllers.create_analysis_controller import (
     create_analysis_controller,
 )
+from analysis.interfaces.controllers.create_or_update_analysis_question_controller import \
+    create_or_update_analysis_question_controller
+
 from analysis.interfaces.controllers.get_administrative_division_controller import (
     get_administrative_division_controller,
 )
 from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
+from analysis.interfaces.controllers.get_analysis_frameworks_controller import get_analysis_frameworks_controller
+from analysis.interfaces.controllers.get_sectors_controller import get_all_sectors_controller
 from analysis.interfaces.controllers.get_steps_controller import get_steps_controller
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
     put_analysis_scope_controller,
@@ -22,6 +29,9 @@ from analysis.interfaces.controllers.update_steps_controller import update_steps
 urlpatterns = [
     path("create", create_analysis_controller, name="create_analysis"),
     path("get-steps", get_steps_controller, name="get_steps"),
+    path("frameworks", get_analysis_frameworks_controller, name="get_analysis_frameworks_controller"),
+
+    path("sectors", get_all_sectors_controller, name="get_all_sectors_controller"),
     path(
         "administrative-divisions",
         get_administrative_division_controller,
@@ -39,5 +49,9 @@ urlpatterns = [
     ),
     path("<slug:id>", get_analysis_by_id_controller, name="get_analysis"),
     path("<slug:analysis_id>/update", put_analysis_scope_controller, name="put_analysis"),
+    path("<int:analysis_id>/frameworks/<int:analysis_framework_id>", assign_or_update_analysis_framework_controller,
+         name="assign_or_update_analysis_framework_controller"),
+    path("<int:analysis_id>/questions", create_or_update_analysis_question_controller,
+         name="create_or_update_analysis_question_controller"),
     path("<slug:analysis_id>/update-steps", update_steps_controller, name="update_steps"),
 ]

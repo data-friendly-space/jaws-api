@@ -36,7 +36,7 @@ class OrganizationTestCase(TestCase):
 
     def test_get_organizations_users_by_user_id(self):
         """Test get organizations users by user id"""
-        response = self.client.get(reverse('get-organizations-users-by-user-id'))
+        response = self.client.get(reverse('get-organizations-users-by-user-id', args=[self.org.id]))
 
         self.assertEqual(response.data['status'], status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Organization users retrieved successfully')

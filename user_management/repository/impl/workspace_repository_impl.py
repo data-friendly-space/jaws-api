@@ -1,6 +1,6 @@
 """This module contains the implementation of Workspace repository"""
 from common.helpers.query_options import QueryOptions
-from user_management.contract.repository.workspace_repository import WorkspaceRepository
+from user_management.repository.workspace_repository import WorkspaceRepository
 from user_management.contract.to.user_workspace_role_to import UserWorkspaceRoleTO
 from user_management.contract.to.user_workspace_to import UserWorkspaceTO
 from user_management.contract.to.workspace_to import WorkspaceTO

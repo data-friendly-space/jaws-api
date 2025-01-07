@@ -1,4 +1,5 @@
-from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.contract.to.analysis_to import AnalysisTO
+from analysis.repository.analysis_repository import AnalysisRepository
 from common.use_case.base_use_case import BaseUseCase
 
 
@@ -17,5 +18,5 @@ class GetAnalysisByIdUC(BaseUseCase):
             GetAnalysisByIdUC()
         return GetAnalysisByIdUC._instance
 
-    def exec(self, repository: AnalysisRepository, id: str):
+    def exec(self, repository: AnalysisRepository, id: str) -> AnalysisTO | None:
         return repository.get_by_id(id)

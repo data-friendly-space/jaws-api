@@ -33,5 +33,3 @@ class UserOrganizationTO(UserTO):
         """
         return [self.from_model(org) for org in organizations]
 
-    def to_dict(self) -> Dict:
-        return asdict(self)

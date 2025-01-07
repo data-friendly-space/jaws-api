@@ -62,6 +62,71 @@ class TestGetSteps(TestCase):
         self.assertEqual(len(steps_found), 2)
 
 
+class TestGetAnalysisFrameworks(TestCase):
+    """Test controller get analysis frameworks"""
+
+    def setUp(self):
+        """set up analysis frameworks"""
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("get_analysis_frameworks_controller")
+
+    def test_get_analysis_frameworks(self):
+        """Test that the endpoint retrieves the analysis frameworks"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        analysis_frameworks = response.data["payload"]
+        self.assertIsNotNone(analysis_frameworks)
+
+
+class TestGetAllSectors(TestCase):
+    """Test controller get analysis frameworks"""
+
+    def setUp(self):
+        """set up analysis frameworks"""
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("get_analysis_frameworks_controller")
+
+    def test_get_analysis_frameworks(self):
+        """Test that the endpoint retrieves the analysis frameworks"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        analysis_frameworks = response.data["payload"]
+        self.assertIsNotNone(analysis_frameworks)
+
+
+class TestCreateOrUpdateAnalysisQuestions(TestCase):
+    """Test controller get analysis frameworks"""
+
+    def setUp(self):
+        """set up analysis frameworks"""
+        self.client, self.user = create_logged_in_client()
+        self.org = Organization.objects.create(name="TestOrganization1")
+        self.workspace = Workspace.objects.create(
+            title="TestWorkspace1",
+            organization=self.org,
+            facilitator_id=self.user.id,
+            creator_id=self.user.id,
+        )
+        self.defaul_step = AnalysisStep.objects.create(
+            order=1, name="Test step", mandatory=True
+        )
+        self.default_analysis = Analysis.objects.create(
+            title="test analysis",
+            objectives="test",
+            end_date="2024-11-20",
+            creator_id=self.user.id,
+            workspace_id=self.workspace.id,
+        )
+        self.url = reverse("create_or_update_analysis_question_controller", args=[self.default_analysis.id])
+
+    def test_create_or_update_analysis_question_controller(self):
+        """Test that the endpoint retrieves the analysis question"""
+        response = self.client.put(self.url, {"content": "question"}, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data["payload"])
+        self.assertEqual(response.data['message'], "Analysis question create or updated successfully.")
+
+
 class TestUpdateAnalysisSteps(TestCase):
     """Test the controller update_analysis_steps"""
 
@@ -108,25 +173,27 @@ class TestUpdateAnalysisSteps(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    # def test_create_analysis_successfully(self):
-    #     """Test that creating an analysis with correct data works"""
-    #     response = self.client.post(
-    #         reverse("create_analysis"),
-    #         {
-    #             "title": "Testing creation",
-    #             "disaggregations": [
-    #                 "1", "2"
-    #             ],
-    #             "sectors": [
-    #                 "1"
-    #             ],
-    #             "objetives": "This is a test",
-    #             "startDate": "2024-11-25",
-    #             "endDate": "2024-11-29"
-    #         }
-    #     )
+    def test_create_analysis_successfully(self):
+        """Test that creating an analysis with correct data works"""
+        response = self.client.post(
+            reverse("create_analysis"),
+            {
+                "title": "Testing creation",
+                "disaggregations": [
+                    "1", "2"
+                ],
+                "sectors": [
+                    "1"
+                ],
+                "objetives": "This is a test",
+                "startDate": "2024-11-25",
+                "endDate": "2024-11-29",
+                "workspaceId": self.workspace.id,
+                "objectives": "objectives",
+            }
+            , content_type="application/json")
 
-    #     self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201)
 
     # def test_create_analysis_without_sector_error(self):
     #     """Tests that creating an analysis without a sector fails"""

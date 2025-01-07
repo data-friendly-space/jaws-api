@@ -1,5 +1,5 @@
 """This module contains the use case for getting the user's role within an analysis"""
-from user_management.contract.repository.role_repository import RoleRepository
+from user_management.repository.role_repository import RoleRepository
 
 
 class GetUserRoleInAnalysisUC:

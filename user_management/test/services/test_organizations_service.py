@@ -54,7 +54,7 @@ class TestOrganizationService(TestCase):
 
     def test_get_organizations_users_by_user_id(self):
         """Test get organizations users by user id function."""
-        org = self.service.get_organizations_users_by_user_id(self.user.id, None)
+        org = self.service.get_organizations_users_by_user_id(self.user.id,self.org.id , None)
         self.assertIsNotNone(org)
 
     def test_get_available_organizations_by_user_id(self):

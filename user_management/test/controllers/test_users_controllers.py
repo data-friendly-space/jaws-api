@@ -31,7 +31,6 @@ class UserTestCase(TestCase):
 
     def test_get_users(self):
         response = self.client.get(reverse('get_users'))
-
         self.assertEqual(response.data['status'], status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Users retrieved successfully')
 

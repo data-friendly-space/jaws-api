@@ -2,7 +2,7 @@
 from django.db import models
 
 class AnalysisStep(models.Model):
-    """Contains the model for an step within an analysis"""
+    """Contains the model for a step within an analysis"""
 
     step_parent = models.ForeignKey(
         'self',
@@ -23,3 +23,4 @@ class AnalysisStep(models.Model):
     def __str__(self):
         """Return the analysis step as string"""
         return str(self.name)
+
