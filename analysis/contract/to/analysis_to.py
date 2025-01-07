@@ -25,9 +25,9 @@ class AnalysisTO(BaseTO):
     sectors: Optional[list[SectorTO]]
     workspaceId: str | None
     lastChange: datetime | None
-    disaggregations: Optional[dict] = None,
-    startDate: date | None = None,
-    creator: Optional[str] = None,
+    disaggregations: Optional[dict] = None
+    startDate: date | None = None
+    creator: Optional[str] = None
     locations: Optional[list[AdministrativeDivisionTO]] = None
     analysisSteps: Optional[list[AnalysisStepTO]] = None
     analysisQuestions: Optional[list[AnalysisQuestionTO]] = None
@@ -51,15 +51,15 @@ class AnalysisTO(BaseTO):
             disaggregations=DisaggregationTO.from_models(instance.disaggregations.all()),
             sectors=SectorTO.from_models(instance.sectors.all()),
             locations=AdministrativeDivisionTO.from_models(
-                instance.locations,
-                include_hierarchy=True),
+                instance.locations.all(),
+                True),
             analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps.all()),
             analysisFramework=AnalysisFrameworkTO.from_model(instance.analysis_framework),
             analysisQuestions=AnalysisQuestionTO.from_models(instance.analysis_questions.all()),
 
         )
 
-#    def to_dict(self):
-#        if self.locations:
-#            self.locations = [location.to_dict() for location in self.locations]
-#        return asdict(self)
+    def to_dict(self):
+        if self.locations:
+            self.locations = [location.to_dict() for location in self.locations]
+        return asdict(self)

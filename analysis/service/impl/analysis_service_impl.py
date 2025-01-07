@@ -97,7 +97,7 @@ class AnalysisServiceImpl(AnalysisService):
                                                                    pk__in=scope['disaggregations'])
         else:
             disaggregations = []
-        sectors = self.get_all_sectors_uc.exec(self.repository, None, pk__in=scope['sectors'])
+        sectors = self.get_all_sectors_uc.exec(self.repository, pk__in=scope['sectors'])
         self.validate_scope_fields(scope, sectors)
         data = {
             "title": scope["title"],
