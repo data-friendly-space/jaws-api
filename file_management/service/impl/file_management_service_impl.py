@@ -29,6 +29,7 @@ from file_management.use_cases.get_dataset_columns_uc import GetDatasetColumnsUC
 from file_management.use_cases.get_dataset_file_uc import GetDatasetFileUC
 from file_management.use_cases.get_dataset_rows_uc import GetDatasetRowsUC
 from file_management.use_cases.update_columns_uc import UpdateColumnsUC
+from file_management.use_cases.update_rows_uc import UpdateRowsUC
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 from user_management.usecases.attach_file_to_analysis_uc import AttachFileToAnalysisUC
@@ -62,6 +63,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.get_dataset_by_id_uc = GetDatasetByIdUC.get_instance()
         self.get_dataset_rows_uc = GetDatasetRowsUC.get_instance()
         self.update_columns_uc = UpdateColumnsUC.get_instance()
+        self.update_rows_uc = UpdateRowsUC.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -176,4 +178,29 @@ class FileManagementServiceImpl(FileManagementService):
             raise NotFoundException("The dataset doesn't exist")
         self.update_columns_uc.exec(
             self.repository, columns
+        )
+
+    def update_rows(self, user, dataset_id, rows):
+        # TODO: Validate if the user can update the rows
+        dataset = self.get_dataset_by_id_uc.exec(
+            self.repository, dataset_id
+        )
+        if not dataset:
+            raise NotFoundException("The dataset doesn't exist")
+
+        dataset_file = self.get_dataset_file_uc.exec(
+            self.repository, dataset.filename
+        )
+        dataset_blob = dataset_file.Body
+        dataset_dataframe = pd.read_csv(dataset_blob)
+        start_row = rows.validated_data["page_size"] * (rows.validated_data["page_number"] - 1) + 1
+        end_row = rows.validated_data["page_size"] * rows.validated_data["page_number"]
+        self.update_rows_uc.exec(
+            self.repository,
+            rows.validated_data["analysis_id"],
+            dataset_dataframe,
+            start_row,
+            end_row,
+            rows.validated_data["rows"],
+            dataset.filename
         )

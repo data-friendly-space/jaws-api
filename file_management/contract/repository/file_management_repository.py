@@ -6,7 +6,7 @@ from typing import List
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
-from file_management.contract.requests.update_columns_in import ColumnIn
+from file_management.contract.requests.column_in import ColumnIn
 
 
 class FileManagementRepository:
@@ -110,5 +110,15 @@ class FileManagementRepository:
         
         Keyword arguments:
         columns -- ColumnIn 
+        Return: None
+        """
+
+    @abstractmethod
+    def update_dataset(self, analysis_id: int, filename: str, csv: str) -> None:
+        """Update the dataframe in the storage saving it on a specific analysis folder
+        
+        Keyword arguments:
+        analysis_id -- It allows to save a copy of the dataset in the analysis to avoid overwriting the original
+        csv -- The dataset as csv
         Return: None
         """

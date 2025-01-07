@@ -14,8 +14,21 @@ class Dataset(models.Model):
     size_bytes = models.IntegerField()
     total_rows = models.IntegerField()
     total_columns = models.IntegerField()
-
     class Meta:
         """Table's metadata"""
         db_table = 'dataset'
         ordering = ['created_at']
+
+
+    def create_new_version(self, size_bytes: int, total_columns: int, total_rows: int) -> 'Dataset':
+        """Create a new version of the dataset"""
+        new_dataset = Dataset(
+            filename=self.filename,
+            url=self.url,
+            created_at=self.created_at,
+            mime_type=self.mime_type,
+            size_bytes=size_bytes,
+            total_columns=total_columns,
+            total_rows=total_rows
+        )
+        return new_dataset

@@ -6,7 +6,8 @@ from typing import List
 from common.helpers.query_options import QueryOptions
 from common.service.base_service import BaseService
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
-from file_management.contract.requests.update_columns_in import ColumnIn
+from file_management.contract.requests.column_in import ColumnIn
+from file_management.contract.requests.update_rows_in import UpdateRowsIn
 
 
 class FileManagementService(BaseService):
@@ -60,4 +61,15 @@ class FileManagementService(BaseService):
         dataset_id -- the id of the dataset
         columns -- The columns with its values
         Return: None
+        """
+
+    @abstractmethod
+    def update_rows(self, user, dataset_id: int, rows: UpdateRowsIn) -> None:
+        """Update the given rows of a dataset.
+        It overwrite the current values of the range of rows requested to update
+        
+        Keyword arguments:
+        user -- The user who is trying to update the columns
+        dataset_id -- the id of the dataset
+        rows -- The rows values with the page number and size
         """

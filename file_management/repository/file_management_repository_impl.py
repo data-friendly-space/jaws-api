@@ -136,3 +136,20 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             column_configuration.alias = column["alias"]
             column_configuration.include = column["include"]
             column_configuration.save()
+
+    def update_dataset(self, analysis_id, filename, csv):
+        s3 = boto3.client("s3")
+        try:
+            response = s3.put_object(
+                Bucket=bucket_name,
+                Key=f"datasets/{analysis_id}/{filename}",
+                Body=csv)
+        except ClientError as e:
+            logging.error(e)
+            raise e
+        return response
+
+
+    @transaction.atomic
+    def update_analysis_dataset(self, analysis_id):
+        raise NotImplementedError("Not implemented")

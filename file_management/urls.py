@@ -23,6 +23,7 @@ from file_management.interfaces.controllers.get_dataset_rows_controller import (
 from file_management.interfaces.controllers.update_columns_controller import (
     update_columns_controller
 )
+from file_management.interfaces.controllers.update_rows_controller import update_rows_controller
 
 urlpatterns = [
     path(
@@ -59,5 +60,10 @@ urlpatterns = [
         "update-columns",
         update_columns_controller,
         name="update_columns"
+    ),
+    path(
+        "update-rows",
+        update_rows_controller,
+        name="update_rows"
     )
 ]
