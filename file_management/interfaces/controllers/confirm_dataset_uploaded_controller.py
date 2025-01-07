@@ -20,5 +20,5 @@ def confirm_dataset_uploaded_controller(request):
         raise BadRequestException("The filename is needed.")
     if not analysis_id:
         raise BadRequestException("The analysis id is needed.")
-    column_configurations = service.confirm_dataset_uploaded(request.user, filename, analysis_id)
-    return api_response_success(data=column_configurations)
+    columns = service.confirm_dataset_uploaded(request.user, filename, analysis_id)
+    return api_response_success(data=columns)

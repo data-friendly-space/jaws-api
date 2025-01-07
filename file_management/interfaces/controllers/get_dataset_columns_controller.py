@@ -9,8 +9,11 @@ from file_management.service.impl.file_management_service_impl import FileManage
 def get_dataset_columns_controller(request):
     """Retrieve the column configurations of a dataset"""
     dataset_id = request.query_params.get("dataset_id", None)
+    analysis_id = request.query_params.get("analysis_id", None)
     if not dataset_id:
         raise BadRequestException("The dataset id is needed.")
+    if not analysis_id:
+        raise BadRequestException("The analysis id is needed.")
     service = FileManagementServiceImpl()
-    columns = service.get_dataset_columns(request.user, dataset_id)
+    columns = service.get_column_configurations(request.user, dataset_id, analysis_id)
     return api_response_success(data=columns)

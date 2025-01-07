@@ -15,6 +15,7 @@ from botocore.exceptions import ClientError
 from analysis.models.analysis import Analysis
 from common.helpers.get_mime_type_from_extension import get_mimetype_from_extension
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.dataset_column_to import DatasetColumnTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
@@ -23,6 +24,7 @@ from file_management.contract.repository.file_management_repository import (
 )
 from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
+from file_management.models.dataset_column import DatasetColumn
 from user_management.models.user import User
 
 bucket_name = getenv("AWS_STORAGE_BUCKET_NAME")
@@ -110,23 +112,34 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         )
         return DatasetTO.from_model(new_dataset)
 
-    def create_columns(self, dataset_id, columns: List[str]) -> List[ColumnConfigurationTO]:
+    def create_columns(self, dataset_id, columns):
         dataset = Dataset.objects.get(id=dataset_id)
         column_configurations = []
         for col in columns:
-            new_column_config, _ = ColumnConfiguration.objects.update_or_create(
+            new_column_config, _ = DatasetColumn.objects.update_or_create(
                     dataset=dataset,
                     original_name=col
                 )
             column_configurations.append(
                 new_column_config
             )
-        return ColumnConfigurationTO.from_models(column_configurations)
+        return DatasetColumnTO.from_models(column_configurations)
 
     def get_dataset_columns(self, dataset_id):
-        column_configurations = ColumnConfiguration.objects.filter(
+        columns = DatasetColumn.objects.filter(
             dataset__id=dataset_id
         ).all()
+        return DatasetColumnTO.from_models(columns)
+
+    def get_or_create_column_configurations(self, dataset_id, analysis_id):
+        analysis = Analysis.objects.get(id=analysis_id)
+        columns = DatasetColumn.objects.filter(dataset__id=dataset_id).all()
+        column_configurations = []
+        for column in columns:
+            column_configuration, _ = ColumnConfiguration.objects.get_or_create(
+                column=column,
+                analysis=analysis)
+            column_configurations.append(column_configuration)
         return ColumnConfigurationTO.from_models(column_configurations)
 
     @transaction.atomic

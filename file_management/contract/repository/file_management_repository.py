@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import List
 
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.dataset_column_to import DatasetColumnTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 from file_management.contract.requests.column_in import ColumnIn
@@ -87,8 +88,8 @@ class FileManagementRepository:
         """
 
     @abstractmethod
-    def create_columns(self, dataset_id: str, columns: List[str]) -> List[ColumnConfigurationTO]:
-        """Create the column configurations of a dataset
+    def create_columns(self, dataset_id: str, columns: List[str]) -> List[DatasetColumnTO]:
+        """Create the columns of a dataset
         
         Keyword arguments:
         dataset_id -- The id of the dataset
@@ -96,12 +97,26 @@ class FileManagementRepository:
         """
 
     @abstractmethod
-    def get_dataset_columns(self, dataset_id: str) -> List[ColumnConfigurationTO]:
+    def get_dataset_columns(self, dataset_id: str) -> List[DatasetColumnTO]:
         """Find the dataset columns for a given dataset id
         
         Keyword arguments:
         dataset_id -- The id of the dataset
         Return: a list of column configurations
+        """
+
+    @abstractmethod
+    def get_or_create_column_configurations(
+        self,
+        dataset_id: int,
+        analysis_id: str) -> ColumnConfigurationTO:
+        """If exists, retrieve the column configuration for the given column and analysis
+        If not, create them
+        
+        Keyword arguments:
+        dataset_id -- The id of the dataset
+        analysis_id -- The id of the analysis
+        Return: A list of column configurations
         """
 
     @abstractmethod

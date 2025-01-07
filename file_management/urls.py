@@ -47,7 +47,7 @@ urlpatterns = [
         name="confirm_dataset_uploaded",
     ),
     path(
-        "get-columns",
+        "get-column-configurations",
         get_dataset_columns_controller,
         name="get_dataset_columns"
     ),

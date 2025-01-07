@@ -28,16 +28,26 @@ class FileManagementService(BaseService):
         """
 
     @abstractmethod
-    def confirm_dataset_uploaded(self, user, filename: str, analysis_id: int):
+    def confirm_dataset_uploaded(self, user, filename: str, analysis_id: int) -> List[dict]:
         """Validate that the dataset was succesfully uploaded to the storage and if so, create the corresponding column configurations
         Also attach the dataset to the analysis"""
 
     @abstractmethod
     def get_dataset_columns(self, user, dataset_id: str) -> List[dict]:
-        """Retrieve the column configurations for the dataset
+        """Retrieve the columns of the dataset
         
         Keyword arguments:
         dataset_id -- The id of the dataset
+        Return: a list of columns
+        """
+
+    @abstractmethod
+    def get_column_configurations(self, user, dataset_id: str, analysis_id: int) -> List[dict]:
+        """Retrieve the column configurations of the dataset
+        
+        Keyword arguments:
+        dataset_id -- the id of the dataset
+        analysis_id -- the id of the analysis
         Return: a list of column configurations
         """
 

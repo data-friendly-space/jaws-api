@@ -28,6 +28,7 @@ from file_management.use_cases.get_dataset_by_id_uc import GetDatasetByIdUC
 from file_management.use_cases.get_dataset_columns_uc import GetDatasetColumnsUC
 from file_management.use_cases.get_dataset_file_uc import GetDatasetFileUC
 from file_management.use_cases.get_dataset_rows_uc import GetDatasetRowsUC
+from file_management.use_cases.get_or_create_column_configurations_uc import GetOrCreateColumnConfigurationsTO
 from file_management.use_cases.update_columns_uc import UpdateColumnsUC
 from file_management.use_cases.update_rows_uc import UpdateRowsUC
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
@@ -51,7 +52,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.create_presigned_url_download_file_uc = (
             CreatePresignedUrlDownloadFileUC.get_instance()
         )
-        self.create_dataset_column_configurations_uc = (
+        self.create_dataset_columns = (
             CreateDatasetColumnConfigurationsUC.get_instance()
         )
         self.get_dataset_by_filename_uc = (
@@ -64,6 +65,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.get_dataset_rows_uc = GetDatasetRowsUC.get_instance()
         self.update_columns_uc = UpdateColumnsUC.get_instance()
         self.update_rows_uc = UpdateRowsUC.get_instance()
+        self.get_or_create_column_configurations = GetOrCreateColumnConfigurationsTO.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -119,10 +121,10 @@ class FileManagementServiceImpl(FileManagementService):
         total_rows = len(dataset_df)
         total_columns = len(dataset_df.columns)
 
-        if size_bytes > DATASET_MAX_SIZE:
-            raise BadRequestException(
-                f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
-            )
+        # if size_bytes > DATASET_MAX_SIZE:
+        #     raise BadRequestException(
+        #         f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
+        #     )
         dataset = self.create_dataset_uc.exec(
             self.repository,
             filename,
@@ -131,16 +133,16 @@ class FileManagementServiceImpl(FileManagementService):
             total_rows,
             total_columns
         )
-        # Create the column configurations for each dataset column
-        column_configurations = self.create_dataset_column_configurations_uc.exec(
+        # Create the dataset columns
+        columns = self.create_dataset_columns.exec(
             self.repository, dataset.id, dataset_df
         )
 
         # Attach the dataset to the analysis
         self.attach_file_to_analysis_uc.exec(self.repository, dataset.id, analysis_id)
 
-        return [col.to_dict() for col in column_configurations]
-
+        return [col.to_dict() for col in columns]
+    
     def get_dataset_columns(self, user, dataset_id):
         # TODO: validate if the user can see the dataset
         dataset = self.get_dataset_by_id_uc.exec(
@@ -152,6 +154,18 @@ class FileManagementServiceImpl(FileManagementService):
             self.repository, dataset_id
         )
         return [col.to_dict() for col in columns]
+
+    def get_column_configurations(self, user, dataset_id, analysis_id):
+        # TODO: validate if the user can see the dataset
+        dataset = self.get_dataset_by_id_uc.exec(
+            self.repository, dataset_id
+        )
+        if not dataset:
+            raise NotFoundException("The dataset doesn't exist.")
+        column_configurations = self.get_or_create_column_configurations.exec(
+            self.repository, dataset_id, analysis_id
+        )
+        return [col.to_dict() for col in column_configurations]
 
     def get_dataset_rows(self, user, dataset_id, query_options):
         dataset = self.get_dataset_by_id_uc.exec(

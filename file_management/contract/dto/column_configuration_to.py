@@ -13,12 +13,12 @@ from file_management.models.column_configuration import ColumnConfiguration
 class ColumnConfigurationTO(BaseTO):
     """Contains the fields for a dataset"""
     id: str | None 
-    originalName: str | None
     alias: str | None
     lastChange: datetime | None
     dataType: str | None
     dataRole: str | None
     include: bool | None
+    originalName: str | None
 
 
     @classmethod
@@ -28,12 +28,12 @@ class ColumnConfigurationTO(BaseTO):
             return None
         return cls(
             id=instance.id,
-            originalName=instance.original_name,
             alias=instance.alias,
             lastChange=instance.last_change,
             dataType=DataTypeTO.from_model(instance.data_type),
             dataRole=DataRoleTO.from_model(instance.data_role),
-            include=instance.include
+            include=instance.include,
+            originalName=instance.column.original_name
         )
 
     def to_dict(self) -> Dict:

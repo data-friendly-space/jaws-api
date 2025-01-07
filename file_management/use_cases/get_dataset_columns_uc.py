@@ -2,7 +2,7 @@
 
 from typing import List
 from common.use_case.base_use_case import BaseUseCase
-from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.dataset_column_to import DatasetColumnTO
 from file_management.contract.repository.file_management_repository import FileManagementRepository
 
 
@@ -23,6 +23,6 @@ class GetDatasetColumnsUC(BaseUseCase):
             GetDatasetColumnsUC()
         return GetDatasetColumnsUC._instance
 
-    def exec(self, repository: FileManagementRepository, dataset_id: str) -> List[ColumnConfigurationTO]:
-        column_configuratioins = repository.get_dataset_columns(dataset_id)
-        return column_configuratioins
+    def exec(self, repository: FileManagementRepository, dataset_id: str) -> List[DatasetColumnTO]:
+        columns = repository.get_dataset_columns(dataset_id)
+        return columns
