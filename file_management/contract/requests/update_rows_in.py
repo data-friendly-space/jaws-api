@@ -25,4 +25,4 @@ class UpdateRowsIn(serializers.Serializer):
     page_number = serializers.IntegerField()
     page_size = serializers.IntegerField()
     rows = DynamicRowsField()
-    analysis_id = serializers.IntegerField
+    analysis_id = serializers.IntegerField()

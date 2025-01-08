@@ -1,7 +1,6 @@
 """This module contains the analysis repository"""
 
 import logging
-import urllib
 from datetime import timedelta
 from os import getenv
 from typing import List
@@ -19,6 +18,7 @@ from file_management.contract.dto.dataset_column_to import DatasetColumnTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
+from file_management.contract.dto.s3_put_object_to import S3PutObjectTO
 from file_management.contract.repository.file_management_repository import (
     FileManagementRepository,
 )
@@ -33,14 +33,13 @@ bucket_name = getenv("AWS_STORAGE_BUCKET_NAME")
 class FileManagementRepositoryImpl(FileManagementRepository):
     """Analysis repository"""
 
-    def create_presigned_url_upload_file(self, filename: str):
+    def create_presigned_url_upload_file(self, external_identifier: str):
         s3_client = boto3.client("s3")
         expires_in = timedelta(hours=1).seconds
         try:
-            object_name = f"datasets/{filename}"
             response = s3_client.generate_presigned_post(
                 bucket_name,
-                object_name,
+                external_identifier,
                 ExpiresIn=expires_in,
             )
         except ClientError as e:
@@ -48,14 +47,13 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             raise e
         return S3PresignedUrlTO.from_model(response)
 
-    def create_presigned_url_download_file(self, dataset_id: str) -> str:
+    def create_presigned_url_download_file(self, external_identifier: str) -> str:
         s3_client = boto3.client("s3")
-        object_name = f"datasets/{dataset_id}"
         expires_in = timedelta(hours=1).seconds
         try:
             response = s3_client.generate_presigned_url(
                 "get_object",
-                Params={"Bucket": bucket_name, "Key": object_name},
+                Params={"Bucket": bucket_name, "Key": external_identifier},
                 ExpiresIn=expires_in,
             )
         except ClientError as e:
@@ -67,6 +65,11 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         analysis = Analysis.objects.filter(id=analysis_id).first()
         dataset = Dataset.objects.filter(id=dataset_id).first()
         analysis.datasets.add(dataset)
+
+    def detach_file_from_analysis(self, dataset_id, analysis_id):
+        analysis = Analysis.objects.get(id=analysis_id)
+        dataset = Dataset.objects.get(id=dataset_id)
+        analysis.datasets.remove(dataset)
 
     def get_dataset_by_id(self, dataset_id: str) -> DatasetTO | None:
         dataset = Dataset.objects.filter(id=dataset_id).first()
@@ -81,12 +84,12 @@ class FileManagementRepositoryImpl(FileManagementRepository):
         dataset = Dataset.objects.filter(filename=filename).first()
         return dataset
 
-    def get_dataset_file(self, filename):
+    def get_dataset_file(self, external_identifier):
         s3_client = boto3.client("s3")
         try:
             s3_object = s3_client.get_object(
                 Bucket=bucket_name,
-                Key=f"datasets/{filename}"
+                Key=external_identifier
             )
         except ClientError as e:
             logging.error(e)
@@ -99,16 +102,20 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             size_bytes: int,
             user_id: str,
             total_rows: int,
-            total_columns: int):
+            total_columns: int,
+            external_identifier):
         user = User.objects.get(id=user_id)
         new_dataset, _ = Dataset.objects.update_or_create(
-            filename=filename,
-            size_bytes=size_bytes,
-            uploaded_by=user,
-            mime_type=get_mimetype_from_extension(filename),
-            url=f"https://{bucket_name}.s3.amazonaws.com/datasets/{urllib.parse.quote(filename)}",
-            total_rows=total_rows,
-            total_columns=total_columns
+            url=f"https://{bucket_name}.s3.amazonaws.com/{external_identifier}",
+            defaults={
+                'filename': filename,
+                'size_bytes': size_bytes,
+                'uploaded_by': user,
+                'mime_type': get_mimetype_from_extension(filename),
+                'total_rows': total_rows,
+                'total_columns': total_columns,
+                'external_identifier': external_identifier
+            }
         )
         return DatasetTO.from_model(new_dataset)
 
@@ -150,19 +157,14 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             column_configuration.include = column["include"]
             column_configuration.save()
 
-    def update_dataset(self, analysis_id, filename, csv):
+    def create_dataset_file_copy(self, external_identifier, csv) -> S3PutObjectTO:
         s3 = boto3.client("s3")
         try:
             response = s3.put_object(
                 Bucket=bucket_name,
-                Key=f"datasets/{analysis_id}/{filename}",
+                Key=external_identifier,
                 Body=csv)
         except ClientError as e:
             logging.error(e)
             raise e
-        return response
-
-
-    @transaction.atomic
-    def update_analysis_dataset(self, analysis_id):
-        raise NotImplementedError("Not implemented")
+        return S3PutObjectTO.from_model(response)

@@ -15,14 +15,14 @@ class FileManagementRepository:
 
     @abstractmethod
     def create_presigned_url_upload_file(
-        self, filename: str
+        self, external_identifier: str
     ) -> S3PresignedUrlTO:
         """
         Create a presigned URL to allow the frontend to upload a file
         """
 
     @abstractmethod
-    def create_presigned_url_download_file(self, dataset_id: str) -> str:
+    def create_presigned_url_download_file(self, external_identifier: str) -> str:
         """
         Create a presigned URL to allow the frontend download a file
         Returns the url
@@ -35,6 +35,16 @@ class FileManagementRepository:
         Keyword arguments:
         file_url -- the id of the dataset
         analysis_id -- the id of the analysis
+        """
+
+    @abstractmethod
+    def detach_file_from_analysis(self, dataset_id: str, analysis_id: int) -> None:
+        """Detach a file from an analysis
+        
+        Keyword arguments:
+        - dataset_id -- the id of the dataset
+        - analysis_id -- the id of the analysis
+        Return: None
         """
 
     @abstractmethod
@@ -61,11 +71,11 @@ class FileManagementRepository:
         Return: DatasetTO or None if the dataset was not found
         """
     @abstractmethod
-    def get_dataset_file(self, filename: str):
+    def get_dataset_file(self, external_identifier: str):
         """Search the dataset in the storage
         
         Keyword arguments:
-        filename -- the filename of the dataset
+        external_identifier -- an identifier to get the file from the storage (i.e. Object Key in S3)
         """
 
     @abstractmethod
@@ -75,15 +85,17 @@ class FileManagementRepository:
         size_bytes: int,
         user_id: str,
         total_rows: int,
-        total_columns: int) -> DatasetTO:
+        total_columns: int,
+        external_identifier: str) -> DatasetTO:
         """Create a new Dataset record
         
         Keyword arguments:
-        filename -- The filename of the dataset
-        size_byes -- The size of the file in bytes
-        uder_id -- The id of the user who have uploaded the dataset
-        total_rows -- count of rows
-        total_columns -- count of columns
+         - filename -- The filename of the dataset
+         - size_byes -- The size of the file in bytes
+         - uder_id -- The id of the user who have uploaded the dataset
+         - total_rows -- count of rows
+         - total_columns -- count of columns
+         - external_identifier -- a identifier of the dataset in the storage provider (i.e. Object Key in S3)
         Return: A data transfer object of the dataset record
         """
 
@@ -129,11 +141,11 @@ class FileManagementRepository:
         """
 
     @abstractmethod
-    def update_dataset(self, analysis_id: int, filename: str, csv: str) -> None:
-        """Update the dataframe in the storage saving it on a specific analysis folder
+    def create_dataset_file_copy(self, external_identifier: str, csv: str) -> None:
+        """Create a copy of the dataset in the storage
         
         Keyword arguments:
-        analysis_id -- It allows to save a copy of the dataset in the analysis to avoid overwriting the original
+        external_identifier -- The key of the copy dataset
         csv -- The dataset as csv
         Return: None
         """

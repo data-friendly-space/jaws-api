@@ -1,6 +1,7 @@
 """Contains the implementation of AnalysisService"""
 
 import pandas as pd
+import urllib
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
 from common.constants.constants import DATASET_MAX_SIZE, MB
 from common.exceptions.exceptions import (
@@ -30,10 +31,11 @@ from file_management.use_cases.get_dataset_file_uc import GetDatasetFileUC
 from file_management.use_cases.get_dataset_rows_uc import GetDatasetRowsUC
 from file_management.use_cases.get_or_create_column_configurations_uc import GetOrCreateColumnConfigurationsTO
 from file_management.use_cases.update_columns_uc import UpdateColumnsUC
-from file_management.use_cases.update_rows_uc import UpdateRowsUC
+from file_management.use_cases.create_dataset_copy_uc import CreateDatasetCopyUC
 from user_management.repository.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
 from user_management.usecases.attach_file_to_analysis_uc import AttachFileToAnalysisUC
+from user_management.usecases.detach_file_from_analysis_uc import DetachFileFromAnalysisUC
 from user_management.usecases.get_user_role_in_analysis_uc import (
     GetUserRoleInAnalysisUC,
 )
@@ -48,6 +50,7 @@ class FileManagementServiceImpl(FileManagementService):
         )
         self.get_user_role_in_analysis_uc = GetUserRoleInAnalysisUC.get_instance()
         self.attach_file_to_analysis_uc = AttachFileToAnalysisUC.get_instance()
+        self.detach_file_from_analysis_uc = DetachFileFromAnalysisUC.get_instance()
         self.get_analysis_datasets_uc = GetAnalysisDatasetsUC.get_instance()
         self.create_presigned_url_download_file_uc = (
             CreatePresignedUrlDownloadFileUC.get_instance()
@@ -64,7 +67,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.get_dataset_by_id_uc = GetDatasetByIdUC.get_instance()
         self.get_dataset_rows_uc = GetDatasetRowsUC.get_instance()
         self.update_columns_uc = UpdateColumnsUC.get_instance()
-        self.update_rows_uc = UpdateRowsUC.get_instance()
+        self.create_dataset_copy_uc = CreateDatasetCopyUC.get_instance()
         self.get_or_create_column_configurations = GetOrCreateColumnConfigurationsTO.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
@@ -89,7 +92,7 @@ class FileManagementServiceImpl(FileManagementService):
             raise NotFoundException("The dataset doesn't exist")
 
         response = self.create_presigned_url_download_file_uc.exec(
-            self.repository, dataset_id
+            self.repository, dataset.externalIdentifier
         )
 
         if not response:
@@ -131,7 +134,8 @@ class FileManagementServiceImpl(FileManagementService):
             size_bytes,
             user.id,
             total_rows,
-            total_columns
+            total_columns,
+            urllib.parse.quote(filename)
         )
         # Create the dataset columns
         columns = self.create_dataset_columns.exec(
@@ -142,7 +146,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.attach_file_to_analysis_uc.exec(self.repository, dataset.id, analysis_id)
 
         return [col.to_dict() for col in columns]
-    
+
     def get_dataset_columns(self, user, dataset_id):
         # TODO: validate if the user can see the dataset
         dataset = self.get_dataset_by_id_uc.exec(
@@ -175,7 +179,7 @@ class FileManagementServiceImpl(FileManagementService):
             raise NotFoundException("The dataset doesn't exist.")
 
         dataset_file = self.get_dataset_file_uc.exec(
-            self.repository, dataset.filename
+            self.repository, dataset.externalIdentifier
         )
 
         rows = self.get_dataset_rows_uc.exec(
@@ -196,6 +200,7 @@ class FileManagementServiceImpl(FileManagementService):
 
     def update_rows(self, user, dataset_id, rows):
         # TODO: Validate if the user can update the rows
+        analysis_id = rows.validated_data["analysis_id"]
         dataset = self.get_dataset_by_id_uc.exec(
             self.repository, dataset_id
         )
@@ -209,12 +214,40 @@ class FileManagementServiceImpl(FileManagementService):
         dataset_dataframe = pd.read_csv(dataset_blob)
         start_row = rows.validated_data["page_size"] * (rows.validated_data["page_number"] - 1) + 1
         end_row = rows.validated_data["page_size"] * rows.validated_data["page_number"]
-        self.update_rows_uc.exec(
+
+        external_identifier = urllib.parse.quote(f"{analysis_id}/{dataset.filename}")
+        new_file_size = len(dataset_dataframe.to_csv().encode("utf-8"))
+
+        self.create_dataset_copy_uc.exec(
             self.repository,
-            rows.validated_data["analysis_id"],
             dataset_dataframe,
             start_row,
             end_row,
             rows.validated_data["rows"],
-            dataset.filename
+            external_identifier
+        )
+        dataset_copy = self.create_dataset_uc.exec(
+            self.repository,
+            dataset.filename,
+            new_file_size,
+            user.id,
+            len(dataset_dataframe),
+            len(dataset_dataframe.columns),
+            external_identifier
+        )
+
+        self.create_dataset_columns.exec(
+            self.repository, dataset_copy.id, dataset_dataframe
+        )
+
+        self.detach_file_from_analysis_uc.exec(
+            self.repository,
+            dataset_id,
+            analysis_id
+        )
+
+        self.attach_file_to_analysis_uc.exec(
+            self.repository,
+            dataset_copy.id,
+            analysis_id
         )
