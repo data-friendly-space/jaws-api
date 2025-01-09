@@ -1,5 +1,6 @@
 """Contains the use case for getting the administrative divisions"""
 
+import urllib
 from common.use_case.base_use_case import BaseUseCase
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
 from file_management.contract.repository.file_management_repository import (
@@ -31,6 +32,6 @@ class CreatePresignedUrlUploadFileUC(BaseUseCase):
         filename: str
     ) -> S3PresignedUrlTO:
         presigned_url = repository.create_presigned_url_upload_file(
-            filename
+            urllib.parse.quote(f"datasets/{filename}")
         )
         return presigned_url

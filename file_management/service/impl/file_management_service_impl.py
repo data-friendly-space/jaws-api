@@ -110,7 +110,7 @@ class FileManagementServiceImpl(FileManagementService):
         # TODO: Validate the permission of the user
         # Search the dataset in the storage
         dataset_file = self.get_dataset_file_uc.exec(
-            self.repository, filename
+            self.repository, urllib.parse.quote(f"datasets/{filename}")
         )
         # If doesn't exist, raise exception
         if not dataset_file:
