@@ -7,8 +7,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from analysis.repository.analysis_repository_impl import AnalysisRepositoryImpl
-from analysis.use_cases.get_analysis_uc import GetAnalysisUC
+from analysis.repository.impl.analysis_repository_impl import AnalysisRepositoryImpl
+from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from common.exceptions.exceptions import (
     NotFoundException,
     UnauthorizedException,
@@ -33,11 +33,11 @@ from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
 from user_management.interfaces.serializers.user_serializer import UserSerializer
-from user_management.repository.organization_repository_impl import (
+from user_management.repository.impl.organization_repository_impl import (
     OrganizationRepositoryImpl,
 )
-from user_management.repository.user_repository_impl import UserRepositoryImpl
-from user_management.repository.workspace_repository_impl import WorkspaceRepositoryImpl
+from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
+from user_management.repository.impl.workspace_repository_impl import WorkspaceRepositoryImpl
 from user_management.service.users_service import UsersService
 from user_management.usecases.add_user_to_workspace_uc import AddUserToWorkspaceUC
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
@@ -57,7 +57,7 @@ class UsersServiceImpl(UsersService):
         self.sign_in_uc = SignInUC.get_instance()
         self.sign_up_uc = SignUpUC.get_instance()
         self.get_user_by_filters = GetUserByFiltersUC.get_instance()
-        self.get_analysis_uc = GetAnalysisUC.get_instance()
+        self.get_analysis_uc = GetAnalysesUC.get_instance()
         self.notify_user_uc = SendNotificationToUserUC.get_instance()
         self.invite_user_to_org_uc = InviteUserToOrganizationUC.get_instance()
         self.invite_user_to_analysis_uc = InviteUserToAnalysisUC.get_instance()
@@ -98,19 +98,19 @@ class UsersServiceImpl(UsersService):
         analysis = self.get_analysis_uc.exec(
             AnalysisRepositoryImpl(), None, id=data["id"]
         )
-        if analysis is None or len(analysis) != 1:
+        if analysis.results is None or len(analysis.results) != 1:
             raise NotFoundException("Analysis not found")
         self.invite_user_to_analysis_uc.exec(
             AnalysisRepositoryImpl(), user.id, data["id"], data["role_id"]
         )
         self.add_user_to_workspace_uc.exec(
-            WorkspaceRepositoryImpl(), user.id, analysis[0].workspaceId, None
+            WorkspaceRepositoryImpl(), user.id, analysis.results[0]['workspaceId'], None
         )
         self.notify_user_uc.exec(
             NotificationRepositoryImpl(),
             {
                 "user_id": user.id,
-                "message": ANALYSIS_INVITE_MESSAGE + " " + analysis[0].title,
+                "message": ANALYSIS_INVITE_MESSAGE + " " + analysis.results[0]['title'],
             },
         )
 
@@ -119,7 +119,7 @@ class UsersServiceImpl(UsersService):
         users = self.get_users_uc.exec(self.repository, query_options)
         if not users:
             raise NotFoundException("Users not found")
-        return UserSerializer(users, many=True).data
+        return [user.to_dict() for user in users]
 
     def sign_up(self, sign_up_in: SignUpIn):
         """Business logic to sign up user"""

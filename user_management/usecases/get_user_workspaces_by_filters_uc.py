@@ -1,6 +1,6 @@
 """This module contains the get users use case"""
 from common.helpers.query_options import QueryOptions
-from user_management.contract.repository.workspace_repository import WorkspaceRepository
+from user_management.repository.workspace_repository import WorkspaceRepository
 
 
 class GetUserWorkspacesByFiltersUC:

@@ -1,8 +1,8 @@
 """This module contains the role service Implementation"""
 from common.exceptions.exceptions import NotFoundException
 from common.use_case.get_all_uc import GetAllUC
-from user_management.repository.permissions_repository_impl import PermissionRepositoryImpl
-from user_management.repository.role_repository_impl import RoleRepositoryImpl
+from user_management.repository.impl.permissions_repository_impl import PermissionRepositoryImpl
+from user_management.repository.impl.role_repository_impl import RoleRepositoryImpl
 from user_management.service.role_service import RoleService
 from user_management.usecases.get_roles_uc import GetRolesUC
 

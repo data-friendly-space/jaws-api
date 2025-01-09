@@ -7,12 +7,13 @@ from user_management.service.impl.organization_service_impl import OrganizationS
 
 
 @api_view(['GET'])
-def get_organizations_users_by_user_id_controller(request):
+def get_organizations_users_by_user_id_controller(request, organization_id):
     """
     return UserOrganizationTO.
     """
     service = OrganizationServiceImpl()
     query_options = QueryOptions.from_request(request)
     return api_response_success("Organization users retrieved successfully",
-                                service.get_organizations_users_by_user_id(request.user.id, query_options),
+                                service.get_organizations_users_by_user_id(request.user.id, organization_id,
+                                                                           query_options),
                                 status.HTTP_200_OK)

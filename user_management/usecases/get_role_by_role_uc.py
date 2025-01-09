@@ -1,7 +1,7 @@
 """This module contains the get roles use case"""
 from common.exceptions.exceptions import InternalServerErrorException
 from common.use_case.base_use_case import BaseUseCase
-from user_management.contract.repository.role_repository import RoleRepository
+from user_management.repository.role_repository import RoleRepository
 
 
 class GetRoleByRoleUC(BaseUseCase):

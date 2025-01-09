@@ -17,5 +17,4 @@ urlpatterns = [
     path('user/invite/organization', invite_user_to_organization_controller, name='invite_user_to_organization'),
     path('user/invite/analysis', invite_user_to_analysis_controller, name='invite_user_to_analysis'),
 
-
 ]

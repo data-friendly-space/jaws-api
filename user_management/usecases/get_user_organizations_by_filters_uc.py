@@ -1,6 +1,6 @@
 """This module contains the get users use case"""
 from common.helpers.query_options import QueryOptions
-from user_management.contract.repository.organization_repository import OrganizationRepository
+from user_management.repository.organization_repository import OrganizationRepository
 
 
 class GetUserOrganizationsByFiltersUC:

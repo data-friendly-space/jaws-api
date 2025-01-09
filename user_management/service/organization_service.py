@@ -17,7 +17,7 @@ class OrganizationService(ABC):
         """Create a new organization"""
 
     @abstractmethod
-    def get_organizations_users_by_user_id(self, user_id: str, query_options: QueryOptions):
+    def get_organizations_users_by_user_id(self, user_id: str, organization_id:str, query_options: QueryOptions):
         """Retrieves the organization users by user id"""
         pass
 

@@ -1,5 +1,5 @@
 """Contains the use case for getting the administrative divisions"""
-from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.repository.analysis_repository import AnalysisRepository
 from common.use_case.base_use_case import BaseUseCase
 
 
