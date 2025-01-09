@@ -49,7 +49,7 @@ def remove_types_and_roles(apps, schema_editor):
 class Migration(migrations.Migration):
     """Create datasets structures"""
     dependencies = [
-        ("analysis", "0006_analysisdataset_alter_analysis_datasets"),
+        ("analysis", "0002_analysisdataset_alter_analysis_datasets"),
         ("file_management", "0004_alter_dataset_filename_alter_dataset_size_bytes"),
     ]
 

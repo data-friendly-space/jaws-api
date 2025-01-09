@@ -6,12 +6,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("analysis", "0005_analysis_datasets"),
+        ("analysis", "analysis_init_data"),
         ("file_management", "0004_alter_dataset_filename_alter_dataset_size_bytes"),
     ]
 
     operations = [
         migrations.RemoveField(model_name="Analysis", name="datasets"),
+        migrations.DeleteModel("AnalysisDataset"),
         migrations.CreateModel(
             name="AnalysisDataset",
             fields=[
