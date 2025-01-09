@@ -135,7 +135,7 @@ class FileManagementServiceImpl(FileManagementService):
             user.id,
             total_rows,
             total_columns,
-            urllib.parse.quote(filename)
+            urllib.parse.quote(f"datasets/{filename}")
         )
         # Create the dataset columns
         columns = self.create_dataset_columns.exec(
@@ -208,14 +208,14 @@ class FileManagementServiceImpl(FileManagementService):
             raise NotFoundException("The dataset doesn't exist")
 
         dataset_file = self.get_dataset_file_uc.exec(
-            self.repository, dataset.filename
+            self.repository, dataset.externalIdentifier
         )
         dataset_blob = dataset_file.Body
         dataset_dataframe = pd.read_csv(dataset_blob)
         start_row = rows.validated_data["page_size"] * (rows.validated_data["page_number"] - 1) + 1
         end_row = rows.validated_data["page_size"] * rows.validated_data["page_number"]
 
-        external_identifier = urllib.parse.quote(f"{analysis_id}/{dataset.filename}")
+        external_identifier = urllib.parse.quote(f"datasets/{analysis_id}/{dataset.filename}")
         new_file_size = len(dataset_dataframe.to_csv().encode("utf-8"))
 
         self.create_dataset_copy_uc.exec(

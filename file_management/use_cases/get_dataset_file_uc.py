@@ -28,9 +28,9 @@ class GetDatasetFileUC(BaseUseCase):
     def exec(
         self,
         repository: FileManagementRepository,
-        filename: str,
+        external_identifier: str,
     ) -> S3ObjectAttributesTO:
         dataset = repository.get_dataset_file(
-            filename
+            external_identifier
         )
         return dataset
