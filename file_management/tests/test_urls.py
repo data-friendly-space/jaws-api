@@ -14,6 +14,9 @@ from file_management.interfaces.controllers.get_analysis_datasets_controller imp
     get_analysis_datasets_controller,
 )
 from file_management.interfaces.controllers.get_dataset_columns_controller import get_dataset_columns_controller
+from file_management.interfaces.controllers.get_dataset_rows_controller import get_dataset_rows_controller
+from file_management.interfaces.controllers.update_columns_controller import update_columns_controller
+from file_management.interfaces.controllers.update_rows_controller import update_rows_controller
 
 
 class TestUrls(SimpleTestCase):
@@ -46,3 +49,18 @@ class TestUrls(SimpleTestCase):
         olumns works"""
         url = reverse("get_dataset_columns")
         self.assertEqual(resolve(url).func, get_dataset_columns_controller)
+
+    def test_get_dataset_rows(self):
+        """Test that the url for getting rows of a dataset works"""
+        url = reverse("get_dataset_rows")
+        self.assertEqual(resolve(url).func, get_dataset_rows_controller)
+
+    def test_update_columns(self):
+        """Test that the url for updating the column configurations of a dataset works"""
+        url = reverse("update_columns")
+        self.assertEqual(resolve(url).func, update_columns_controller)
+
+    def test_update_rows(self):
+        """Test that the url for updating the rows of a dataset works"""
+        url = reverse("update_rows")
+        self.assertEqual(resolve(url).func, update_rows_controller)

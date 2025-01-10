@@ -31,11 +31,11 @@ class CreateDatasetCopyUC(BaseUseCase):
             end_row: int,
             values,
             external_identifier: str,
-        ) -> S3PutObjectTO:
+        ) -> tuple[S3PutObjectTO, str]:
         new_values_df = DataFrame.from_dict(values)
         dataframe.iloc[start_row - 1 : end_row] = new_values_df[start_row - 1 : end_row].values
         updated_dataframe_csv = dataframe.to_csv(index=False)
         dataset_file_copy = repository.create_dataset_file_copy(
             external_identifier, updated_dataframe_csv
         )
-        return dataset_file_copy
+        return dataset_file_copy, updated_dataframe_csv

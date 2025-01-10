@@ -1,9 +1,17 @@
 """Contains test utilities"""
+from base64 import encode
+from io import StringIO
+import boto3
 from django.contrib.auth import get_user_model
 from django.test import Client
+from moto import mock_aws
+import pandas as pd
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from analysis.models.analysis import Analysis
+from file_management.models.column_configuration import ColumnConfiguration
+from file_management.models.dataset import Dataset
+from file_management.models.dataset_column import DatasetColumn
 from user_management.models.organization import Organization
 from user_management.models.workspace import Workspace
 
@@ -41,3 +49,41 @@ def create_test_analysis(user):
     )
 
     return test_analysis
+
+@mock_aws
+def create_test_dataset(
+    user: User,
+    analysis: Analysis,
+    bucket_name = "testbucket",
+    filename = "test.csv",
+    content = "column1,column2\nvalue1,value2\nvalue3,value4",
+    total_rows = 2,
+    total_cols = 2) -> tuple[Dataset, str]:
+    """Create a test dataset with columns. 
+    Attach it to an analysis and create the column configurations
+    Assign the given user as the owner"""
+    s3 = boto3.client("s3")
+    s3.create_bucket(Bucket=bucket_name)
+    s3.put_object(Bucket="testbucket", Key="test.csv", Body=content)
+    dataset = Dataset.objects.create(
+        filename=filename,
+        url=f"http://testurl/{filename}",
+        uploaded_by=user,
+        size_bytes=len(content.encode("utf-8")),
+        total_columns=total_cols,
+        total_rows=total_rows,
+        external_identifier=filename
+    )
+    csv_data = StringIO(content)
+    dataset_df = pd.read_csv(csv_data)
+    for column in dataset_df.columns:
+        col = DatasetColumn.objects.create(
+            original_name=column,
+            dataset=dataset
+        )
+        ColumnConfiguration.objects.create(
+            analysis=analysis,
+            column=col
+        )
+    analysis.datasets.add(dataset)
+    return dataset, content

@@ -124,10 +124,10 @@ class FileManagementServiceImpl(FileManagementService):
         total_rows = len(dataset_df)
         total_columns = len(dataset_df.columns)
 
-        # if size_bytes > DATASET_MAX_SIZE:
-        #     raise BadRequestException(
-        #         f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
-        #     )
+        if size_bytes > DATASET_MAX_SIZE:
+            raise BadRequestException(
+                f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
+            )
         dataset = self.create_dataset_uc.exec(
             self.repository,
             filename,
@@ -216,9 +216,8 @@ class FileManagementServiceImpl(FileManagementService):
         end_row = rows.validated_data["page_size"] * rows.validated_data["page_number"]
 
         external_identifier = urllib.parse.quote(f"datasets/{analysis_id}/{dataset.filename}")
-        new_file_size = len(dataset_dataframe.to_csv().encode("utf-8"))
 
-        self.create_dataset_copy_uc.exec(
+        _, new_csv = self.create_dataset_copy_uc.exec(
             self.repository,
             dataset_dataframe,
             start_row,
@@ -226,6 +225,7 @@ class FileManagementServiceImpl(FileManagementService):
             rows.validated_data["rows"],
             external_identifier
         )
+        new_file_size = len(new_csv.encode("utf-8"))
         dataset_copy = self.create_dataset_uc.exec(
             self.repository,
             dataset.filename,
