@@ -1,18 +1,27 @@
 """This module contains the tests for the controllers"""
 
 from unittest.mock import MagicMock, patch
+import boto3
 from django.test import TestCase
 from django.urls import reverse
+from moto import mock_aws
+import pandas as pd
 
 from analysis.models.analysis import Analysis
 from common.exceptions.exceptions import BadRequestException
-from common.test_utils import create_logged_in_client
+from common.test_utils import create_logged_in_client, create_test_analysis, create_test_dataset
+from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
+from file_management.models.dataset_column import DatasetColumn
 from user_management.models.organization import Organization
 from user_management.models.role import Role
 from user_management.models.user_analysis_role import UserAnalysisRole
 from user_management.models.workspace import Workspace
 
+
+REPOSITORY_PATH =  "file_management.repository.file_management_repository_impl.bucket_name"
+TEST_S3_BUCKET_NAME = "testbucket"
 
 class TestCreatePresignedUrlFileUploadController(TestCase):
     """TestCase for get presigned url for file upload"""
@@ -31,14 +40,14 @@ class TestCreatePresignedUrlFileUploadController(TestCase):
         mock_service_instance.create_presigned_url_upload_file.return_value = {
             "url": "https://example.com/upload"
         }
-        valid_data = {"filename": "test.csv", "analysisId": 1, "sizeBytes": 12345}
+        valid_data = {"filename": "test.csv", "analysisId": 1}
         response = self.client.post(self.url, valid_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data["payload"], {"url": "https://example.com/upload"}
         )
         mock_service_instance.create_presigned_url_upload_file.assert_called_once_with(
-            self.user, "test.csv", 1, 12345
+            self.user, "test.csv", 1
         )
 
     def test_missing_fields(self):
@@ -143,7 +152,9 @@ class TestGetDatasetsFromAnalysis(TestCase):
                 filename="test.csv",
                 url="http://testurl/test.csv",
                 uploaded_by=self.user,
-                size_bytes=12345
+                size_bytes=12345,
+                total_columns=1,
+                total_rows=1
             )
         )
         UserAnalysisRole.objects.create(
@@ -162,3 +173,239 @@ class TestGetDatasetsFromAnalysis(TestCase):
         response = self.client.get(self.url + f"?analysis_id={self.analysis.id}")
 
         self.assertEqual(response.status_code, 200)
+class TestConfirmDatasetUploaded(TestCase):
+    """Test the controller for confirming that a dataset was uploaded"""
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("confirm_dataset_uploaded")
+        self.test_analysis = create_test_analysis(self.user)
+        self.test_filename = "test.csv"
+
+    def test_missing_filename(self):
+        """Test that if the filename is missing the response is a bad request"""
+        response = self.client.post(f"{self.url}?analysis_id={self.test_analysis.id}")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_missing_analysis_id(self):
+        """Test that if the analysis id is missing the response is a bad request"""
+        response = self.client.post(f"{self.url}?filename={self.test_filename}")
+
+        self.assertEqual(response.status_code, 400)
+
+    @patch(
+        "file_management.interfaces.controllers.confirm_dataset_uploaded_controller.FileManagementServiceImpl"
+    )
+    def test_valid_data(self, mock_service):
+        """Test that if the filename and the analysis are present it works"""
+        mock_service_instance = MagicMock()
+        mock_service.return_value = mock_service_instance
+        mock_service_instance.confirm_dataset_uploaded.return_value = {}
+
+        response = self.client.post(
+            f"{self.url}?analysis_id={self.test_analysis.id}&filename={self.test_filename}"
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+class TestGetDatasetColumns(TestCase):
+    """Test the controller for getting a dataset's columns"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.analysis)
+        self.url = reverse("get_dataset_columns")
+
+    def test_call_without_dataset_id_fails(self):
+        """Test that calling the endpoint without a dataset id fails"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_dataset_id_invalid_uuid(self):
+        """Test that calling the endpoint with a invalid dataset id fails"""
+        invalid_id = "asd"
+        response = self.client.get(f"{self.url}?dataset_id={invalid_id}")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_dataset_id_valid(self):
+        """Test that calling the endpoint with a valid dataset id returns the expected response object"""
+        response = self.client.get(
+            f"{self.url}?dataset_id={self.dataset.id}&analysis_id={self.analysis.id}"
+        )
+        self.assertEqual(response.status_code, 200)
+
+        column_config_to = ColumnConfigurationTO.from_models(ColumnConfiguration.objects.all())
+        self.assertEqual(
+            response.data['payload'],
+            [
+                col.to_dict() for col in column_config_to
+            ]
+        )
+
+@mock_aws
+@patch(
+   REPOSITORY_PATH, TEST_S3_BUCKET_NAME
+)
+class TestGetDatasetRows(TestCase):
+    """Test the endpoint for getting dataset rows"""
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.analysis)
+        self.url = reverse("get_dataset_rows")
+        self.pagination_options = "page_size=3&page_number=1"
+
+    def test_missing_dataset_id(self):
+        """Test that if the dataset id is missing it returns BadRequest"""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_id_present(self):
+        """Test that if the dataset id is present it works"""
+        response = self.client.get(
+            f"{self.url}?{self.pagination_options}&dataset_id={self.dataset.id}"
+        )
+        print(response.data, flush=True)
+        self.assertEqual(response.status_code, 200)
+        response_body = response.data
+        self.assertIn("payload", response_body)
+        data = response_body["payload"]
+        self.assertIn("totalRows", data)
+        self.assertIn("totalColumns", data)
+        self.assertEqual(data["totalRows"], self.dataset.total_rows)
+        self.assertEqual(data["totalColumns"], self.dataset.total_columns)
+
+class TestUpdateColumns(TestCase):
+    """Test the endpoint for updating the column configurations of a dataset"""
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.analysis)
+        self.url = reverse("update_columns")
+        self.columns = DatasetColumn.objects.all()
+        self.column_configurations = ColumnConfiguration.objects.all()
+
+    def test_missing_dataset_id(self):
+        """Test that if the dataset is missing it raises a BadRequest"""
+        response = self.client.put(self.url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_bad_request_body(self):
+        """Test that if there is a problem with the request body it raises a BadRequest"""
+        invalid_body = {}
+        valid_url = f"{self.url}?dataset_id={self.dataset.id}"
+        response = self.client.put(valid_url, invalid_body, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_valid_dataset_and_body(self):
+        """Test that if the dataset id and the body are correct it modifying the dataset configuration"""
+        valid_body = [
+        {
+            "id": col.id,
+            "alias": "a",
+            "dataTypeId": None,
+            "dataRoleId": None,
+            "include": False
+        } for col in self.column_configurations]
+        url = f"{self.url}?dataset_id={self.dataset.id}"
+        response = self.client.put(url, valid_body, content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("payload", response.data)
+        some_col = self.column_configurations[0]
+        some_col.refresh_from_db()
+        self.assertEqual(some_col.include, False)
+        self.assertEqual(some_col.alias, "a")
+
+@mock_aws()
+@patch(
+    REPOSITORY_PATH, TEST_S3_BUCKET_NAME
+)
+class TestUpdateRows(TestCase):
+    """Test the endpoint for updating rows"""
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.analysis)
+        self.url = reverse("update_rows")
+
+        self.dataset_columns = DatasetColumn.objects.all()
+        self.column_configurations = ColumnConfiguration.objects.all()
+
+    def test_dataset_id_missing(self):
+        """Test that if the dataset id is missing it raises a BadRequest"""
+        response = self.client.put(self.url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_request_body(self):
+        """Test that if the request body is invalid it raises a BadRequest"""
+        invalid_body = {}
+        url = f"{self.url}?dataset_id={self.dataset.id}"
+        response = self.client.put(
+            url, invalid_body, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_valid_dataset_id_and_body(self):
+        """Test that if the dataset id and the request body are correct it update the rows"""
+        valid_data = {
+            "rows": {
+                "column1": ["test1", "test2"],
+                "column2": ["test3", "test4"]
+            },
+            "analysisId": self.analysis.id,
+            "pageSize": 10,
+            "pageNumber": 1
+        }
+        url = f"{self.url}?dataset_id={self.dataset.id}"
+        response = self.client.put(url, valid_data, content_type="application/json")
+
+        # Assert status code 200
+        self.assertEqual(response.status_code, 200)
+
+        # Assert that a new file was saved and has the same amount of rows and columns
+        s3 = boto3.client("s3")
+        file_before = s3.get_object(
+            Bucket=TEST_S3_BUCKET_NAME,
+            Key=self.dataset.external_identifier
+        )
+        df_before = pd.read_csv(file_before["Body"])
+        new_dataset_external_identifier = f"datasets/{self.analysis.id}/{self.dataset.filename}"
+        file_after = s3.get_object(
+            Bucket=TEST_S3_BUCKET_NAME,
+            Key=new_dataset_external_identifier
+        )
+        df_after = pd.read_csv(file_after["Body"])
+        self.assertEqual(len(df_before), len(df_after))
+        self.assertEqual(len(df_before.columns), len(df_after.columns))
+
+        # Assert that now there are 2 datasets
+        amount_of_datasets = Dataset.objects.count()
+        self.assertEqual(amount_of_datasets, 2)
+
+        # Assert that a new dataset record was created and has the correct size in bytes
+        new_dataset_record = Dataset.objects.filter(
+            external_identifier=new_dataset_external_identifier
+        ).first()
+        size_bytes=new_dataset_record.size_bytes
+        self.assertIsNotNone(new_dataset_record)
+        self.assertEqual(file_after["ContentLength"], size_bytes)
+
+        # Assert that the analysis has detached the old dataset and attached the new one
+        self.analysis.refresh_from_db()
+        self.assertEqual(self.analysis.datasets.count(), 1)
+        self.assertEqual(
+            self.analysis.datasets.first().external_identifier,
+            new_dataset_external_identifier
+        )
+
+        # Assert that new dataset columns were created for the new dataset file
+        self.dataset_columns = DatasetColumn.objects.all()
+        self.assertEqual(len(self.dataset_columns), 4)
+
+        # Assert that the values of the new dataset are updated
+        self.assertEqual(df_after["column1"][0], "test1")
+        self.assertEqual(df_after["column1"][1], "test2")
+        self.assertEqual(df_after["column2"][0], "test3")
+        self.assertEqual(df_after["column2"][1], "test4")

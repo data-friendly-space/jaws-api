@@ -115,3 +115,6 @@ In order to set up de development environment using docker compose run the follo
 
 ### 18. **coverage**
    - Tool that measures test coverage of Python code, showing which parts of the code are executed during tests and which are not.
+   
+### 19. **moto**
+   - A library that allows you to easily mock out tests based on AWS infrastructure

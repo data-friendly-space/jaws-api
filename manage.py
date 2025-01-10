@@ -6,7 +6,8 @@ import sys
 from debugger import initialize_debugger_if_needed
 
 if os.getenv("ENVIRONMENT") == "Development" and os.getenv("DEBUGGER"):
-    initialize_debugger_if_needed()
+    if 'test' not in sys.argv:
+        initialize_debugger_if_needed()
 
 def main():
     """Run administrative tasks."""

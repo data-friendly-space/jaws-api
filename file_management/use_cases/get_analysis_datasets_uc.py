@@ -30,4 +30,6 @@ class GetAnalysisDatasetsUC(BaseUseCase):
         self, repository: FileManagementRepository, analysis_id: int
     ) -> tuple[S3PresignedUrlTO, DatasetTO]:
         datasets = repository.get_analysis_datasets(analysis_id)
+        if not datasets:
+            return []
         return datasets
