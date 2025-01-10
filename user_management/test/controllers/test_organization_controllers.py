@@ -7,10 +7,6 @@ from common.test_utils import (
     create_test_organization,
 )
 
-
-# Create your tests here.
-
-
 class OrganizationTestCase(TestCase):
     """OrganizationController test cases"""
 

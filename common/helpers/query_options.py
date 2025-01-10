@@ -162,7 +162,6 @@ class QueryOptions(serializers.Serializer):
         else:
             # Default ordering if none is provided
             self.order_by = order_by
-            return list(queryset)
 
     def paginate_and_filter_dataframe(self, dataframe: DataFrame):
         """Return the specified rows of a dataframe"""
