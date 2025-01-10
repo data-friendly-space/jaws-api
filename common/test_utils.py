@@ -64,7 +64,7 @@ def create_test_dataset(
     Assign the given user as the owner"""
     s3 = boto3.client("s3")
     s3.create_bucket(Bucket=bucket_name)
-    s3.put_object(Bucket="testbucket", Key="test.csv", Body=content)
+    s3.put_object(Bucket="testbucket", Key=f"datasets/{filename}", Body=content)
     dataset = Dataset.objects.create(
         filename=filename,
         url=f"http://testurl/{filename}",
@@ -72,7 +72,7 @@ def create_test_dataset(
         size_bytes=len(content.encode("utf-8")),
         total_columns=total_cols,
         total_rows=total_rows,
-        external_identifier=filename
+        external_identifier=f"datasets/{filename}"
     )
     csv_data = StringIO(content)
     dataset_df = pd.read_csv(csv_data)

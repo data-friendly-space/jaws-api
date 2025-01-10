@@ -1,6 +1,5 @@
 """This module contains the tests for the controllers"""
 
-from io import StringIO
 from unittest.mock import MagicMock, patch
 import boto3
 from django.test import TestCase
@@ -214,26 +213,13 @@ class TestGetDatasetColumns(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
-
-        self.dataset = Dataset.objects.create(
-            filename="test.csv",
-            url="http://testurl/test.csv",
-            uploaded_by=self.user,
-            size_bytes=12345,
-            total_rows=1,
-            total_columns=1
-        )
-
-        self.column_config = ColumnConfiguration.objects.create(
-            dataset=self.dataset,
-            original_name="Test"
-        )
+        self.analysis = create_test_analysis(self.user)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.analysis)
         self.url = reverse("get_dataset_columns")
 
     def test_call_without_dataset_id_fails(self):
         """Test that calling the endpoint without a dataset id fails"""
         response = self.client.get(self.url)
-
         self.assertEqual(response.status_code, 400)
 
     def test_dataset_id_invalid_uuid(self):
@@ -241,18 +227,20 @@ class TestGetDatasetColumns(TestCase):
         invalid_id = "asd"
         response = self.client.get(f"{self.url}?dataset_id={invalid_id}")
 
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 400)
 
     def test_dataset_id_valid(self):
         """Test that calling the endpoint with a valid dataset id returns the expected response object"""
-        response = self.client.get(f"{self.url}?dataset_id={self.dataset.id}")
+        response = self.client.get(
+            f"{self.url}?dataset_id={self.dataset.id}&analysis_id={self.analysis.id}"
+        )
         self.assertEqual(response.status_code, 200)
 
-        column_config_to = ColumnConfigurationTO.from_model(self.column_config)
+        column_config_to = ColumnConfigurationTO.from_models(ColumnConfiguration.objects.all())
         self.assertEqual(
             response.data['payload'],
             [
-                column_config_to.to_dict()
+                col.to_dict() for col in column_config_to
             ]
         )
 
@@ -412,7 +400,7 @@ class TestUpdateRows(TestCase):
             new_dataset_external_identifier
         )
 
-        # Assert that new dataset column and column configurations were created for the new dataset file
+        # Assert that new dataset columns were created for the new dataset file
         self.dataset_columns = DatasetColumn.objects.all()
         self.assertEqual(len(self.dataset_columns), 4)
 
@@ -421,4 +409,3 @@ class TestUpdateRows(TestCase):
         self.assertEqual(df_after["column1"][1], "test2")
         self.assertEqual(df_after["column2"][0], "test3")
         self.assertEqual(df_after["column2"][1], "test4")
-

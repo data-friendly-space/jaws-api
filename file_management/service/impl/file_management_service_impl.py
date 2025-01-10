@@ -226,6 +226,10 @@ class FileManagementServiceImpl(FileManagementService):
             external_identifier
         )
         new_file_size = len(new_csv.encode("utf-8"))
+        if (new_file_size > DATASET_MAX_SIZE):
+            raise BadRequestException(
+                f"The file must be smaller than {DATASET_MAX_SIZE / MB}MB"
+            )
         dataset_copy = self.create_dataset_uc.exec(
             self.repository,
             dataset.filename,

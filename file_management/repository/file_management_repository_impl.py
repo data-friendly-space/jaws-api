@@ -121,16 +121,16 @@ class FileManagementRepositoryImpl(FileManagementRepository):
 
     def create_columns(self, dataset_id, columns):
         dataset = Dataset.objects.get(id=dataset_id)
-        column_configurations = []
+        new_columns = []
         for col in columns:
-            new_column_config, _ = DatasetColumn.objects.update_or_create(
+            new_column, _ = DatasetColumn.objects.update_or_create(
                     dataset=dataset,
                     original_name=col
                 )
-            column_configurations.append(
-                new_column_config
+            new_columns.append(
+                new_column
             )
-        return DatasetColumnTO.from_models(column_configurations)
+        return DatasetColumnTO.from_models(new_columns)
 
     def get_dataset_columns(self, dataset_id):
         columns = DatasetColumn.objects.filter(
