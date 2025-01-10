@@ -11,7 +11,7 @@ class DynamicRowsField(serializers.DictField):
             raise serializers.ValidationError("This field must be a dictionary")
         for key, value in data.items():
             if not isinstance(value, list) or not all(
-                isinstance(item, str) for item in value
+                isinstance(item, (str, int, float)) for item in value
             ):
                 raise serializers.ValidationError(
                     f"All values for key '{key}' must be a list of strings"
