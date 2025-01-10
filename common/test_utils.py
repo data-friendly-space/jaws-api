@@ -40,7 +40,7 @@ def create_test_organization():
 def create_test_workspace(facilitator: User, organization: Organization = None):
     """Create a test workspace with the required organization"""
     if not organization:
-        create_test_organization()
+        organization = create_test_organization()
     workspace = Workspace.objects.create(
         title="TestWorksp2ace1",
         organization=organization,
@@ -58,7 +58,7 @@ def create_test_analysis(
 ):
     """Create all the structure fo an analysis"""
     if not workspace:
-        create_test_workspace(user, organization)
+        workspace = create_test_workspace(user, organization)
     test_analysis = Analysis.objects.create(
         title="TestAnalysis1",
         workspace_id=workspace.id,
