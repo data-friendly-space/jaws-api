@@ -32,22 +32,39 @@ def create_logged_in_client():
     client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {str(refresh.access_token)}"
     return client, user
 
-def create_test_analysis(user):
-    """Create all the structure fo an analysis"""
+def create_test_organization():
+    """Create a test organization"""
     organization = Organization.objects.create(name="TestOrganization2")
+    return organization
+
+def create_test_workspace(facilitator: User, organization: Organization = None):
+    """Create a test workspace with the required organization"""
+    if not organization:
+        create_test_organization()
     workspace = Workspace.objects.create(
         title="TestWorksp2ace1",
         organization=organization,
-        facilitator_id=user.id,
-        creator_id=user.id,
+        facilitator_id=facilitator.id,
+        creator_id=facilitator.id,
     )
+    return workspace
+
+
+
+def create_test_analysis(
+        user: User,
+        workspace: Workspace = None,
+        organization: Organization = None
+):
+    """Create all the structure fo an analysis"""
+    if not workspace:
+        create_test_workspace(user, organization)
     test_analysis = Analysis.objects.create(
         title="TestAnalysis1",
         workspace_id=workspace.id,
         end_date="2024-12-17",
         creator_id=user.id,
     )
-
     return test_analysis
 
 @mock_aws
