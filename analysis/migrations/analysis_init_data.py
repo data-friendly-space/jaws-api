@@ -1,4 +1,5 @@
 import sys
+
 from django.db import migrations, models
 
 from analysis.command.add_administrative_divisions import add_administrative_divisions
@@ -45,7 +46,7 @@ def add_sector_data():
 
 
 def add_frameworks_initial_data():
-    frameworks = ["JIAF", "IFRC", "PAF", "Deep Generic"]
+    frameworks = ["JIAF", "IFRC", "PAF", "Deep Generic", "Test Framework"]
 
     for framework in frameworks:
         AnalysisFramework.objects.get_or_create(name=framework)
@@ -57,7 +58,6 @@ def add_frameworks_initial_data():
     )
     for analysis in existing_analyses:
         analysis.analysis_steps.set(mandatory_steps)
-
 
 def add_initial_data(apps, schema_editor):
     """Add disaggregations, sectors and administrative divisions"""
@@ -75,6 +75,7 @@ def remove_initial_data(apps, schema_editor):
     if 'test' not in sys.argv:
         AdministrativeDivision.objects.all().delete()
     AnalysisFramework.objects.all().delete()
+
 
 
 class Migration(migrations.Migration):
