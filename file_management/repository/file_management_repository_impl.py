@@ -14,6 +14,8 @@ from botocore.exceptions import ClientError
 from analysis.models.analysis import Analysis
 from common.helpers.get_mime_type_from_extension import get_mimetype_from_extension
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.data_role_to import DataRoleTO
+from file_management.contract.dto.data_type_to import DataTypeTO
 from file_management.contract.dto.dataset_column_to import DatasetColumnTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
@@ -23,6 +25,8 @@ from file_management.contract.repository.file_management_repository import (
     FileManagementRepository,
 )
 from file_management.models.column_configuration import ColumnConfiguration
+from file_management.models.data_role import DataRole
+from file_management.models.data_type import DataType
 from file_management.models.dataset import Dataset
 from file_management.models.dataset_column import DatasetColumn
 from user_management.models.user import User
@@ -151,10 +155,14 @@ class FileManagementRepositoryImpl(FileManagementRepository):
 
     @transaction.atomic
     def update_columns(self, columns):
-        for column in columns.data:
+        for column in columns:
             column_configuration = ColumnConfiguration.objects.get(id=column["id"])
             column_configuration.alias = column["alias"]
             column_configuration.include = column["include"]
+            data_type = DataType.objects.filter(id=column["data_type_id"]).first()
+            data_role = DataRole.objects.filter(id=column["data_role_id"]).first()
+            column_configuration.data_type = data_type
+            column_configuration.data_role = data_role
             column_configuration.save()
 
     def create_dataset_file_copy(self, external_identifier, csv) -> S3PutObjectTO:
@@ -168,3 +176,11 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             logging.error(e)
             raise e
         return S3PutObjectTO.from_model(response)
+
+    def get_data_types(self):
+        data_types = DataType.objects.all()
+        return DataTypeTO.from_models(data_types)
+
+    def get_data_roles(self):
+        data_roles = DataRole.objects.all()
+        return DataRoleTO.from_models(data_roles)

@@ -63,7 +63,7 @@ class FileManagementService(BaseService):
         """
 
     @abstractmethod
-    def update_columns(self, user, dataset_id: int, columns: ColumnIn) -> None:
+    def update_columns(self, user, dataset_id: int, columns: List[dict]) -> None:
         """Update the given column configurations of a dataset
         
         Keyword arguments:
@@ -82,4 +82,20 @@ class FileManagementService(BaseService):
         user -- The user who is trying to update the columns
         dataset_id -- the id of the dataset
         rows -- The rows values with the page number and size
+        """
+
+    @abstractmethod
+    def get_data_types(self) -> List[dict]:
+        """Retrieves all of the data types
+        
+        Keyword arguments:
+        Return: A list of dicts
+        """
+
+    @abstractmethod
+    def get_data_roles(self) -> List[dict]:
+        """Retrieves all of the data roles
+        
+        Keyword arguments:
+        Return: A list of dicts
         """

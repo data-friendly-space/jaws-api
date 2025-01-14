@@ -4,10 +4,11 @@ from abc import abstractmethod
 from typing import List
 
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
+from file_management.contract.dto.data_role_to import DataRoleTO
+from file_management.contract.dto.data_type_to import DataTypeTO
 from file_management.contract.dto.dataset_column_to import DatasetColumnTO
 from file_management.contract.dto.dataset_to import DatasetTO
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
-from file_management.contract.requests.column_in import ColumnIn
 
 
 class FileManagementRepository:
@@ -132,11 +133,11 @@ class FileManagementRepository:
         """
 
     @abstractmethod
-    def update_columns(self, columns: ColumnIn) -> None:
+    def update_columns(self, columns: List[dict]) -> None:
         """Update dataset columns
         
         Keyword arguments:
-        columns -- ColumnIn 
+        columns -- dict of ColumnsIn 
         Return: None
         """
 
@@ -148,4 +149,38 @@ class FileManagementRepository:
         external_identifier -- The key of the copy dataset
         csv -- The dataset as csv
         Return: None
+        """
+
+    @abstractmethod
+    def get_data_type(self, data_type_id: int) -> DataTypeTO | None:
+        """Get a data type by id
+        
+        Keyword arguments:
+        data_type_id -- the id of the data type
+        Return: The data type to or None if not found
+        """
+
+    @abstractmethod
+    def get_data_role(self, data_role_id: int) -> DataRoleTO | None:
+        """Get a data role by id
+        
+        Keyword arguments:
+        data_role_id -- the id of the data role
+        Return: The data role to or None if not found
+        """
+
+    @abstractmethod
+    def get_data_types(self) -> List[DataTypeTO]:
+        """Get all the data types
+        
+        Keyword arguments:
+        Return: A list with data types to 
+        """
+
+    @abstractmethod
+    def get_data_roles(self) -> List[DataRoleTO]:
+        """Get all the data roles
+        
+        Keyword arguments:
+        Return: A list with data roles to 
         """
