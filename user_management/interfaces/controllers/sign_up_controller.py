@@ -13,4 +13,5 @@ def sign_up_controller(request):
 
     sign_up_in = SignUpIn(data=to_snake_case_data(request.data))
     user_service.sign_up(sign_up_in)
+
     return api_response_success("User successfully created", None, status.HTTP_201_CREATED)
