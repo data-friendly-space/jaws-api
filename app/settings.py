@@ -59,7 +59,8 @@ CUSTOM_APPS = [
     'health_checks',
     'file_management',
     'analysis',
-    'interac_not_manager'
+    'interac_not_manager',
+    'charts'
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',

@@ -1,0 +1,38 @@
+"""Contains the abstract chart repository"""
+
+from abc import abstractmethod
+from typing import List, Optional
+
+from charts.contract.dto.chart_to import ChartTO
+
+
+class ChartRepository:
+    """Abstract repository"""
+
+    @abstractmethod
+    def save(
+        self,
+        chart_type: str,
+        dataset_id: str,
+        analysis_id: int,
+        name: str,
+        x_col: str,
+        y_cols: List[str],
+        title: Optional[str],
+        x_label: Optional[str],
+        y_label: Optional[str],
+    ) -> ChartTO:
+        """Save the chart configuration in the database
+        
+        Keyword arguments:
+        chart_type -- the type of the chart. Should be on the Chart.Type choices
+        dataset_id -- the id of the dataset
+        analysis_id -- the id of the analysis where the chart belongs
+        name -- The name to be displayed
+        title -- The title of the chart on top of it
+        x_col -- The column of the dataset to be used as x axis
+        y_cols -- the columns of the dataset to be used as y axis
+        x_label -- The label of the x axis
+        y_label -- the label of the y axis
+        Return: The chart dto
+        """

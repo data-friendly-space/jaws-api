@@ -39,5 +39,7 @@ urlpatterns = [
 
     path('jaws-api/file-management/', include('file_management.urls')),
 
+    path('jaws-api/charts/', include('charts.urls')),
+
     path('jaws-api/csrf', csrf_token_controller, name='csrf'),
 ]
