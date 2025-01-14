@@ -15,8 +15,8 @@ def update_columns_controller(request):
         raise BadRequestException("The dataset id is needed.")
     columns = ColumnIn(data=to_snake_case_data(request.data), many=True)
     if not columns.is_valid():
-        raise BadRequestException("Check the payload and try again.")
+        raise BadRequestException("Check the payload and try again.", columns.errors)
     service = FileManagementServiceImpl()
-    service.update_columns(request.user, dataset_id, columns)
+    service.update_columns(request.user, dataset_id, columns.validated_data)
 
     return api_response_success()
