@@ -44,7 +44,7 @@ def remove_types_and_roles(apps, schema_editor):
     DataRole = apps.get_model("file_management", "DataRole")
 
     DataType.objects.all().delete()
-    DataRole.object.all().delete()
+    DataRole.objects.all().delete()
 
 class Migration(migrations.Migration):
     """Create datasets structures"""
