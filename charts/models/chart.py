@@ -21,3 +21,7 @@ class Chart(models.Model):
         choices=[("bar", "Bar"), ("line", "Line"), ("pie", "Pie")], default="bar"
     )
     analysis = models.ForeignKey(Analysis, on_delete=models.CASCADE)
+
+    class Meta:
+        """Table's metadata"""
+        db_table="chart"
