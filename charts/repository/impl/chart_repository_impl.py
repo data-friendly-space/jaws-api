@@ -49,3 +49,10 @@ class ChartRepositoryImpl(ChartRepository):
         )
         new_chart.y_cols.set(y_col_configs)
         return ChartTO.from_model(new_chart)
+
+    def get(self, analysis_id, subpillar_ids):
+        if subpillar_ids:
+            charts = Chart.objects.filter(analysis_id=analysis_id, subpillar__id__in=subpillar_ids)
+        else:
+            charts = Chart.objects.filter(analysis_id=analysis_id)
+        return ChartTO.from_models(charts)

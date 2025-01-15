@@ -38,3 +38,13 @@ class ChartRepository:
         y_label -- the label of the y axis
         Return: The chart dto
         """
+
+    @abstractmethod
+    def get(self, analysis_id: int, subpillar_ids: List[int]) -> List[ChartTO]:
+        """Retrieve the charts that belong to the analysis filtered by subpillars
+        
+        Keyword arguments:
+        analysis_id -- the id of the analysis
+        subpillar_ids -- the ids of each subpillar to use as a filter
+        Return: a list of charts to
+        """

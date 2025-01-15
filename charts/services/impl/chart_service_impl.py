@@ -6,6 +6,7 @@ from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_subpillar_by_id_uc import GetSubpillarByIdUC
 from charts.repository.impl.chart_repository_impl import ChartRepositoryImpl
 from charts.services.chart_service import ChartService
+from charts.use_cases.get_charts_uc import GetChartsUC
 from charts.use_cases.save_chart_uc import SaveChartUC
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from file_management.repository.file_management_repository_impl import FileManagementRepositoryImpl
@@ -21,6 +22,7 @@ class ChartServiceImpl(ChartService):
         self.get_dataset_column_uc = GetDatasetColumnsUC.get_instance()
         self.get_dataset_by_id_uc = GetDatasetByIdUC.get_instance()
         self.get_analysis_by_id_uc = GetAnalysisByIdUC.get_instance()
+        self.get_charts_uc = GetChartsUC.get_instance()
         self.get_subpillar_uc = GetSubpillarByIdUC.get_instance()
         self.repository = ChartRepositoryImpl()
         self.file_management_repository = FileManagementRepositoryImpl()
@@ -72,3 +74,12 @@ class ChartServiceImpl(ChartService):
             self.repository, config
         )
         return new_chart.to_dict()
+
+    def get_charts(self, user, analysis_id, subpillar_ids):
+        # TODO: Check if the user can see the charts
+        charts = self.get_charts_uc.exec(
+            self.repository, analysis_id, subpillar_ids
+        )
+        if not charts:
+            raise NotFoundException("No charts matching the criteria")
+        return [chart.to_dict() for chart in charts]
