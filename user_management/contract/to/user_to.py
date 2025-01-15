@@ -14,7 +14,6 @@ from user_management.models import User
 class UserTO(BaseTO):
     id: str | None = None
     name: str | None = None
-    password: str | None = None
     lastname: str | None = None
     email: str | None = None
     country: str | None = None
@@ -31,7 +30,6 @@ class UserTO(BaseTO):
         return cls(
             id=instance.id,
             name=instance.name,
-            password=instance.password,
             lastname=instance.lastname,
             email=instance.email,
             country=instance.country,
