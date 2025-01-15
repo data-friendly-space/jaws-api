@@ -12,6 +12,8 @@ from common.exceptions.exceptions import BadRequestException
 from common.test_utils import create_logged_in_client, create_test_analysis, create_test_dataset
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.models.column_configuration import ColumnConfiguration
+from file_management.models.data_role import DataRole
+from file_management.models.data_type import DataType
 from file_management.models.dataset import Dataset
 from file_management.models.dataset_column import DatasetColumn
 from user_management.models.organization import Organization
@@ -409,3 +411,43 @@ class TestUpdateRows(TestCase):
         self.assertEqual(df_after["column1"][1], "test2")
         self.assertEqual(df_after["column2"][0], "test3")
         self.assertEqual(df_after["column2"][1], "test4")
+
+class TestGetDataTypes(TestCase):
+    """Test the endpoint for getting the data types"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("get_data_types")
+        DataType.objects.all().delete()
+        self.data_type_test1 = DataType.objects.create(name="Test data type")
+        self.data_type_test2 = DataType.objects.create(name="Test data type")
+
+    def test_get_data_types(self):
+        """Test that getting the data types return the types saved in the database"""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("payload", response.data)
+        self.assertTrue(isinstance(response.data["payload"], list), "The response isn't a list")
+        self.assertEqual(len(response.data["payload"]), 2)
+        self.assertEqual(response.data["payload"][0]["name"], "Test data type")
+
+class TestGetDataRoles(TestCase):
+    """Test the endpoint for getting the data roles"""
+
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.url = reverse("get_data_roles")
+        DataRole.objects.all().delete()
+        self.test_data_role1 = DataRole.objects.create(name="Test data role")
+        self.test_data_role2 = DataRole.objects.create(name="Test data role")
+
+    def test_get_data_roles(self):
+        """Test that getting the data types return the roles saved in the database"""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("payload", response.data)
+        self.assertTrue(isinstance(response.data["payload"], list), "The response isn't a list")
+        self.assertEqual(len(response.data["payload"]), 2)
+        self.assertEqual(response.data["payload"][0]["name"], "Test data role")

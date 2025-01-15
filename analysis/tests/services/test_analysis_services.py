@@ -20,7 +20,7 @@ from analysis.models.sector import Sector
 from analysis.service.impl.analysis_service_impl import AnalysisServiceImpl
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
-from common.test_utils import create_logged_in_client
+from common.test_utils import create_logged_in_client, create_test_analysis, create_test_organization
 from user_management.models import Organization, Workspace, Role
 
 
@@ -194,8 +194,10 @@ class TestGetSteps(TestCase):
     """Test that getting steps and mandatory steps work"""
 
     def setUp(self):
+        AnalysisStep.objects.all().delete()
         self.default_step = AnalysisStep.objects.create(name="Test 1", order=1)
         AnalysisStep.objects.create(name="Test 2", order=2)
+
         self.service = AnalysisServiceImpl()
 
     def test_get_steps(self):
@@ -219,20 +221,9 @@ class TestUpdateAnalysisSteps(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
         self.service = AnalysisServiceImpl()
-        self.org = Organization.objects.create(name="TestOrganization2")
-        self.workspace = Workspace.objects.create(
-            title="TestWorksp2ace1",
-            organization=self.org,
-            facilitator_id=self.user.id,
-            creator_id=self.user.id,
-        )
-        self.analysis = Analysis.objects.create(
-            title="TestAnalysis1",
-            workspace_id=self.workspace.id,
-            end_date="2024-12-17",
-            creator_id=self.user.id,
-        )
+        AnalysisStep.objects.all().delete()
         mandatory_step_1 = AnalysisStep.objects.create(name="Mandatory 1", order=1)
         mandatory_step_2 = AnalysisStep.objects.create(name="Mandatory 2", order=2)
         self.mandatory_step_ids = [mandatory_step_1.id, mandatory_step_2.id]

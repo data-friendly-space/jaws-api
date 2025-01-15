@@ -24,11 +24,11 @@ class SaveChartUC(BaseUseCase):
     def exec(self, repository: ChartRepository, chart: dict):
         """Execute the use case"""
         return repository.save(
-            chart_type=chart["type"],
-            title=chart["title"],
-            x_label=chart["x_label"],
-            x_col=chart["x_col"],
-            y_label=chart["y_label"],
+            chart_type=chart.get("type"),
+            title=chart.get("title", None),
+            x_label=chart.get("x_label", None),
+            x_col=chart.get("x_col"),
+            y_label=chart.get("y_label", None),
             y_cols=chart["y_cols"],
             name=chart["name"],
             analysis_id=chart["analysis_id"],

@@ -3,7 +3,9 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
-from file_management.interfaces.controllers.confirm_dataset_uploaded_controller import confirm_dataset_uploaded_controller
+from file_management.interfaces.controllers.confirm_dataset_uploaded_controller import (
+    confirm_dataset_uploaded_controller,
+)
 from file_management.interfaces.controllers.create_presigned_url_download_file_controller import (
     create_presigned_url_download_file_controller,
 )
@@ -13,10 +15,24 @@ from file_management.interfaces.controllers.create_presigned_url_upload_file_con
 from file_management.interfaces.controllers.get_analysis_datasets_controller import (
     get_analysis_datasets_controller,
 )
-from file_management.interfaces.controllers.get_dataset_columns_controller import get_dataset_columns_controller
-from file_management.interfaces.controllers.get_dataset_rows_controller import get_dataset_rows_controller
-from file_management.interfaces.controllers.update_columns_controller import update_columns_controller
-from file_management.interfaces.controllers.update_rows_controller import update_rows_controller
+from file_management.interfaces.controllers.get_data_roles_controller import (
+    get_data_roles_controller,
+)
+from file_management.interfaces.controllers.get_data_types_controller import (
+    get_data_types_controller,
+)
+from file_management.interfaces.controllers.get_dataset_columns_controller import (
+    get_dataset_columns_controller,
+)
+from file_management.interfaces.controllers.get_dataset_rows_controller import (
+    get_dataset_rows_controller,
+)
+from file_management.interfaces.controllers.update_columns_controller import (
+    update_columns_controller,
+)
+from file_management.interfaces.controllers.update_rows_controller import (
+    update_rows_controller,
+)
 
 
 class TestUrls(SimpleTestCase):
@@ -64,3 +80,13 @@ class TestUrls(SimpleTestCase):
         """Test that the url for updating the rows of a dataset works"""
         url = reverse("update_rows")
         self.assertEqual(resolve(url).func, update_rows_controller)
+
+    def test_get_data_types(self):
+        """Test that the url for getting the data types"""
+        url = reverse("get_data_types")
+        self.assertEqual(resolve(url).func, get_data_types_controller)
+
+    def test_get_data_roles(self):
+        """Test that the url for getting the data roles"""
+        url = reverse("get_data_roles")
+        self.assertEqual(resolve(url).func, get_data_roles_controller)

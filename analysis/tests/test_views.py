@@ -8,6 +8,7 @@ from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
 from common.test_utils import create_logged_in_client
+from common.test_utils import create_logged_in_client, create_test_analysis
 from user_management.models import Organization, Workspace
 
 
@@ -53,6 +54,7 @@ class TestGetSteps(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
+        AnalysisStep.objects.all().delete()
         AnalysisStep.objects.create(name="Test 1", order=1)
         AnalysisStep.objects.create(name="Test 2", order=2)
 
@@ -134,22 +136,10 @@ class TestUpdateAnalysisSteps(TestCase):
 
     def setUp(self):
         self.client, self.user = create_logged_in_client()
-        self.org = Organization.objects.create(name="TestOrganization1")
-        self.workspace = Workspace.objects.create(
-            title="TestWorkspace1",
-            organization=self.org,
-            facilitator_id=self.user.id,
-            creator_id=self.user.id,
-        )
+        self.default_analysis = create_test_analysis(self.user)
+        AnalysisStep.objects.all().delete()
         self.defaul_step = AnalysisStep.objects.create(
             order=1, name="Test step", mandatory=True
-        )
-        self.default_analysis = Analysis.objects.create(
-            title="test analysis",
-            objectives="test",
-            end_date="2024-11-20",
-            creator_id=self.user.id,
-            workspace_id=self.workspace.id,
         )
 
     def test_update_steps_invalid_analysis_id(self):
@@ -198,7 +188,7 @@ class TestUpdateAnalysisSteps(TestCase):
                 "objetives": "This is a test",
                 "startDate": "2024-11-25",
                 "endDate": "2024-11-29",
-                "workspaceId": self.workspace.id,
+                "workspaceId": self.default_analysis.workspace.id,
                 "objectives": "objectives",
             }
             , content_type="application/json")
