@@ -3,6 +3,7 @@
 from django.db import models
 
 from analysis.models.analysis import Analysis
+from analysis.models.sub_pillar import SubPillar
 from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
 
@@ -17,6 +18,7 @@ class Chart(models.Model):
     title = models.CharField(max_length=255, null=True)
     x_label = models.CharField(max_length=255, null=True)
     y_label = models.CharField(max_length=255, null=True)
+    subpillar = models.ForeignKey(SubPillar, null=True, on_delete=models.SET_NULL)
     type = models.CharField(
         choices=[("bar", "Bar"), ("line", "Line"), ("pie", "Pie")], default="bar"
     )

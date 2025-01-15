@@ -32,5 +32,6 @@ class SaveChartUC(BaseUseCase):
             y_cols=chart["y_cols"],
             name=chart["name"],
             analysis_id=chart["analysis_id"],
-            dataset_id=chart["dataset_id"]
+            dataset_id=chart["dataset_id"],
+            subpillar_id=chart["subpillar_id"]
         )
