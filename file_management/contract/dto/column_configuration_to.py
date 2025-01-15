@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 from typing import Dict
 
+from analysis.contract.to.sub_pillar_to import SubPillarTO
 from common.contract.to.base_to import BaseTO
 from file_management.contract.dto.data_role_to import DataRoleTO
 from file_management.contract.dto.data_type_to import DataTypeTO
@@ -15,10 +16,11 @@ class ColumnConfigurationTO(BaseTO):
     id: str | None 
     alias: str | None
     lastChange: datetime | None
-    dataType: str | None
-    dataRole: str | None
+    dataType: DataTypeTO | None
+    dataRole: DataRoleTO | None
     include: bool | None
     originalName: str | None
+    subpillar: SubPillarTO | None
 
 
     @classmethod
@@ -32,6 +34,7 @@ class ColumnConfigurationTO(BaseTO):
             lastChange=instance.last_change,
             dataType=DataTypeTO.from_model(instance.data_type),
             dataRole=DataRoleTO.from_model(instance.data_role),
+            subpillar=SubPillarTO.from_model(instance.subpillar),
             include=instance.include,
             originalName=instance.column.original_name
         )

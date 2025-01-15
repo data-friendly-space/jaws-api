@@ -4,6 +4,7 @@ from abc import abstractmethod
 from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.sub_pillar_to import SubPillarTO
 from analysis.models import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.helpers.query_options import QueryOptions
@@ -64,3 +65,12 @@ class AnalysisRepository(BaseRepository):
     @abstractmethod
     def get_all_disaggregations(self, query_options: QueryOptions, **kwargs) -> list[DisaggregationTO]:
         """Return all disaggregations"""
+
+    @abstractmethod
+    def get_subpillar(self, subpillar_id: int) -> SubPillarTO:
+        """Retrieve a subpillar by id
+        
+        Keyword arguments:
+        subpillar_id -- the id of the subpillar
+        Return: The subpillar as dto
+        """
