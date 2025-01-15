@@ -5,6 +5,8 @@ from django.urls import reverse
 
 from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
+from analysis.models.disaggregation import Disaggregation
+from analysis.models.sector import Sector
 from common.test_utils import create_logged_in_client
 from user_management.models import Organization, Workspace
 
@@ -175,15 +177,23 @@ class TestUpdateAnalysisSteps(TestCase):
 
     def test_create_analysis_successfully(self):
         """Test that creating an analysis with correct data works"""
+        disaggregations = Disaggregation.objects.all()
+        sectors = Sector.objects.all()
         response = self.client.post(
             reverse("create_analysis"),
             {
                 "title": "Testing creation",
                 "disaggregations": [
-                    "1", "2"
+                    {
+                        "id": disaggregations[0].id,
+                        "name": disaggregations[0].name
+                    }
                 ],
                 "sectors": [
-                    "1"
+                    {
+                        "id": sectors[0].id,
+                        "name": sectors[0].name
+                    }
                 ],
                 "objetives": "This is a test",
                 "startDate": "2024-11-25",

@@ -1,16 +1,12 @@
 """Contains the implementation of AnalysisService"""
 
 from typing import List
+
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
-from analysis.contract.to import administrative_division_to
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
-from analysis.models.administrative_division import AdministrativeDivision
-from analysis.models.analysis import Analysis
-from analysis.models.disaggregation import Disaggregation
-from analysis.models.sector import Sector
 from analysis.repository.impl.analysis_framework_repository_impl import AnalysisFrameworkRepositoryImpl
 from analysis.repository.impl.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.service.analysis_service import AnalysisService
@@ -23,8 +19,8 @@ from analysis.use_cases.get_administrative_divisions_uc import GetAdministrative
     GetAdministrativeDivisionByIdUC
 from analysis.use_cases.get_all_disaggregations_uc import GetAllDisaggregationsUC
 from analysis.use_cases.get_all_sectors_uc import GetAllSectorsUC
-from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analyses_uc import GetAnalysesUC
+from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_frameworks_uc import GetAnalysisFrameworkUC
 from analysis.use_cases.get_steps_uc import GetStepsUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
@@ -83,6 +79,11 @@ class AnalysisServiceImpl(AnalysisService):
         sectors = self.get_all_sectors_uc.exec(AnalysisRepositoryImpl(), **kwargs)
         return [sector.to_dict() for sector in sectors]
 
+    def get_all_disaggregations(self, **kwargs):
+        """Get all disaggregations"""
+        disaggregations = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None, **kwargs)
+        return [disaggregation.to_dict() for disaggregation in disaggregations]
+
     def create_analysis(self, analysis: CreateAnalysisIn, creator_id):
         """Create analysis business logic"""
         if not self.get_user_by_filter_uc.exec(self.user_repository, id=creator_id):
@@ -92,13 +93,7 @@ class AnalysisServiceImpl(AnalysisService):
                 "Create analysis request is not valid: ",
                 analysis.errors)
         scope = analysis.validated_data
-        if scope['disaggregations']:
-            disaggregations = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None,
-                                                                   pk__in=scope['disaggregations'])
-        else:
-            disaggregations = []
-        sectors = self.get_all_sectors_uc.exec(self.repository, pk__in=scope['sectors'])
-        self.validate_scope_fields(scope, sectors)
+        self.validate_scope_fields(scope, scope['sectors'])
         data = {
             "title": scope["title"],
             "objectives": scope["objectives"],
@@ -108,7 +103,7 @@ class AnalysisServiceImpl(AnalysisService):
             "workspace_id": scope['workspace_id'],
         }
         new_analysis = self.create_analysis_uc.exec(
-            self.repository, data, disaggregations, sectors
+            self.repository, data, scope['disaggregations'], scope['sectors']
         )
         return new_analysis.to_dict()
 
@@ -121,12 +116,7 @@ class AnalysisServiceImpl(AnalysisService):
             raise BadRequestException("Invalid request", analysis.errors)
 
         scope = analysis.validated_data
-        if scope["disaggregations"]:
-            disaggregations = self.get_disaggregations(scope["disaggregations"])
-        else:
-            disaggregations = []
-        sectors = self.get_all_sectors_uc.exec(self.repository, None, pk__in=scope["sectors"])
-        self.validate_scope_fields(scope, sectors)
+        self.validate_scope_fields(scope, scope["sectors"])
 
         data = {
             "title": scope["title"],
@@ -138,8 +128,8 @@ class AnalysisServiceImpl(AnalysisService):
         analysis_updated = self.put_analysis_scope_uc.exec(
             self.repository,
             data=data,
-            disaggregations=disaggregations,
-            sectors=sectors,
+            disaggregations=scope["disaggregations"],
+            sectors=scope["sectors"],
             analysis_id=analysis_id,
         )
         return analysis_updated.to_dict()

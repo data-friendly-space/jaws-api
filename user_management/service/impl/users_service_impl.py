@@ -104,7 +104,7 @@ class UsersServiceImpl(UsersService):
             AnalysisRepositoryImpl(), user.id, data["id"], data["role_id"]
         )
         self.add_user_to_workspace_uc.exec(
-            WorkspaceRepositoryImpl(), user.id, analysis.results[0]['workspaceId'], None
+            WorkspaceRepositoryImpl(), user.id, analysis.results[0]['workspace']['id'], None
         )
         self.notify_user_uc.exec(
             NotificationRepositoryImpl(),

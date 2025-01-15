@@ -98,18 +98,15 @@ class AnalysisRepositoryImpl(AnalysisRepository):
 
     def update(self, obj_id, data, sectors, disaggregations):
         """
-        Update a user by ID.
+        Update analysis id.
         """
         try:
             analysis = Analysis.objects.get(id=obj_id)
-            for field, value in data.items():
-                if field == "sectors":
-                    analysis.sectors.set(sectors)
-                elif field == "disaggregations":
-                    analysis.disaggregations.set(disaggregations)
-                else:
-                    setattr(analysis, field, value)
-            analysis.save()
+            disaggregation_ids = [d['id'] for d in disaggregations]  # Extract IDs from disaggregations
+            sector_ids = [s['id'] for s in sectors]  # Extract IDs from sectors
+            # Set the relationships using the IDs
+            analysis.disaggregations.set(disaggregation_ids)  # Assign disaggregations using IDs
+            analysis.sectors.set(sector_ids)  # Assign sectors using IDs
             return AnalysisTO.from_model(analysis)
         except Analysis.DoesNotExist:
             return None
@@ -121,8 +118,8 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         # Create the analysis instance
 
         # Extract only the IDs from disaggregations and sectors
-        disaggregation_ids = [d.id for d in disaggregations]  # Extract IDs from disaggregations
-        sector_ids = [s.id for s in sectors]  # Extract IDs from sectors
+        disaggregation_ids = [d['id'] for d in disaggregations]  # Extract IDs from disaggregations
+        sector_ids = [s['id'] for s in sectors]  # Extract IDs from sectors
         analysis = Analysis.objects.create(**data)
 
         # Set the relationships using the IDs

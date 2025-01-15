@@ -18,6 +18,7 @@ from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
 from analysis.interfaces.controllers.get_analysis_frameworks_controller import get_analysis_frameworks_controller
+from analysis.interfaces.controllers.get_disaggregations_controller import get_all_disaggregations_controller
 from analysis.interfaces.controllers.get_sectors_controller import get_all_sectors_controller
 from analysis.interfaces.controllers.get_steps_controller import get_steps_controller
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
@@ -32,6 +33,7 @@ urlpatterns = [
     path("frameworks", get_analysis_frameworks_controller, name="get_analysis_frameworks_controller"),
 
     path("sectors", get_all_sectors_controller, name="get_all_sectors_controller"),
+    path("disaggregations", get_all_disaggregations_controller, name="get_all_disaggregations_controller"),
     path(
         "administrative-divisions",
         get_administrative_division_controller,
