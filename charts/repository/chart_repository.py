@@ -12,6 +12,7 @@ class ChartRepository:
     @abstractmethod
     def save(
         self,
+        user,
         chart_type: str,
         dataset_id: str,
         analysis_id: int,
@@ -26,6 +27,7 @@ class ChartRepository:
         """Save the chart configuration in the database
         
         Keyword arguments:
+        user -- the creator of the chart
         chart_type -- the type of the chart. Should be on the Chart.Type choices
         dataset_id -- the id of the dataset
         analysis_id -- the id of the analysis where the chart belongs

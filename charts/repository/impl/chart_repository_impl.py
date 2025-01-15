@@ -13,6 +13,7 @@ class ChartRepositoryImpl(ChartRepository):
     """Implementation of the chart repository"""
 
     def save(self,
+            user,
             chart_type,
             dataset_id,
             analysis_id,
@@ -45,7 +46,8 @@ class ChartRepositoryImpl(ChartRepository):
             x_label=x_label,
             y_label=y_label,
             analysis=analysis,
-            subpillar=subpillar
+            subpillar=subpillar,
+            created_by=user,
         )
         new_chart.y_cols.set(y_col_configs)
         return ChartTO.from_model(new_chart)
