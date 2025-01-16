@@ -22,6 +22,6 @@ class CreatePresignedUrlDownloadFileUC(BaseUseCase):
             CreatePresignedUrlDownloadFileUC()
         return CreatePresignedUrlDownloadFileUC._instance
 
-    def exec(self, repository: FileManagementRepository, dataset_id: str) -> S3PresignedUrlTO:
-        presigned_url = repository.create_presigned_url_download_file(dataset_id)
+    def exec(self, repository: FileManagementRepository, external_identifier: str) -> S3PresignedUrlTO:
+        presigned_url = repository.create_presigned_url_download_file(external_identifier)
         return presigned_url

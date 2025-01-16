@@ -59,7 +59,8 @@ CUSTOM_APPS = [
     'health_checks',
     'file_management',
     'analysis',
-    'interac_not_manager'
+    'interac_not_manager',
+    'charts'
 ]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -132,7 +133,7 @@ TEMPLATES = [
 
 SIMPLE_JWT = {
     # Duration of the access token
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME', 30))),  # 30min as example
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('JWT_ACCESS_TOKEN_LIFETIME', 10000))),  # 30min as example
 
     # Duration of the refresh token
     'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME', 7))),  # 7 days as example

@@ -1,5 +1,5 @@
 """This module contains the get users use case"""
-from analysis.contract.repository.analysis_repository import AnalysisRepository
+from analysis.repository.analysis_repository import AnalysisRepository
 
 
 class InviteUserToAnalysisUC:

@@ -81,7 +81,7 @@ class TestUrls(SimpleTestCase):
 
     def test_get_organizations_users_url_resolves(self):
         """Test that the get organization users by user ID URL works"""
-        url = reverse("get-organizations-users-by-user-id")
+        url = reverse("get-organizations-users-by-user-id",args=['some-org-id'])
         self.assertEqual(
             resolve(url).func, get_organizations_users_by_user_id_controller
         )

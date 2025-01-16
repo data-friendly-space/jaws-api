@@ -19,6 +19,9 @@ class DatasetTO(BaseTO):
     mimeType: str | None
     url: str | None
     filename: str | None
+    totalRows: int | None
+    totalColumns: int | None
+    externalIdentifier: str | None
 
 
     @classmethod
@@ -34,7 +37,10 @@ class DatasetTO(BaseTO):
             mimeType=instance.mime_type,
             updatedAt=instance.updated_at,
             filename=instance.filename,
-            url=instance.url
+            url=instance.url,
+            totalRows=instance.total_rows,
+            totalColumns=instance.total_columns,
+            externalIdentifier=instance.external_identifier
         )
 
     def to_dict(self) -> Dict:

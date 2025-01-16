@@ -4,7 +4,9 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Optional
 
-from analysis.contract.to.administrative_division_dto import AdministrativeDivisionTO
+from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
+from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.contract.to.sector_to import SectorTO
@@ -23,12 +25,13 @@ class AnalysisTO(BaseTO):
     sectors: Optional[list[SectorTO]]
     workspaceId: str | None
     lastChange: datetime | None
-    disaggregations: Optional[dict] = None,
-    startDate: date | None = None,
-    creator: Optional[str] = None,
+    disaggregations: Optional[dict] = None
+    startDate: date | None = None
+    creator: Optional[str] = None
     locations: Optional[list[AdministrativeDivisionTO]] = None
     analysisSteps: Optional[list[AnalysisStepTO]] = None
-
+    analysisQuestions: Optional[list[AnalysisQuestionTO]] = None
+    analysisFramework: Optional[AnalysisFrameworkTO] = None
 
     @classmethod
     def from_model(cls, instance: Analysis):
@@ -45,12 +48,15 @@ class AnalysisTO(BaseTO):
             endDate=instance.end_date,
             lastChange=instance.last_change,
             createdOn=instance.created_on,
-            disaggregations=DisaggregationTO.from_models(instance.disaggregations),
-            sectors=SectorTO.from_models(instance.sectors),
+            disaggregations=DisaggregationTO.from_models(instance.disaggregations.all()),
+            sectors=SectorTO.from_models(instance.sectors.all()),
             locations=AdministrativeDivisionTO.from_models(
-                instance.locations,
-                include_hierarchy=True),
-            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps)
+                instance.locations.all(),
+                True),
+            analysisSteps=AnalysisStepTO.from_models(instance.analysis_steps.all()),
+            analysisFramework=AnalysisFrameworkTO.from_model(instance.analysis_framework),
+            analysisQuestions=AnalysisQuestionTO.from_models(instance.analysis_questions.all()),
+
         )
 
     def to_dict(self):

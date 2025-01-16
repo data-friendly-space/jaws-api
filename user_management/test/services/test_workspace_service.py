@@ -27,7 +27,7 @@ class TestWorkspaceService(TestCase):
         workspaces = self.service.get_workspaces()
         self.assertIsInstance(workspaces, list)
 
-    @patch('user_management.repository.workspace_repository_impl.WorkspaceRepositoryImpl.get_all')
+    @patch('user_management.repository.impl.workspace_repository_impl.WorkspaceRepositoryImpl.get_all')
     def test_get_workspaces_not_found(self, mock_get_workspaces):
         """Test get_workspaces function."""
         mock_get_workspaces.return_value = None

@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from user_management.repository.user_repository_impl import UserRepositoryImpl
+from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
 
 user_repo = UserRepositoryImpl()
 

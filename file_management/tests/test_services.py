@@ -1,12 +1,20 @@
 """This module contains the tests for the services"""
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+import boto3
 from django.test import SimpleTestCase, TestCase
+
+from moto import mock_aws
 
 from analysis.models.analysis import Analysis
 from common.constants.constants import DATASET_MAX_SIZE
 from common.exceptions.exceptions import BadRequestException, ForbiddenException, NotFoundException
+from common.test_utils import create_logged_in_client, create_test_analysis, create_test_dataset
+from file_management.contract.dto.dataset_column_to import DatasetColumnTO
+from file_management.contract.dto.s3_object_attributes_to import S3ObjectAttributesTO
+from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
+from file_management.models.dataset_column import DatasetColumn
 from file_management.service.impl.file_management_service_impl import (
     FileManagementServiceImpl,
 )
@@ -16,6 +24,8 @@ from user_management.models.user import User
 from user_management.models.user_analysis_role import UserAnalysisRole
 from user_management.models.workspace import Workspace
 
+REPOSITORY_PATH =  "file_management.repository.file_management_repository_impl.bucket_name"
+TEST_S3_BUCKET_NAME = "testbucket"
 
 class TestGetPresignedUrlFileUpload(SimpleTestCase):
     """TestCase for get presigned url for file upload"""
@@ -37,48 +47,18 @@ class TestGetPresignedUrlFileUpload(SimpleTestCase):
         presigned_url_mock = MagicMock()
         presigned_url_mock.fields.key = "mock_key"
         presigned_url_mock.url = "https://mockurl.com/"
-        dataset_mock = MagicMock()
-        dataset_mock.id = 123
-        size_bytes = 12345
-        self.service.create_presigned_url_upload_file_uc.exec.return_value = (
-            presigned_url_mock, dataset_mock
-        )
+        self.service.create_presigned_url_upload_file_uc.exec.return_value = presigned_url_mock
 
         mock_dataset = MagicMock()
         mock_dataset.id = 456
 
         response = self.service.create_presigned_url_upload_file(
-            self.user, self.filename, self.analysis_id, size_bytes
+            self.user, self.filename, self.analysis_id
         )
 
-        self.service.analysis_service.get_analysis_by_id.assert_called_once_with(
-            self.analysis_id
-        )
         self.service.create_presigned_url_upload_file_uc.exec.assert_called_once()
-        self.service.attach_file_to_analysis_uc.exec.assert_called_once_with(
-            self.service.repository, dataset_mock.id, self.analysis_id
-        )
         self.assertEqual(response, presigned_url_mock.to_dict())
 
-    def test_analysis_not_found(self):
-        """Test that if the analysis was not found a not found exception is raised"""
-        self.service.analysis_service.get_analysis_by_id.side_effect = (
-            NotFoundException()
-        )
-        size_bytes = 12345
-
-        with self.assertRaises(NotFoundException):
-            self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id, size_bytes
-            )
-
-    def test_file_too_big(self):
-        """Test that if the file size is too big raises a bad request exception"""
-        size_bytes = DATASET_MAX_SIZE + 1
-        with self.assertRaises(BadRequestException):
-            self.service.create_presigned_url_upload_file(
-                self.user, self.filename, self.analysis_id, size_bytes
-            )
 
 class TestCreatePresignedUrlDownloadFile(SimpleTestCase):
     """Contains the test cases for creating a presigned url for file downloading"""
@@ -146,7 +126,9 @@ class TestGetAnalysisDatasets(TestCase):  # noqa: F821
             filename="test.csv",
             url="http://testurl/test.csv",
             uploaded_by=self.user,
-            size_bytes=12345
+            size_bytes=12345,
+            total_rows=1,
+            total_columns=1
         )
         self.test_analysis.datasets.add(self.dataset)
 
@@ -170,3 +152,93 @@ class TestGetAnalysisDatasets(TestCase):  # noqa: F821
         )
         response = self.service.get_analysis_datasets(self.user, self.test_analysis.id)
         self.assertEqual(response[0]['id'], self.dataset.id)
+
+@mock_aws
+@patch(
+    REPOSITORY_PATH, TEST_S3_BUCKET_NAME
+)
+class TestConfirmDatasetUploaded(TestCase):
+    """Test the method for confirming that a dataset was uploaded"""
+
+    def setUp(self):
+        self.service = FileManagementServiceImpl()
+        _, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset = create_test_dataset(self.user, self.analysis)
+        self.filename = "test.csv"
+
+    def test_dataset_not_found(self):
+        """Test that if the dataset was not found it raises a not found exception"""
+        self.service.get_dataset_file_uc = MagicMock()
+        self.service.get_dataset_file_uc.exec.return_value = None
+
+        with self.assertRaises(NotFoundException):
+            self.service.confirm_dataset_uploaded(
+                self.user,
+                self.filename,
+                self.analysis.id
+            )
+        self.service.get_dataset_file_uc.exec.assert_called_once()
+
+    def test_size_bytes_too_big(self):
+        """Test that if the dataset size is too big it raises a bad request"""
+        self.service.get_dataset_file_uc = MagicMock()
+        s3 = boto3.client("s3")
+        self.service.get_dataset_file_uc.exec.return_value = S3ObjectAttributesTO.from_model(
+            s3.get_object(
+                Bucket=TEST_S3_BUCKET_NAME, Key=f"datasets/{self.filename}"
+            )
+        )
+        self.service.get_dataset_file_uc.exec.return_value.ContentLength = DATASET_MAX_SIZE + 1
+
+        with self.assertRaises(BadRequestException):
+            self.service.confirm_dataset_uploaded(
+                self.user,
+                self.filename,
+                self.analysis.id
+            )
+        self.service.get_dataset_file_uc.exec.assert_called_once()
+
+    def test_valid_size_and_dataset(self):
+        """Test that with valid size and dataset it create the dataset, the column configurations and attach the dataset to the analysis, returning the columns"""
+        Dataset.objects.all().delete()
+        DatasetColumn.objects.all().delete()
+        ColumnConfiguration.objects.all().delete()
+        response = self.service.confirm_dataset_uploaded(self.user, self.filename, self.analysis.id)
+
+        columns = DatasetColumn.objects.all()
+        dataset = Dataset.objects.first()
+        self.assertEqual(columns.count(), 2)
+
+        self.assertEqual(dataset.filename, self.filename)
+        self.assertEqual(self.analysis.datasets.first(), dataset)
+        columns_to = DatasetColumnTO.from_models(columns)
+        columns_dict = [col.to_dict() for col in columns_to]
+        self.assertEqual(columns_dict, response)
+
+        self.assertEqual(dataset.total_columns, 2)
+        self.assertEqual(dataset.total_rows, 2)
+
+class TestGetDatasetColumns(TestCase):
+    """Test the method for getting the dataset columns"""
+
+    def setUp(self):
+        self.service = FileManagementServiceImpl()
+        _, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.analysis)
+
+    def test_dataset_not_found(self):
+        """Test that the method raises a not found if the dataset doesn't exists"""
+        invalid_dataset_id = 1
+
+        with self.assertRaises(NotFoundException):
+            self.service.get_dataset_columns(self.user, invalid_dataset_id)
+
+    def test_dataset_found(self):
+        """Test that the method return the dataset columns"""
+        columns = self.service.get_dataset_columns(self.user, self.dataset.id)
+        col_models = DatasetColumn.objects.all()
+        col_models_to = DatasetColumnTO.from_models(col_models)
+        columns_dict = [col.to_dict() for col in col_models_to]
+        self.assertEqual(columns, columns_dict)
