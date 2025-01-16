@@ -88,3 +88,8 @@ class AnalysisService(BaseService):
         """
         Updates analysis framework
         """
+    @abstractmethod
+    def get_all_disaggregations(self, **kwargs):
+        """
+        Get all disaggregations
+        """
