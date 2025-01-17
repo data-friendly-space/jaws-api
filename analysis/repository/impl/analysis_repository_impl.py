@@ -31,28 +31,28 @@ class AnalysisRepositoryImpl(AnalysisRepository):
 
     def get_or_create_sub_pillar(self, name):
         """Get or Create Sub pillar"""
-        sub_pillar,_ = SubPillar.objects.get_or_create(name=name)
+        sub_pillar, _ = SubPillar.objects.get_or_create(name=name)
 
         return SubPillarTO.from_model(sub_pillar)
 
-    def add_sub_pillar_to_pillar(self, pillar_id, sub_pillar: SubPillarTO):
+    def add_sub_pillar_to_pillar(self, pillar_id, sub_pillar_to: SubPillarTO):
         """add pillar to sub pillar"""
         pillar = Pillar.objects.get(pk=pillar_id)
-        sub_pillar_model = sub_pillar.to_model()
-        pillar.sub_pillars.add(sub_pillar_model)
+        sub_pillar = SubPillar.objects.get(pk=sub_pillar_to.id)
+        pillar.sub_pillars.add(sub_pillar)
         return PillarTO.from_model(pillar)
 
-    def add_pillars_to_analysis_framework(self, analysis_framework_id: int,
-                                          pillar: PillarTO) -> AnalysisFrameworkTO:
+    def add_pillar_to_analysis_framework(self, analysis_framework_id: int,
+                                         pillar_to: PillarTO) -> AnalysisFrameworkTO:
         """add pillars to analysis_framework"""
         analysis_framework = AnalysisFramework.objects.get(pk=analysis_framework_id)
-        pillar_model = pillar.to_model()
-        analysis_framework.pillars.add(pillar_model)
+        pillar,_ = Pillar.objects.get_or_create(id=pillar_to.id)
+        analysis_framework.pillars.add(pillar)
         return AnalysisFrameworkTO.from_model(analysis_framework)
 
     def get_or_create_pillar(self, name):
         """Get or Create Pillar"""
-        pillar,_ = Pillar.objects.get_or_create(name=name)
+        pillar, _ = Pillar.objects.get_or_create(name=name)
 
         return PillarTO.from_model(pillar)
 

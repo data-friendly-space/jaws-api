@@ -33,12 +33,12 @@ class AnalysisRepository(BaseRepository):
         """Get or Create Sub pillar"""
 
     @abstractmethod
-    def add_sub_pillar_to_pillar(self, pillar_id: int, sub_pillar: SubPillarTO) -> PillarTO:
+    def add_sub_pillar_to_pillar(self, pillar_id: int, sub_pillar_to: SubPillarTO) -> PillarTO:
         """add pillar to sub pillar"""
 
     @abstractmethod
-    def add_pillars_to_analysis_framework(self, analysis_framework_id: int,
-                                          pillar:PillarTO) -> AnalysisFrameworkTO:
+    def add_pillar_to_analysis_framework(self, analysis_framework_id: int,
+                                          pillar_to:PillarTO) -> AnalysisFrameworkTO:
         """add pillars to analysis_framework"""
 
     @abstractmethod

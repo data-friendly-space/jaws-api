@@ -20,4 +20,4 @@ class AddPillarToAnalysisFrameworkUC(BaseUseCase):
         return AddPillarToAnalysisFrameworkUC._instance
 
     def exec(self, repository: AnalysisRepository, analysis_framework_id:int, pillar:PillarTO) -> AnalysisFrameworkTO:
-        return repository.add_pillars_to_analysis_framework(analysis_framework_id,pillar)
+        return repository.add_pillar_to_analysis_framework(analysis_framework_id,pillar)

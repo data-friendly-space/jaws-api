@@ -12,7 +12,6 @@ class SubPillarTO(BaseTO):
     id: int
     name: str
     alias: Optional[str]
-    model_class = SubPillar
 
     @classmethod
     def from_model(cls, instance: SubPillar):
@@ -22,5 +21,5 @@ class SubPillarTO(BaseTO):
         return cls(
             id=instance.id,
             name=instance.name,
-            alias=instance.alias,
+            alias=instance.alias
         )
