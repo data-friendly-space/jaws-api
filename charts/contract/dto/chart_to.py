@@ -43,7 +43,6 @@ class ChartTO(BaseTO):
             subpillar=SubPillarTO.from_model(instance.subpillar),
             createdBy=UserTO.from_model(instance.created_by),
             createdOn=instance.created_on
-
         )
 
     def to_dict(self) -> Dict:
