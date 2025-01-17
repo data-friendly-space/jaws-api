@@ -24,21 +24,3 @@ class SubPillarTO(BaseTO):
             name=instance.name,
             alias=instance.alias,
         )
-
-    def to_model(self) -> SubPillar:
-        """Transforms SubPillarTO instance into a SubPillar model instance."""
-        # Create or update the SubPillar instance
-        sub_pillar, created = SubPillar.objects.get_or_create(
-            id=self.id,
-            defaults={
-                'name': self.name,
-                'alias': self.alias
-            }
-        )
-        if not created:
-            # Update the existing SubPillar instance
-            sub_pillar.name = self.name
-            sub_pillar.alias = self.alias
-            sub_pillar.save()
-
-        return sub_pillar
