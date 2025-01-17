@@ -4,7 +4,6 @@ from typing import Optional, Dict
 
 from common.contract.to.base_to import BaseTO
 from user_management.contract.to.affiliattion_to import AffiliationTO
-from user_management.contract.to.organization_to import OrganizationTO
 from user_management.contract.to.position_to import PositionTO
 from user_management.contract.to.ui_configuration_to import UiConfigurationTO
 from user_management.models import User
@@ -14,7 +13,6 @@ from user_management.models import User
 class UserTO(BaseTO):
     id: str | None = None
     name: str | None = None
-    password: str | None = None
     lastname: str | None = None
     email: str | None = None
     country: str | None = None
@@ -31,7 +29,6 @@ class UserTO(BaseTO):
         return cls(
             id=instance.id,
             name=instance.name,
-            password=instance.password,
             lastname=instance.lastname,
             email=instance.email,
             country=instance.country,

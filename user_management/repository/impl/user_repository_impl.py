@@ -1,4 +1,7 @@
+"""Contains the user repository"""
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
+
 
 from common.helpers.query_options import QueryOptions
 from user_management.repository.user_repository import UserRepository
@@ -66,3 +69,7 @@ class UserRepositoryImpl(UserRepository):
     def is_user_in_analysis(self, user_id: str, analysis_id: int) -> bool:
         is_user_in_analysis = UserAnalysisRole.objects.filter(user_id=user_id, analysis_id=analysis_id).exists()
         return is_user_in_analysis
+
+    def check_password(self, user_id, password):
+        user = User.objects.get(id=user_id)
+        return check_password(password, user.password)

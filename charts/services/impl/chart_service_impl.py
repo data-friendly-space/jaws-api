@@ -71,7 +71,7 @@ class ChartServiceImpl(ChartService):
                 raise NotFoundException(f"The column {y_col} doesn't exist in the dataset")
 
         new_chart = self.save_chart_uc.exec(
-            self.repository, config
+            self.repository, user, config
         )
         return new_chart.to_dict()
 
