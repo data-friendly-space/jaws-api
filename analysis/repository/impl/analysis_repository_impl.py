@@ -2,17 +2,21 @@
 from typing import List
 
 from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.pillar_to import PillarTO
 from analysis.contract.to.sector_to import SectorTO
 from analysis.contract.to.sub_pillar_to import SubPillarTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from analysis.models.analysis_framework import AnalysisFramework
 from analysis.models.analysis_question import AnalysisQuestion
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
+from analysis.models.pillar import Pillar
 from analysis.models.sector import Sector
 from analysis.models.sub_pillar import SubPillar
 from analysis.repository.analysis_repository import AnalysisRepository
@@ -24,6 +28,38 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
+
+    def get_or_create_sub_pillar(self, name):
+        """Get or Create Sub pillar"""
+        sub_pillar, _ = SubPillar.objects.get_or_create(name=name)
+
+        return SubPillarTO.from_model(sub_pillar)
+
+    def add_sub_pillar_to_pillar(self, pillar_id, sub_pillar_to: SubPillarTO):
+        """add pillar to sub pillar"""
+        pillar = Pillar.objects.get(pk=pillar_id)
+        sub_pillar = SubPillar.objects.get(pk=sub_pillar_to.id)
+        pillar.sub_pillars.add(sub_pillar)
+        return PillarTO.from_model(pillar)
+
+    def add_pillar_to_analysis_framework(self, analysis_framework_id: int,
+                                         pillar_to: PillarTO) -> AnalysisFrameworkTO:
+        """add pillars to analysis_framework"""
+        analysis_framework = AnalysisFramework.objects.get(pk=analysis_framework_id)
+        pillar,_ = Pillar.objects.get_or_create(id=pillar_to.id)
+        analysis_framework.pillars.add(pillar)
+        return AnalysisFrameworkTO.from_model(analysis_framework)
+
+    def get_or_create_pillar(self, name):
+        """Get or Create Pillar"""
+        pillar, _ = Pillar.objects.get_or_create(name=name)
+
+        return PillarTO.from_model(pillar)
+
+    def get_or_create_analysis_framework(self, name):
+        """Get or Create Analysis Framework"""
+        analysis_framework, _ = AnalysisFramework.objects.get_or_create(name=name)
+        return AnalysisFrameworkTO.from_model(analysis_framework)
 
     def update_analysis_questions(self, analysis_id: int, content: str) -> AnalysisQuestionTO:
         """Assign or update analysis questions"""
@@ -75,7 +111,6 @@ class AnalysisRepositoryImpl(AnalysisRepository):
             AnalysisTO.from_models(analyses['results']),
             analyses['total']  # Total count with DISTINCT
         )
-
 
     def get_by_id(self, obj_id) -> AnalysisTO | None:
         """

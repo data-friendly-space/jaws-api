@@ -13,7 +13,6 @@ class SubPillarTO(BaseTO):
     name: str
     alias: Optional[str]
 
-
     @classmethod
     def from_model(cls, instance: SubPillar):
         """Transforms SubPillar instance into a SubPillarTO representation."""
@@ -22,5 +21,5 @@ class SubPillarTO(BaseTO):
         return cls(
             id=instance.id,
             name=instance.name,
-            alias=instance.alias,
+            alias=instance.alias
         )

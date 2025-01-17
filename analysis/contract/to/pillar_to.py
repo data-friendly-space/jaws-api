@@ -13,8 +13,7 @@ class PillarTO(BaseTO):
     id: int
     name: str
     alias: Optional[str]
-    subPillars:list[SubPillarTO]
-
+    subPillars: list[SubPillarTO]
 
     @classmethod
     def from_model(cls, instance: Pillar):

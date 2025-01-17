@@ -9,6 +9,13 @@ from common.service.base_service import BaseService
 class AnalysisService(BaseService):
     """Definition of the analysis service"""
 
+
+    @abstractmethod
+    def upload_analysis_framework(self, file):
+        """
+        Processes the uploaded CSV file and creates AnalysisFramework, Pillar, and SubPillar models.
+        """
+
     @abstractmethod
     def put_analysis_scope(self, analysis, analysis_id, user_id):
         """

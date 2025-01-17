@@ -2,6 +2,8 @@
 
 from typing import List
 
+import pandas as pd
+
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.interfaces.serializers.administrative_division_serializer import (
@@ -11,6 +13,8 @@ from analysis.repository.impl.analysis_framework_repository_impl import Analysis
 from analysis.repository.impl.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.service.analysis_service import AnalysisService
 from analysis.use_cases.add_location_uc import AddLocationUC
+from analysis.use_cases.add_pillar_analysis_framework_uc import AddPillarToAnalysisFrameworkUC
+from analysis.use_cases.add_sub_pillar_to_pillar_uc import AddSubPillarToPillarUC
 from analysis.use_cases.assign_or_update_analysis_framework_uc import AssignOrUpdateAnalysisFrameworkUC
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
 from analysis.use_cases.create_or_update_analysis_question_uc import CreateOrUpdateAnalysisQuestionUC
@@ -22,10 +26,14 @@ from analysis.use_cases.get_all_sectors_uc import GetAllSectorsUC
 from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_frameworks_uc import GetAnalysisFrameworkUC
+from analysis.use_cases.get_or_create_analysis_uc import GetOrCreateAnalysisFrameworkUC
+from analysis.use_cases.get_or_create_pillar_uc import GetOrCreatePillarUC
+from analysis.use_cases.get_or_create_sub_pillar_uc import GetOrCreateSubPillarUC
 from analysis.use_cases.get_steps_uc import GetStepsUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from analysis.use_cases.update_analysis_steps_uc import UpdateAnalysisStepsUC
+from common.constants.constants import REQUIRED_COLUMNS, SUB_PILLAR_COLUMN, TITLE_COLUMN, PILLAR_COLUMN
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
 from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
@@ -57,6 +65,11 @@ class AnalysisServiceImpl(AnalysisService):
         self.assign_or_update_analysis_framework_uc = AssignOrUpdateAnalysisFrameworkUC.get_instance()
         self.create_or_update_analysis_question_uc = CreateOrUpdateAnalysisQuestionUC.get_instance()
         self.get_all_disaggregations_uc = GetAllDisaggregationsUC.get_instance()
+        self.get_or_create_analysis_framework_uc = GetOrCreateAnalysisFrameworkUC.get_instance()
+        self.get_or_create_pillar_uc = GetOrCreatePillarUC.get_instance()
+        self.get_or_create_sub_pillar = GetOrCreateSubPillarUC.get_instance()
+        self.add_pillar_to_analysis_framework_uc = AddPillarToAnalysisFrameworkUC.get_instance()
+        self.add_sub_pillar_to_pillar_uc = AddSubPillarToPillarUC.get_instance()
 
     def get_all_analysis_frameworks(self, query_options: QueryOptions):
         """Get all analysis frameworks"""
@@ -229,3 +242,45 @@ class AnalysisServiceImpl(AnalysisService):
         steps = self.get_steps_uc.exec(self.repository)
         mandatory_steps = [step.id for step in steps if step.mandatory and not step.parentStepId]
         return mandatory_steps
+
+    def upload_analysis_framework(self, file):
+        # Extract the framework name from the file name
+        framework_name = file.name.split('_')[0] if '_' in file.name else file.name.split('.')[0]
+
+        # Read the CSV file
+        data = pd.read_csv(file)
+
+        # Validate required columns
+        for column in REQUIRED_COLUMNS:
+            if column not in data.columns:
+                raise BadRequestException(f"Missing required column: {column}")
+
+        # Get or create the Analysis Framework
+        analysis_framework_to = self.get_or_create_analysis_framework_uc.exec(AnalysisRepositoryImpl(), framework_name)
+
+        # Process each row in the CSV
+        for _, row in data.iterrows():
+            # Construct the Pillar name
+            pillar_name = f"{row[TITLE_COLUMN]}: {row[PILLAR_COLUMN]}" if pd.notna(row[PILLAR_COLUMN]) else row[TITLE_COLUMN]
+
+            # Get or create the Pillar
+            pillar_to = self.get_or_create_pillar_uc.exec(AnalysisRepositoryImpl(), pillar_name)
+
+            # Construct the SubPillar name
+            if pd.notna(row[SUB_PILLAR_COLUMN]):
+                sub_pillar_name = (
+                    f"{row[SUB_PILLAR_COLUMN]}: {row['2D column']}"
+                    if pd.notna(row['2D column'])
+                    else row[SUB_PILLAR_COLUMN]
+                )
+
+                # Get or create the SubPillar
+                sub_pillar_to = self.get_or_create_sub_pillar.exec(AnalysisRepositoryImpl(), sub_pillar_name)
+
+                # Add the SubPillar to the Pillar
+                pillar_to = self.add_sub_pillar_to_pillar_uc.exec(AnalysisRepositoryImpl(), pillar_to.id, sub_pillar_to)
+
+            # Add the Pillar to the Analysis Framework
+            analysis_framework_to = self.add_pillar_to_analysis_framework_uc.exec(AnalysisRepositoryImpl(), analysis_framework_to.id, pillar_to)
+
+        return analysis_framework_to.to_dict()

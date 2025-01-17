@@ -4,7 +4,6 @@ from typing import Dict
 
 
 class BaseTO(ABC):
-
     @abstractmethod
     def from_model(cls, instance):
         pass
@@ -12,7 +11,7 @@ class BaseTO(ABC):
     @classmethod
     def from_models(self, models):
         """
-        Transform a list of Workspace model instances into a list of WorkspaceTO instances.
+        Transform a list of  model instances into a list of instances.
         """
         if models is None or len(models) <= 0:
             return None
@@ -21,3 +20,4 @@ class BaseTO(ABC):
     def to_dict(self) -> Dict:
         """Return a dict of the object"""
         return asdict(self)
+

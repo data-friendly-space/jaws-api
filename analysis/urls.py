@@ -26,11 +26,13 @@ from analysis.interfaces.controllers.put_analysis_scope_controller import (
 )
 from analysis.interfaces.controllers.remove_location_controller import remove_location_controller
 from analysis.interfaces.controllers.update_steps_controller import update_steps_controller
+from analysis.interfaces.controllers.upload_analysis_framework_controller import upload_analysis_framework_controller
 
 urlpatterns = [
     path("create", create_analysis_controller, name="create_analysis"),
     path("get-steps", get_steps_controller, name="get_steps"),
     path("frameworks", get_analysis_frameworks_controller, name="get_analysis_frameworks_controller"),
+    path("frameworks/upload", upload_analysis_framework_controller, name="upload_analysis_framework_controller"),
 
     path("sectors", get_all_sectors_controller, name="get_all_sectors_controller"),
     path("disaggregations", get_all_disaggregations_controller, name="get_all_disaggregations_controller"),
