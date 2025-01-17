@@ -29,6 +29,9 @@ class GetDatasetRowsUC(BaseUseCase):
             dataset: S3ObjectAttributesTO,
             query_options: QueryOptions
         ) -> List[dict]:
-        dataset_df = pd.read_csv(dataset.Body)
+        try:
+            dataset_df = pd.read_csv(dataset.Body)
+        except pd.errors.ParserError:
+            dataset_df = pd.read_csv(dataset.Body, sep=";")
         rows = query_options.paginate_and_filter_dataframe(dataset_df)
         return rows

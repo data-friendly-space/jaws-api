@@ -129,7 +129,10 @@ class FileManagementServiceImpl(FileManagementService):
         # If exists create the Dataset record
         size_bytes = dataset_file.ContentLength
         dataset_blob = dataset_file.Body
-        dataset_df = pd.read_csv(dataset_blob)
+        try:
+            dataset_df = pd.read_csv(dataset_blob)
+        except pd.errors.ParserError:
+            dataset_df = pd.read_csv(dataset_blob, sep=";")
 
         total_rows = len(dataset_df)
         total_columns = len(dataset_df.columns)
@@ -215,7 +218,10 @@ class FileManagementServiceImpl(FileManagementService):
             self.repository, dataset.externalIdentifier
         )
         dataset_blob = dataset_file.Body
-        dataset_dataframe = pd.read_csv(dataset_blob)
+        try:
+            dataset_dataframe = pd.read_csv(dataset_blob)
+        except pd.errors.ParserError:
+            dataset_dataframe = pd.read_csv(dataset_blob, sep=";")
         start_row = (
             rows.validated_data["page_size"] * (rows.validated_data["page_number"] - 1)
             + 1
