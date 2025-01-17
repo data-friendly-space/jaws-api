@@ -4,7 +4,6 @@ from typing import Optional, Dict
 
 from common.contract.to.base_to import BaseTO
 from user_management.contract.to.affiliattion_to import AffiliationTO
-from user_management.contract.to.organization_to import OrganizationTO
 from user_management.contract.to.position_to import PositionTO
 from user_management.contract.to.ui_configuration_to import UiConfigurationTO
 from user_management.models import User

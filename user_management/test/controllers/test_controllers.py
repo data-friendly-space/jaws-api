@@ -2,7 +2,6 @@
 import urllib
 from datetime import timedelta
 from unittest.mock import MagicMock
-from urllib.parse import urlencode
 
 from django.test import Client, TestCase
 from django.urls import reverse
