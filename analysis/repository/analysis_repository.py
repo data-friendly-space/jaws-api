@@ -15,6 +15,10 @@ class AnalysisRepository(BaseRepository):
     """Analysis repository"""
 
     @abstractmethod
+    def create(self, data, disaggregations, sectors):
+        """Create Analysis"""
+
+    @abstractmethod
     def invite_user_to_analysis(self, user_id: str, analysis_id: str, role_id: str):
         """Invite user to analysis"""
 
@@ -74,3 +78,7 @@ class AnalysisRepository(BaseRepository):
         subpillar_id -- the id of the subpillar
         Return: The subpillar as dto
         """
+
+    @abstractmethod
+    def update(self,obj_id, data, sectors, disaggregations):
+        """update analysis"""

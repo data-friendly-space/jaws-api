@@ -8,6 +8,7 @@ from moto import mock_aws
 import pandas as pd
 
 from analysis.models.analysis import Analysis
+from analysis.models.sub_pillar import SubPillar
 from common.exceptions.exceptions import BadRequestException
 from common.test_utils import create_logged_in_client, create_test_analysis, create_test_dataset
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
@@ -288,6 +289,7 @@ class TestUpdateColumns(TestCase):
         self.url = reverse("update_columns")
         self.columns = DatasetColumn.objects.all()
         self.column_configurations = ColumnConfiguration.objects.all()
+        self.subpillar = SubPillar.objects.create(name="test")
 
     def test_missing_dataset_id(self):
         """Test that if the dataset is missing it raises a BadRequest"""
@@ -302,14 +304,38 @@ class TestUpdateColumns(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_valid_dataset_and_body(self):
-        """Test that if the dataset id and the body are correct it modifying the dataset configuration"""
+        """
+        Test that if the dataset id and the body are correct it modifying the dataset configuration
+        """
         valid_body = [
         {
             "id": col.id,
             "alias": "a",
             "dataTypeId": None,
             "dataRoleId": None,
-            "include": False
+            "include": False,
+            "subpillarId": None
+        } for col in self.column_configurations]
+        url = f"{self.url}?dataset_id={self.dataset.id}"
+        response = self.client.put(url, valid_body, content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("payload", response.data)
+        some_col = self.column_configurations[0]
+        some_col.refresh_from_db()
+        self.assertEqual(some_col.include, False)
+        self.assertEqual(some_col.alias, "a")
+
+    def test_update_column_invalid_combination_role_subpillar(self):
+        """Test that if the subpillar is provided but the data role is not content it fails"""
+        valid_body = [
+        {
+            "id": col.id,
+            "alias": "a",
+            "dataTypeId": None,
+            "dataRoleId": DataRole.objects.filter(name="Content").first().id,
+            "include": False,
+            "subpillarId": self.subpillar.id
         } for col in self.column_configurations]
         url = f"{self.url}?dataset_id={self.dataset.id}"
         response = self.client.put(url, valid_body, content_type="application/json")

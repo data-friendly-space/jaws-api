@@ -1,11 +1,13 @@
 """Request object to create an analysis contract"""
 from rest_framework import serializers
 
+from analysis.contract.io.create_analysis_in import DisaggregationSerializer, SectorSerializer
+
 
 class AnalysisQuestionSerializer(serializers.Serializer):
     """Request input for an AnalysisQuestion creation"""
     id = serializers.IntegerField()
-    name = serializers.CharField()
+    content = serializers.CharField()
 
 
 class AnalysisFrameworkSerializer(serializers.Serializer):
@@ -18,12 +20,12 @@ class UpdateAnalysisIn(serializers.Serializer):
     """Request input for an analysis creation"""
     title = serializers.CharField(max_length=255)
     disaggregations = serializers.ListField(
-        child=serializers.CharField(),
+        child=DisaggregationSerializer(),
         allow_empty=True,
         required=False
     )
     sectors = serializers.ListField(
-        child=serializers.CharField(),
+        child=SectorSerializer(),
         required=False,
         allow_empty=True
     )
