@@ -2,8 +2,11 @@
 from abc import abstractmethod
 
 from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.pillar_to import PillarTO
+from analysis.contract.to.sub_pillar_to import SubPillarTO
 from analysis.models import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.helpers.query_options import QueryOptions
@@ -16,6 +19,27 @@ class AnalysisRepository(BaseRepository):
     @abstractmethod
     def create(self, data, disaggregations, sectors):
         """Create Analysis"""
+
+    @abstractmethod
+    def get_or_create_analysis_framework(self, name):
+        """Get or Create Analysis Framework"""
+
+    @abstractmethod
+    def get_or_create_pillar(self, name) -> PillarTO:
+        """Get or Create Pillar"""
+
+    @abstractmethod
+    def get_or_create_sub_pillar(self, name) -> SubPillarTO:
+        """Get or Create Sub pillar"""
+
+    @abstractmethod
+    def add_sub_pillar_to_pillar(self, pillar_id: int, sub_pillar: SubPillarTO) -> PillarTO:
+        """add pillar to sub pillar"""
+
+    @abstractmethod
+    def add_pillars_to_analysis_framework(self, analysis_framework_id: int,
+                                          pillar:PillarTO) -> AnalysisFrameworkTO:
+        """add pillars to analysis_framework"""
 
     @abstractmethod
     def invite_user_to_analysis(self, user_id: str, analysis_id: str, role_id: str):
@@ -70,5 +94,5 @@ class AnalysisRepository(BaseRepository):
         """Return all disaggregations"""
 
     @abstractmethod
-    def update(self,obj_id, data, sectors, disaggregations):
+    def update(self, obj_id, data, sectors, disaggregations):
         """update analysis"""

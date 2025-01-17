@@ -14,6 +14,7 @@ class PillarTO(BaseTO):
     name: str
     alias: Optional[str]
     subPillars:list[SubPillarTO]
+    model_class = Pillar
 
 
     @classmethod

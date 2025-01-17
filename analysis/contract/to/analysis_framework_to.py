@@ -12,6 +12,7 @@ class AnalysisFrameworkTO(BaseTO):
     id: int
     name: str
     pillars: list[PillarTO]
+    model_class = AnalysisFramework
 
     @classmethod
     def from_model(cls, instance: AnalysisFramework) -> 'AnalysisFrameworkTO':
