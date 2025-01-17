@@ -23,7 +23,7 @@ class AnalysisTO(BaseTO):
     createdOn: datetime | None
     endDate: date | None
     sectors: Optional[list[SectorTO]]
-    workspaceId: str | None
+    workspace: dict
     lastChange: datetime | None
     disaggregations: Optional[dict] = None
     startDate: date | None = None
@@ -42,8 +42,11 @@ class AnalysisTO(BaseTO):
             id=instance.id,
             title=instance.title,
             objectives=instance.objectives,
-            creator=instance.creator_id,
-            workspaceId=instance.workspace_id,
+            creator=instance.creator.email,
+            workspace={
+                "id": instance.workspace.id,
+                "title": instance.workspace.title
+            },
             startDate=instance.start_date,
             endDate=instance.end_date,
             lastChange=instance.last_change,
