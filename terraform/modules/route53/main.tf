@@ -14,7 +14,7 @@ resource "aws_route53_zone" "main" {
 
 resource "aws_route53_record" "frontend" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = format("%s%s", "api.", var.zone_name)
+  name    = format("%s%s", "frontend.", var.zone_name)
   type    = "A"
 
   alias {
@@ -26,7 +26,7 @@ resource "aws_route53_record" "frontend" {
 
 resource "aws_route53_record" "api" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = format("%s%s", "www.", var.zone_name)
+  name    = format("%s%s", "api.", var.zone_name)
   type    = "A"
 
   alias {
