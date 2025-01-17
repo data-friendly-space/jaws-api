@@ -82,4 +82,3 @@ class AnalysisRepository(BaseRepository):
     @abstractmethod
     def update(self,obj_id, data, sectors, disaggregations):
         """update analysis"""
-

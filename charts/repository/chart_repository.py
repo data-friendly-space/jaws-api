@@ -17,6 +17,7 @@ class ChartRepository:
         analysis_id: int,
         name: str,
         x_col: str,
+        subpillar_id: int,
         y_cols: List[str],
         title: Optional[str],
         x_label: Optional[str],
@@ -31,6 +32,7 @@ class ChartRepository:
         name -- The name to be displayed
         title -- The title of the chart on top of it
         x_col -- The column of the dataset to be used as x axis
+        subpillar -- The subpillar that the chart is aiming to
         y_cols -- the columns of the dataset to be used as y axis
         x_label -- The label of the x axis
         y_label -- the label of the y axis

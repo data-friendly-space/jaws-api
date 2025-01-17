@@ -8,5 +8,5 @@ class ChartService(BaseService):
     """Service for charts management"""
 
     @abstractmethod
-    def save_chart(self, user, config: dict):
+    def save_chart(self, user, config: dict) -> dict:
         """Save a chart"""
