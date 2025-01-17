@@ -16,5 +16,5 @@ class TestUrls(SimpleTestCase):
 
     def test_get_charts(self):
         """Test that the url for getting the charts works"""
-        url = reverse("get-charts")
+        url = reverse("get_charts")
         self.assertEqual(resolve(url).func, get_charts_controller)
