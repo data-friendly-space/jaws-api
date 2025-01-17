@@ -234,7 +234,13 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         filters = {key: value for key, value in kwargs.items() if value is not None}
         disaggregations = Disaggregation.objects.filter(**filters)
         if query_options:
-            disaggregations = query_options.filter_and_exec_queryset(disaggregations, model=Analysis)
+            disaggregations = query_options.filter_and_exec_queryset(
+                disaggregations,
+                model=Analysis)
         if not disaggregations or len(disaggregations) == 0:
             return []
         return DisaggregationTO.from_models(disaggregations)
+
+    def get_subpillar(self, subpillar_id):
+        subpillar = SubPillar.objects.get(id=subpillar_id)
+        return SubPillarTO.from_model(subpillar)

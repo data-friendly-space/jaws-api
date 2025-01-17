@@ -94,5 +94,14 @@ class AnalysisRepository(BaseRepository):
         """Return all disaggregations"""
 
     @abstractmethod
+    def get_subpillar(self, subpillar_id: int) -> SubPillarTO:
+        """Retrieve a subpillar by id
+        
+        Keyword arguments:
+        subpillar_id -- the id of the subpillar
+        Return: The subpillar as dto
+        """
+
+    @abstractmethod
     def update(self, obj_id, data, sectors, disaggregations):
         """update analysis"""

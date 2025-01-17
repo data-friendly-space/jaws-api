@@ -189,6 +189,16 @@ class FileManagementServiceImpl(FileManagementService):
 
     def update_columns(self, user, dataset_id, columns):
         # TODO: Check if the user can update the column configurations
+        for column in columns:
+            if not column["subpillar_id"]:
+                continue
+            data_role = self.get_data_role_by_id_uc.exec(
+                self.repository, column["data_role_id"]
+            )
+            if data_role.name != "Content":
+                raise BadRequestException(
+                    "You can't add a column pillar if the data role is different of content"
+                )
         dataset = self.get_dataset_by_id_uc.exec(self.repository, dataset_id)
         if not dataset:
             raise NotFoundException("The dataset doesn't exist")

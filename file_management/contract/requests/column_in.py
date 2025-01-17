@@ -8,3 +8,4 @@ class ColumnIn(serializers.Serializer):
     data_type_id = serializers.IntegerField(allow_null=True)
     data_role_id = serializers.IntegerField(allow_null=True)
     include = serializers.BooleanField()
+    subpillar_id = serializers.IntegerField(allow_null=True)

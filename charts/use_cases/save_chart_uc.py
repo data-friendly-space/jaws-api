@@ -21,9 +21,10 @@ class SaveChartUC(BaseUseCase):
             SaveChartUC()
         return SaveChartUC._instance
 
-    def exec(self, repository: ChartRepository, chart: dict):
+    def exec(self, repository: ChartRepository, user, chart: dict):
         """Execute the use case"""
         return repository.save(
+            user=user,
             chart_type=chart.get("type"),
             title=chart.get("title", None),
             x_label=chart.get("x_label", None),
@@ -32,5 +33,6 @@ class SaveChartUC(BaseUseCase):
             y_cols=chart["y_cols"],
             name=chart["name"],
             analysis_id=chart["analysis_id"],
-            dataset_id=chart["dataset_id"]
+            dataset_id=chart["dataset_id"],
+            subpillar_id=chart["subpillar_id"]
         )

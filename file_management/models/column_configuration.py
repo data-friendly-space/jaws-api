@@ -2,6 +2,7 @@
 from django.db import models
 
 from analysis.models.analysis import Analysis
+from analysis.models.sub_pillar import SubPillar
 from file_management.models.dataset_column import DatasetColumn
 from file_management.models.data_role import DataRole
 from file_management.models.data_type import DataType
@@ -14,6 +15,7 @@ class ColumnConfiguration(models.Model):
     data_type = models.ForeignKey(DataType, null=True, on_delete=models.SET_NULL)
     data_role = models.ForeignKey(DataRole, null=True, on_delete=models.SET_NULL)
     last_change=models.DateTimeField(auto_now=True)
+    subpillar = models.ForeignKey(SubPillar, null=True, on_delete=models.SET_NULL)
     analysis = models.ForeignKey(Analysis, on_delete=models.CASCADE)
 
     class Meta:
