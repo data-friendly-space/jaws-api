@@ -17,7 +17,7 @@ availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
 it_public_subnets  = ["subnet-017b0144f753b8028", "subnet-0a1fa7026dc5ba396", "subnet-01dd0044f6a1c4bad"]
 it_public_subnet   = "subnet-017b0144f753b8028"
 
-zone_name    = "jawsdev.com"
+zone_name    = "jawsdev.thedeep.io"
 zone_comment = "Jaws development domain"
 
 #-------------------------------jaws-api VARIABLES--------------------------
