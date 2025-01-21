@@ -14,6 +14,7 @@ from user_management.contract.to.user_to import UserTO
 @dataclass
 class ChartTO(BaseTO):
     """Contains the fields for chart"""
+    id: int
     dataset: DatasetTO
     name: str
     type: str
@@ -32,6 +33,7 @@ class ChartTO(BaseTO):
         if not instance:
             return None
         return cls(
+            id=instance.id,
             dataset=DatasetTO.from_model(instance.dataset),
             type=instance.type,
             name=instance.name,
