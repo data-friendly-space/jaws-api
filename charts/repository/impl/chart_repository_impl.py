@@ -12,6 +12,9 @@ from file_management.models.dataset import Dataset
 class ChartRepositoryImpl(ChartRepository):
     """Implementation of the chart repository"""
 
+    def get_chart_by_id(self, chart_id: int) -> ChartTO:
+        chart = Chart.objects.get(id=chart_id)
+        return ChartTO.from_model(chart)
     def save(self,
             user,
             chart_type,

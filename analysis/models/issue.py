@@ -2,22 +2,19 @@
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField
 
-import charts
-from analysis.contract.to.issue_to import IssueTO
-from analysis.models.disaggregation import Disaggregation
-from analysis.models.entry import Entry
-from charts.models import Chart
+from common.models.base_model import BaseModel
 
 
-class Issue(models.Model):
+class Issue(BaseModel):
     """Issue model"""
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=600)
     information_gaps = models.CharField(max_length=600)
     assumptions = models.CharField(max_length=600)
-    disaggregation = ForeignKey(Disaggregation, on_delete=models.CASCADE)
-    entries = ManyToManyField(Entry, blank=True)
-    charts = models.ManyToManyField(Chart, blank=True)
+    disaggregation = ForeignKey('analysis.Disaggregation', on_delete=models.CASCADE)
+    entries = ManyToManyField('analysis.Entry', blank=True)
+    charts = models.ManyToManyField('charts.Chart', blank=True)
+    analysis = models.ForeignKey('analysis.Analysis', on_delete=models.CASCADE)
 
     class Meta:
         """Table's metadata"""
@@ -34,6 +31,11 @@ class Issue(models.Model):
         Returns:
             Issue: An instance of the Issue model.
         """
+        from analysis.models.disaggregation import Disaggregation
+        from analysis.models.entry import Entry
+        from charts.models import Chart
+        from analysis.contract.to.issue_to import IssueTO
+
         if issue_to is None:
             return None
 
@@ -47,9 +49,10 @@ class Issue(models.Model):
             description=issue_to.description,
             information_gaps=issue_to.informationGaps,
             assumptions=issue_to.assumptions,
-            entries= Entry.from_tos(issue_to.entries),
-            charts=Entry.from_tos(issue_to.charts),
-            disaggregation=Disaggregation.from_to(issue_to.disaggregation)
+            entries=Entry.from_tos(issue_to.entries),
+            charts=Chart.from_tos(issue_to.charts),
+            disaggregation=Disaggregation.from_to(issue_to.disaggregation),
+            analisis_id=issue_to.analysisId
         )
 
         return issue_instance

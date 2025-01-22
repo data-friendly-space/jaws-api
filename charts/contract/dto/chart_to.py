@@ -1,6 +1,6 @@
 '''This module contains the Chart TO'''
-from dataclasses import dataclass, asdict
 import datetime
+from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional
 
 from analysis.contract.to.sub_pillar_to import SubPillarTO

@@ -19,6 +19,7 @@ class IssueTO(BaseTO):
     disaggregation: DisaggregationTO
     entries: list[EntryTO]
     charts: list[ChartTO]
+    analysisId: int
 
     @classmethod
     def from_model(cls, instance: Issue):
@@ -34,4 +35,5 @@ class IssueTO(BaseTO):
             disaggregation=DisaggregationTO.from_model(instance.disaggregation),
             entries=EntryTO.from_models(instance.entries.all()),
             charts=ChartTO.from_models(instance.charts.all()),
+            analysisId=instance.analysis_id
         )

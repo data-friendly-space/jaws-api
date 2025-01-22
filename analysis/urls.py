@@ -8,6 +8,7 @@ from analysis.interfaces.controllers.assign_or_update_analysis_framework_control
 from analysis.interfaces.controllers.create_analysis_controller import (
     create_analysis_controller,
 )
+from analysis.interfaces.controllers.create_issue_controller import create_issue_controller
 from analysis.interfaces.controllers.create_or_update_analysis_question_controller import \
     create_or_update_analysis_question_controller
 
@@ -19,6 +20,7 @@ from analysis.interfaces.controllers.get_analysis_by_id_controller import (
 )
 from analysis.interfaces.controllers.get_analysis_frameworks_controller import get_analysis_frameworks_controller
 from analysis.interfaces.controllers.get_disaggregations_controller import get_all_disaggregations_controller
+from analysis.interfaces.controllers.get_issues_controller import get_issues_controller
 from analysis.interfaces.controllers.get_sectors_controller import get_all_sectors_controller
 from analysis.interfaces.controllers.get_steps_controller import get_steps_controller
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
@@ -31,6 +33,8 @@ from analysis.interfaces.controllers.upload_analysis_framework_controller import
 urlpatterns = [
     path("create", create_analysis_controller, name="create_analysis"),
     path("get-steps", get_steps_controller, name="get_steps"),
+    path("issues/create", create_issue_controller, name="create_issue_controller"),
+    path("<int:analysis_id>/issues", get_issues_controller, name="get_issues_controller"),
     path("frameworks", get_analysis_frameworks_controller, name="get_analysis_frameworks_controller"),
     path("frameworks/upload", upload_analysis_framework_controller, name="upload_analysis_framework_controller"),
 

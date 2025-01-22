@@ -12,6 +12,7 @@ from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.contract.to.sector_to import SectorTO
 from analysis.models.analysis import Analysis
 from common.contract.to.base_to import BaseTO
+from user_management.contract.to.workspace_to import WorkspaceLiteTO
 
 
 @dataclass
@@ -22,14 +23,14 @@ class AnalysisTO(BaseTO):
     objectives: str
     createdOn: datetime | None
     endDate: date | None
-    sectors: Optional[list[SectorTO]]
+    sectors: list[SectorTO]
     workspace: dict
     lastChange: datetime | None
-    disaggregations: Optional[dict] = None
+    disaggregations: list[DisaggregationTO]
     startDate: date | None = None
     creator: Optional[str] = None
-    locations: Optional[list[AdministrativeDivisionTO]] = None
-    analysisSteps: Optional[list[AnalysisStepTO]] = None
+    locations: list[AdministrativeDivisionTO] = None
+    analysisSteps: list[AnalysisStepTO] = None
     analysisQuestions: Optional[list[AnalysisQuestionTO]] = None
     analysisFramework: Optional[AnalysisFrameworkTO] = None
 
@@ -43,10 +44,7 @@ class AnalysisTO(BaseTO):
             title=instance.title,
             objectives=instance.objectives,
             creator=instance.creator.email,
-            workspace={
-                "id": instance.workspace.id,
-                "title": instance.workspace.title
-            },
+            workspace=WorkspaceLiteTO.from_model(instance.workspace),
             startDate=instance.start_date,
             endDate=instance.end_date,
             lastChange=instance.last_change,

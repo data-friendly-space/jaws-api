@@ -4,9 +4,7 @@ import uuid
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
-from user_management.models.affiliation import Affiliation
-from user_management.models.position import Position
-from user_management.models.ui_configuration import UiConfiguration
+from common.models.base_model import BaseModel
 
 
 class CustomUserManager(BaseUserManager):
@@ -23,7 +21,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(BaseModel, AbstractBaseUser):
     """User model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -31,9 +29,9 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     country = models.CharField(max_length=100)
     profile_image = models.URLField(blank=True, null=True)
-    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True)
-    affiliation = models.ForeignKey(Affiliation, on_delete=models.SET_NULL, null=True)
-    ui_configuration = models.OneToOneField(UiConfiguration, on_delete=models.SET_NULL, null=True)
+    position = models.ForeignKey('user_management.Position', on_delete=models.SET_NULL, null=True)
+    affiliation = models.ForeignKey('user_management.Affiliation', on_delete=models.SET_NULL, null=True)
+    ui_configuration = models.OneToOneField('user_management.UiConfiguration', on_delete=models.SET_NULL, null=True)
     is_active = models.BooleanField(default=True)
     objects = CustomUserManager()
 
@@ -45,3 +43,44 @@ class User(AbstractBaseUser):
 
     class Meta:
         db_table = 'user'
+
+    @classmethod
+    def from_to(cls, user_to):
+        """
+        Creates a User instance from a UserTO instance without saving it.
+
+        Args:
+            user_to (UserTO): Transfer Object containing the User data.
+
+        Returns:
+            User: An instance of the User model.
+        """
+        from user_management.contract.to.user_to import UserTO
+        if user_to is None:
+            return None
+
+        if not isinstance(user_to, UserTO):
+            raise ValueError("The argument must be an instance of UserTO")
+
+        # Resolve ForeignKey and OneToOneField relationships
+        position_instance = Position.from_to(user_to.position) if user_to.position else None
+        affiliation_instance = Affiliation.from_to(user_to.affiliation) if user_to.affiliation else None
+        ui_configuration_instance = (
+            UiConfiguration.from_to(user_to.uiConfiguration) if user_to.uiConfiguration else None
+        )
+
+        # Create the User instance without saving
+        user_instance = cls(
+            id=uuid.UUID(user_to.id) if user_to.id else None,
+            name=user_to.name,
+            lastname=user_to.lastname,
+            email=user_to.email,
+            country=user_to.country,
+            profile_image=user_to.profileImage,
+            position=position_instance,
+            affiliation=affiliation_instance,
+            ui_configuration=ui_configuration_instance,
+            is_active=True,  # Default value; adjust if provided in UserTO
+        )
+
+        return user_instance

@@ -5,7 +5,6 @@ from typing import Dict
 
 from common.contract.to.base_to import BaseTO
 from file_management.models.dataset import Dataset
-from user_management.contract.to.user_to import UserTO
 
 
 @dataclass

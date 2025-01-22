@@ -1,11 +1,10 @@
 """This module contains the entry model"""
-from django.db import models
 
-from analysis.contract.to.entry_to import EntryTO
+
 from common.models.base_model import BaseModel
 
 
-class Entry(BaseModel, models.Model):
+class Entry(BaseModel):
     """Entry model"""
 
     class Meta:
@@ -23,6 +22,7 @@ class Entry(BaseModel, models.Model):
         Returns:
             Entry: An instance of the Entry model.
         """
+        from analysis.contract.to.entry_to import EntryTO
         if not isinstance(entry_to, EntryTO):
             raise ValueError("The argument must be an instance of EntryTO")
 
@@ -32,4 +32,3 @@ class Entry(BaseModel, models.Model):
         )
 
         return entry_instance
-

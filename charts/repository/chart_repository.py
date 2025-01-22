@@ -9,6 +9,11 @@ from charts.contract.dto.chart_to import ChartTO
 class ChartRepository:
     """Abstract repository"""
 
+
+    @abstractmethod
+    def get_chart_by_id(self, chart_id: int) -> ChartTO:
+        """Gets a chart by its ID"""
+        
     @abstractmethod
     def save(
         self,

@@ -5,6 +5,7 @@ from analysis.contract.to.administrative_division_to import AdministrativeDivisi
 from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.entry_to import EntryTO
 from analysis.contract.to.issue_to import IssueTO
 from analysis.contract.to.pillar_to import PillarTO
 from analysis.contract.to.sub_pillar_to import SubPillarTO
@@ -17,12 +18,17 @@ from common.repository.base_repository import BaseRepository
 class AnalysisRepository(BaseRepository):
     """Analysis repository"""
 
+
     @abstractmethod
-    def create_issue(self, issue: IssueTO) -> IssueTO:
+    def get_or_create_entry(self, issue_id:int) -> EntryTO:
+        """Get or create entry"""
+
+    @abstractmethod
+    def create_issue(self, issue_to: IssueTO) -> IssueTO:
         """Create Issue"""
 
     @abstractmethod
-    def get_issues(self, analyis_id: int) -> IssueTO:
+    def get_issues(self, analysis_id: int) -> list[IssueTO]:
         """Get Issues"""
 
     @abstractmethod

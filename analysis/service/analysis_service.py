@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 
+from analysis.contract.io.issue_in import IssueIn
 from common.helpers.query_options import QueryOptions
 from common.service.base_service import BaseService
 
@@ -9,6 +10,13 @@ from common.service.base_service import BaseService
 class AnalysisService(BaseService):
     """Definition of the analysis service"""
 
+    @abstractmethod
+    def get_issues_by_analysis_id(self, analysis_id: int):
+        """Get all issues by analysis id"""
+
+    @abstractmethod
+    def create_issue(self, issue_data: IssueIn):
+        """Create new issue"""
 
     @abstractmethod
     def upload_analysis_framework(self, file):
@@ -95,6 +103,7 @@ class AnalysisService(BaseService):
         """
         Updates analysis framework
         """
+
     @abstractmethod
     def get_all_disaggregations(self, **kwargs):
         """

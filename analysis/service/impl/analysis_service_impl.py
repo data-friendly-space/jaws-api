@@ -5,7 +5,9 @@ from typing import List
 import pandas as pd
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
+from analysis.contract.io.issue_in import IssueIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
+from analysis.contract.to.issue_to import IssueTO
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
 )
@@ -17,6 +19,7 @@ from analysis.use_cases.add_pillar_analysis_framework_uc import AddPillarToAnaly
 from analysis.use_cases.add_sub_pillar_to_pillar_uc import AddSubPillarToPillarUC
 from analysis.use_cases.assign_or_update_analysis_framework_uc import AssignOrUpdateAnalysisFrameworkUC
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
+from analysis.use_cases.create_issue_uc import CreateIssueUC
 from analysis.use_cases.create_or_update_analysis_question_uc import CreateOrUpdateAnalysisQuestionUC
 from analysis.use_cases.get_administrative_division_by_pcode_uc import GetAdministrativeDivisionByPCodeUC
 from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionsUC, \
@@ -26,13 +29,17 @@ from analysis.use_cases.get_all_sectors_uc import GetAllSectorsUC
 from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_frameworks_uc import GetAnalysisFrameworkUC
+from analysis.use_cases.get_issues_by_analysis_id_uc import GetIssuesByAnalysisIdUC
 from analysis.use_cases.get_or_create_analysis_uc import GetOrCreateAnalysisFrameworkUC
+from analysis.use_cases.get_or_create_entry_uc import GetOrCreateEntryUC
 from analysis.use_cases.get_or_create_pillar_uc import GetOrCreatePillarUC
 from analysis.use_cases.get_or_create_sub_pillar_uc import GetOrCreateSubPillarUC
 from analysis.use_cases.get_steps_uc import GetStepsUC
 from analysis.use_cases.put_analysis_scope_uc import PutAnalysisScopeUC
 from analysis.use_cases.remove_location_uc import RemoveLocationUC
 from analysis.use_cases.update_analysis_steps_uc import UpdateAnalysisStepsUC
+from charts.repository.impl.chart_repository_impl import ChartRepositoryImpl
+from charts.use_cases.get_chart_by_id_uc import GetChartByIdUC
 from common.constants.constants import REQUIRED_COLUMNS, SUB_PILLAR_COLUMN, TITLE_COLUMN, PILLAR_COLUMN
 from common.exceptions.exceptions import BadRequestException, NotFoundException
 from common.helpers.query_options import QueryOptions
@@ -70,6 +77,38 @@ class AnalysisServiceImpl(AnalysisService):
         self.get_or_create_sub_pillar = GetOrCreateSubPillarUC.get_instance()
         self.add_pillar_to_analysis_framework_uc = AddPillarToAnalysisFrameworkUC.get_instance()
         self.add_sub_pillar_to_pillar_uc = AddSubPillarToPillarUC.get_instance()
+        self.get_issues_by_analysis_id_uc = GetIssuesByAnalysisIdUC.get_instance()
+        self.get_or_create_entry_uc = GetOrCreateEntryUC.get_instance()
+        self.get_chart_id_uc = GetChartByIdUC.get_instance()
+        self.create_issue_uc = CreateIssueUC.get_instance()
+
+    def create_issue(self, issue_data: IssueIn):
+        if not issue_data.is_valid():
+            raise BadRequestException(
+                "Create issue request is not valid: ",
+                issue_data.errors)
+
+        issue_validated_data = issue_data.validated_data()
+        entry_tos = []
+        chart_tos = []
+        for entry_id in issue_validated_data['entries']:
+            entry_tos.append(self.get_or_create_entry_uc.exec(self.repository, entry_id))
+
+        for chart_id in issue_validated_data['charts']:
+            chart_tos.append(self.get_chart_id_uc.exec(ChartRepositoryImpl(),chart_id))
+        issue_to = IssueTO()
+        issue_to.id = issue_validated_data['id']
+        issue_to.title = issue_validated_data['title']
+        issue_to.description = issue_validated_data['description']
+        issue_to.status = issue_validated_data['status']
+        issue_to.entries = entry_tos
+        issue_to.charts = chart_tos
+        issue_to = self.create_issue_uc.exec(self.repository, issue_to)
+        return issue_to.to_dict()
+
+    def get_issues_by_analysis_id(self, analysis_id: int):
+        issues = self.get_issues_by_analysis_id_uc.exec(self.repository, analysis_id)
+        return [issue.to_dict() for issue in issues]
 
     def get_all_analysis_frameworks(self, query_options: QueryOptions):
         """Get all analysis frameworks"""
@@ -261,7 +300,8 @@ class AnalysisServiceImpl(AnalysisService):
         # Process each row in the CSV
         for _, row in data.iterrows():
             # Construct the Pillar name
-            pillar_name = f"{row[TITLE_COLUMN]}: {row[PILLAR_COLUMN]}" if pd.notna(row[PILLAR_COLUMN]) else row[TITLE_COLUMN]
+            pillar_name = f"{row[TITLE_COLUMN]}: {row[PILLAR_COLUMN]}" if pd.notna(row[PILLAR_COLUMN]) else row[
+                TITLE_COLUMN]
 
             # Get or create the Pillar
             pillar_to = self.get_or_create_pillar_uc.exec(AnalysisRepositoryImpl(), pillar_name)
@@ -281,6 +321,7 @@ class AnalysisServiceImpl(AnalysisService):
                 pillar_to = self.add_sub_pillar_to_pillar_uc.exec(AnalysisRepositoryImpl(), pillar_to.id, sub_pillar_to)
 
             # Add the Pillar to the Analysis Framework
-            analysis_framework_to = self.add_pillar_to_analysis_framework_uc.exec(AnalysisRepositoryImpl(), analysis_framework_to.id, pillar_to)
+            analysis_framework_to = self.add_pillar_to_analysis_framework_uc.exec(AnalysisRepositoryImpl(),
+                                                                                  analysis_framework_to.id, pillar_to)
 
         return analysis_framework_to.to_dict()

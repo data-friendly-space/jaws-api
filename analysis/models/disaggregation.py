@@ -1,11 +1,10 @@
 """Contains the disaggregation model"""
 from django.db import models
 
-from analysis.contract.to.disaggregation_to import DisaggregationTO
 from common.models.base_model import BaseModel
 
 
-class Disaggregation(BaseModel, models.Model):
+class Disaggregation(BaseModel):
     """Disaggregation model"""
     name = models.CharField(max_length=100)
 
@@ -24,6 +23,8 @@ class Disaggregation(BaseModel, models.Model):
         Returns:
             Disaggregation: An instance of the Disaggregation model.
         """
+        from analysis.contract.to.disaggregation_to import DisaggregationTO
+
         if disaggregation_to is None:
             return None
 

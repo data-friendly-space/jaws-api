@@ -7,6 +7,8 @@ from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.entry_to import EntryTO
+from analysis.contract.to.issue_to import IssueTO
 from analysis.contract.to.pillar_to import PillarTO
 from analysis.contract.to.sector_to import SectorTO
 from analysis.contract.to.sub_pillar_to import SubPillarTO
@@ -16,6 +18,8 @@ from analysis.models.analysis_framework import AnalysisFramework
 from analysis.models.analysis_question import AnalysisQuestion
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
+from analysis.models.entry import Entry
+from analysis.models.issue import Issue
 from analysis.models.pillar import Pillar
 from analysis.models.sector import Sector
 from analysis.models.sub_pillar import SubPillar
@@ -28,6 +32,20 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
+
+    def get_or_create_entry(self, entry_id: int):
+        entry = Entry.objects.get_or_create(id=entry_id)
+        return EntryTO.from_model(entry[0]) if entry.count() > 0 else None
+
+    def create_issue(self, issue_to: IssueTO) -> IssueTO:
+        issue = Issue.from_to(issue_to)
+        issue_saved = issue.save()
+        return IssueTO.from_model(issue_saved)
+
+    def get_issues(self, analysis_id: int) -> list[IssueTO]:
+
+        issues = Issue.objects.get(analysis_id=analysis_id)
+        return IssueTO.from_models(issues)
 
     def get_or_create_sub_pillar(self, name):
         """Get or Create Sub pillar"""
@@ -46,7 +64,7 @@ class AnalysisRepositoryImpl(AnalysisRepository):
                                          pillar_to: PillarTO) -> AnalysisFrameworkTO:
         """add pillars to analysis_framework"""
         analysis_framework = AnalysisFramework.objects.get(pk=analysis_framework_id)
-        pillar,_ = Pillar.objects.get_or_create(id=pillar_to.id)
+        pillar, _ = Pillar.objects.get_or_create(id=pillar_to.id)
         analysis_framework.pillars.add(pillar)
         return AnalysisFrameworkTO.from_model(analysis_framework)
 
