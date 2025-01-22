@@ -5,6 +5,7 @@ from analysis.contract.to.administrative_division_to import AdministrativeDivisi
 from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.issue_to import IssueTO
 from analysis.contract.to.pillar_to import PillarTO
 from analysis.contract.to.sub_pillar_to import SubPillarTO
 from analysis.models import AdministrativeDivision
@@ -15,6 +16,14 @@ from common.repository.base_repository import BaseRepository
 
 class AnalysisRepository(BaseRepository):
     """Analysis repository"""
+
+    @abstractmethod
+    def create_issue(self, issue: IssueTO) -> IssueTO:
+        """Create Issue"""
+
+    @abstractmethod
+    def get_issues(self, analyis_id: int) -> IssueTO:
+        """Get Issues"""
 
     @abstractmethod
     def create(self, data, disaggregations, sectors):
@@ -38,7 +47,7 @@ class AnalysisRepository(BaseRepository):
 
     @abstractmethod
     def add_pillar_to_analysis_framework(self, analysis_framework_id: int,
-                                          pillar_to:PillarTO) -> AnalysisFrameworkTO:
+                                         pillar_to: PillarTO) -> AnalysisFrameworkTO:
         """add pillars to analysis_framework"""
 
     @abstractmethod

@@ -4,13 +4,16 @@ from django.db import models
 
 from analysis.models.analysis import Analysis
 from analysis.models.sub_pillar import SubPillar
+from charts.contract.dto.chart_to import ChartTO
+from common.models.base_model import BaseModel
 from file_management.models.column_configuration import ColumnConfiguration
 from file_management.models.dataset import Dataset
 from user_management.models.user import User
 
 
-class Chart(models.Model):
+class Chart(BaseModel,models.Model):
     """Model for charts"""
+
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -30,3 +33,6 @@ class Chart(models.Model):
     class Meta:
         """Table's metadata"""
         db_table="chart"
+
+    def from_to(cls, instance):
+        pass
