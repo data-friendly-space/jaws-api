@@ -15,14 +15,12 @@ resource "aws_route53_zone" "main" {
 resource "aws_route53_record" "frontend" {
   zone_id = aws_route53_zone.main.zone_id
   name    = format("%s%s", "frontend.", var.zone_name)
-  type    = "A"
+  type    = "CNAME"
 
-  alias {
-    name                   = data.aws_s3_bucket.frontend.website_endpoint
-    zone_id                = aws_route53_zone.main.zone_id
-    evaluate_target_health = false
-  }
+  ttl     = 60
+  records = [data.aws_s3_bucket.frontend.website_endpoint]
 }
+
 
 resource "aws_route53_record" "api" {
   zone_id = aws_route53_zone.main.zone_id
