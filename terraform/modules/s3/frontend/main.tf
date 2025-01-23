@@ -16,11 +16,6 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
   restrict_public_buckets = false
 }
 
-# resource "aws_s3_bucket_acl" "jaws-frontend-s3-acl" {
-#   bucket = aws_s3_bucket.frontend.id
-#   acl    = "public-read"
-# }
-
 resource "aws_s3_bucket_policy" "frontend" {
   bucket = aws_s3_bucket.frontend.id
 
@@ -44,5 +39,8 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
 
   index_document {
     suffix = "index.html"
+  }
+  error_document {
+    key = "index.html"
   }
 }
