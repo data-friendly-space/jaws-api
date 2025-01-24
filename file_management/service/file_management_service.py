@@ -6,7 +6,6 @@ from typing import List
 from common.helpers.query_options import QueryOptions
 from common.service.base_service import BaseService
 from file_management.contract.dto.s3_presigned_url_to import S3PresignedUrlTO
-from file_management.contract.requests.column_in import ColumnIn
 from file_management.contract.requests.update_rows_in import UpdateRowsIn
 
 
@@ -98,4 +97,15 @@ class FileManagementService(BaseService):
         
         Keyword arguments:
         Return: A list of dicts
+        """
+
+    @abstractmethod
+    def get_merge_preview(self, user, merge_config: dict) -> List[dict]:
+        """Create and return preview of the merge result
+        
+        Keyword arguments:
+        * user -- The user who is trying to merge datasets
+        * merge_config -- the merge configuration containing the join columns and datasets, 
+                        the method and the output name
+        * Return: return_description
         """

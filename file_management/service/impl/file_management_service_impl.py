@@ -11,6 +11,7 @@ from common.exceptions.exceptions import (
     ForbiddenException,
     NotFoundException,
 )
+from common.helpers.query_options import QueryOptions
 from file_management.repository.file_management_repository_impl import (
     FileManagementRepositoryImpl,
 )
@@ -266,3 +267,33 @@ class FileManagementServiceImpl(FileManagementService):
     def get_data_roles(self):
         data_roles = self.get_data_roles_uc.exec(self.repository)
         return [data_role.to_dict() for data_role in data_roles]
+
+    def get_merge_preview(self, user, merge_config):
+        data_frames = []
+        merged_df = None
+        for dataset_join_config in merge_config["datasets"]:
+            dataset = self.get_dataset_by_id_uc.exec(
+                self.repository, dataset_join_config["id"]
+            )
+            dataset_file = self.get_dataset_file_uc.exec(
+                self.repository, dataset.externalIdentifier
+            )
+            try:
+                df = pd.read_csv(dataset_file.Body)
+                data_frames.append(df)
+            except pd.errors.ParserError:
+                df = pd.read_csv(dataset_file.Body, sep=";")
+            if merged_df is None:
+                merged_df = df
+            else:
+                merged_df = merged_df.merge(
+                    df,
+                    on=dataset_join_config["join_column"],
+                    how=merge_config["method"])
+        merged_df.fillna("", inplace=True)
+
+        query_options = QueryOptions(
+            page_number=1,
+            page_size=10,
+        )
+        return query_options.paginate_and_filter_dataframe(merged_df)
