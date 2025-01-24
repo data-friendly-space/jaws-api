@@ -34,13 +34,12 @@ class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
 
     def get_or_create_entry(self, entry_id: int):
-        entry = Entry.objects.get_or_create(id=entry_id)
-        return EntryTO.from_model(entry[0]) if entry.count() > 0 else None
+        entry, _ = Entry.objects.get_or_create(id=entry_id)
+        return EntryTO.from_model(entry)
 
     def create_issue(self, issue_to: IssueTO) -> IssueTO:
         issue = Issue.from_to(issue_to)
-        issue_saved = issue.save()
-        return IssueTO.from_model(issue_saved)
+        return IssueTO.from_model(issue)
 
     def get_issues(self, analysis_id: int) -> list[IssueTO]:
 

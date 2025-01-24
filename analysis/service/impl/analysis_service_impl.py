@@ -5,7 +5,6 @@ from typing import List
 import pandas as pd
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
-from analysis.contract.io.issue_in import IssueIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
 from analysis.contract.to.issue_to import IssueTO
 from analysis.interfaces.serializers.administrative_division_serializer import (
@@ -82,25 +81,26 @@ class AnalysisServiceImpl(AnalysisService):
         self.get_chart_id_uc = GetChartByIdUC.get_instance()
         self.create_issue_uc = CreateIssueUC.get_instance()
 
-    def create_issue(self, issue_data: IssueIn):
+    def create_issue(self, issue_data):
         if not issue_data.is_valid():
             raise BadRequestException(
                 "Create issue request is not valid: ",
                 issue_data.errors)
 
-        issue_validated_data = issue_data.validated_data()
+        issue_validated_data = issue_data.validated_data
         entry_tos = []
         chart_tos = []
         for entry_id in issue_validated_data['entries']:
             entry_tos.append(self.get_or_create_entry_uc.exec(self.repository, entry_id))
 
         for chart_id in issue_validated_data['charts']:
-            chart_tos.append(self.get_chart_id_uc.exec(ChartRepositoryImpl(),chart_id))
-        issue_to = IssueTO()
-        issue_to.id = issue_validated_data['id']
-        issue_to.title = issue_validated_data['title']
-        issue_to.description = issue_validated_data['description']
-        issue_to.status = issue_validated_data['status']
+            chart_tos.append(self.get_chart_id_uc.exec(ChartRepositoryImpl(), chart_id))
+        disaggregation = None
+        if issue_validated_data['disaggregation']:
+            disaggregation = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None, pk=issue_validated_data['disaggregation'])
+
+        issue_to = IssueTO.from_dict(issue_validated_data)
+        issue_to.disaggregation = disaggregation[0] if disaggregation and disaggregation else None
         issue_to.entries = entry_tos
         issue_to.charts = chart_tos
         issue_to = self.create_issue_uc.exec(self.repository, issue_to)

@@ -1,5 +1,6 @@
 """This module contains the disaggregation Transfer Object"""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List, Optional
 
 from analysis.contract.to.disaggregation_to import DisaggregationTO
 from analysis.contract.to.entry_to import EntryTO
@@ -11,15 +12,15 @@ from common.contract.to.base_to import BaseTO
 @dataclass
 class IssueTO(BaseTO):
     """Issue DTO"""
-    id: int
-    name: str
-    description: str
-    informationGaps: str
-    assumptions: str
-    disaggregation: DisaggregationTO
-    entries: list[EntryTO]
-    charts: list[ChartTO]
-    analysisId: int
+    id: Optional[int] = None
+    name: str = ""
+    description: str = ""
+    informationGaps: str = ""
+    assumptions: str = ""
+    disaggregation: Optional[DisaggregationTO] = None
+    entries: List[EntryTO] = field(default_factory=list)
+    charts: List[ChartTO] = field(default_factory=list)
+    analysisId: Optional[int] = None
 
     @classmethod
     def from_model(cls, instance: Issue):

@@ -31,4 +31,6 @@ class Entry(BaseModel):
             id=entry_to.id,  # Include only if IDs are passed in the TO
         )
 
+        entry_instance.save()
+
         return entry_instance

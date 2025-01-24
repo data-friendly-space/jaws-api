@@ -55,5 +55,5 @@ class ColumnConfiguration(BaseModel, models.Model):
             subpillar=SubPillar.from_to(column_config_to.subpillar),
             column=column_instance,
         )
-
+        column_config_instance.save()
         return column_config_instance

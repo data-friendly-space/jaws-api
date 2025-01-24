@@ -42,17 +42,25 @@ class Issue(BaseModel):
         if not isinstance(issue_to, IssueTO):
             raise ValueError("The argument must be an instance of IssueTO")
 
-        # Create the Issue instance without saving
+        # Create the Issue instance without ManyToMany fields
         issue_instance = cls(
             id=issue_to.id,  # Include only if IDs are passed in the TO
             name=issue_to.name,
             description=issue_to.description,
             information_gaps=issue_to.informationGaps,
             assumptions=issue_to.assumptions,
-            entries=Entry.from_tos(issue_to.entries),
-            charts=Chart.from_tos(issue_to.charts),
             disaggregation=Disaggregation.from_to(issue_to.disaggregation),
-            analisis_id=issue_to.analysisId
+            analysis_id=issue_to.analysisId
         )
+
+        # Save the instance to enable ManyToManyField assignments
+        issue_instance.save()
+
+        # Assign ManyToMany fields using .set()
+        if issue_to.entries:
+            issue_instance.entries.set(Entry.from_tos(issue_to.entries))
+
+        if issue_to.charts:
+            issue_instance.charts.set(Chart.from_tos(issue_to.charts))
 
         return issue_instance

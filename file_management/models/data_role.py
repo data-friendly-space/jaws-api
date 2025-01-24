@@ -36,5 +36,5 @@ class DataRole(BaseModel,models.Model):
             id=data_role_to.id,  # Include only if IDs are passed in the TO
             name=data_role_to.name,
         )
-
+        data_role_instance.save()
         return data_role_instance

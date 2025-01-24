@@ -37,7 +37,10 @@ class BaseTO(ABC):
         """
         if not data:
             return None
+
         # Filter out keys that are not part of the TO fields
         field_names = {f.name for f in fields(cls)}
         filtered_data = {key: value for key, value in data.items() if key in field_names}
+
+        # Use default values for missing fields
         return cls(**filtered_data)

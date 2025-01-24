@@ -37,5 +37,5 @@ class SubPillar(BaseModel):
             id=sub_pillar_to.id,  # Include only if IDs are passed in the TO
             name=sub_pillar_to.name,
         )
-
+        sub_pillar_instance.save()
         return sub_pillar_instance

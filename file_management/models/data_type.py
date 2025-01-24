@@ -36,5 +36,5 @@ class DataType(BaseModel, models.Model):
             id=data_type_to.id,  # Include only if IDs are passed in the TO
             name=data_type_to.name,
         )
-
+        data_type_instance.save()
         return data_type_instance

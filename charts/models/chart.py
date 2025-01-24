@@ -62,5 +62,6 @@ class Chart(BaseModel, models.Model):
             subpillar=Dataset.from_to(chart_to.dataset),
             type=chart_to.type,
         )
+        chart_instance.save()
 
         return chart_instance

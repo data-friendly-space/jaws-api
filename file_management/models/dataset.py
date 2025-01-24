@@ -84,5 +84,6 @@ class Dataset(BaseModel):
             external_identifier=dataset_to.externalIdentifier,
             uploaded_by=uploaded_by_instance,
         )
+        dataset_instance.save()
 
         return dataset_instance
