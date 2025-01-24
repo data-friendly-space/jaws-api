@@ -32,7 +32,7 @@ variable "container_port" {
 variable "host_port" {
   description = "The port to expose in the host"
   type        = number
-  default     = 80
+  default     = 8000
 }
 
 variable "container_memory" {
