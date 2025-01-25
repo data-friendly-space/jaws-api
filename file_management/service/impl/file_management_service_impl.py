@@ -271,6 +271,7 @@ class FileManagementServiceImpl(FileManagementService):
     def get_merge_preview(self, user, merge_config):
         data_frames = []
         merged_df = None
+        join_column = merge_config["datasets"][0]["join_column"]
         for dataset_join_config in merge_config["datasets"]:
             dataset = self.get_dataset_by_id_uc.exec(
                 self.repository, dataset_join_config["id"]
@@ -283,13 +284,32 @@ class FileManagementServiceImpl(FileManagementService):
                 data_frames.append(df)
             except pd.errors.ParserError:
                 df = pd.read_csv(dataset_file.Body, sep=";")
+
             if merged_df is None:
                 merged_df = df
             else:
-                merged_df = merged_df.merge(
-                    df,
-                    on=dataset_join_config["join_column"],
-                    how=merge_config["method"])
+                try:
+                    merged_df = merged_df.merge(
+                        df,
+                        left_on=join_column,
+                        right_on=dataset_join_config["join_column"],
+                        how=merge_config["method"],
+                    )
+                except ValueError as e:
+                    raise BadRequestException(
+                        "The columns you've selected as join columns doesn't match or contains different types, check the data and try again"
+                    ) from e
+
+        # Fill string columns
+        merged_df[merged_df.select_dtypes(include="object").columns] = (
+            merged_df.select_dtypes(include="object").fillna("")
+        )
+
+        # Fill numeric columns
+        merged_df[merged_df.select_dtypes(include="number").columns] = (
+            merged_df.select_dtypes(include="number").fillna(0)
+        )
+
         merged_df.fillna("", inplace=True)
 
         query_options = QueryOptions(

@@ -6,12 +6,19 @@ class DatasetJoinColumn(serializers.Serializer):
     id = serializers.UUIDField()
     join_column = serializers.CharField(max_length=255, allow_blank=False)
 
+class MergePreviewConfigurationIn(serializers.Serializer):
+    """Only for previewing. Not to do the merge"""
+    datasets = serializers.ListField(child=DatasetJoinColumn(), min_length=1)
+    analysis_id = serializers.IntegerField()
+    method = serializers.ChoiceField(choices=[
+        "left", "right", "inner", "outer"
+    ], default="left", allow_null=True)
 
 class MergeConfigurationIn(serializers.Serializer):
-    """Request interface for merging datasets"""
+    """Request for merging datasets"""
     datasets = serializers.ListField(child=DatasetJoinColumn(), min_length=2)
     analysis_id = serializers.IntegerField()
-    output_name = serializers.CharField(max_length=255, allow_blank=False)
     method = serializers.ChoiceField(choices=[
-        "left", "right", "inner", "outer"\
+        "left", "right", "inner", "outer"
     ], default="left", allow_null=True)
+    output_name = serializers.CharField(max_length=255, allow_blank=False)
