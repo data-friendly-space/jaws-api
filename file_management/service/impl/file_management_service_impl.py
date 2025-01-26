@@ -269,7 +269,7 @@ class FileManagementServiceImpl(FileManagementService):
         data_roles = self.get_data_roles_uc.exec(self.repository)
         return [data_role.to_dict() for data_role in data_roles]
 
-    @validate_analysis_exist()
+    @validate_analysis_exist
     def get_merge_preview(self, user, merge_config):
         # TODO: validate that the user can see the datasets and the analysis
         data_frames = []
