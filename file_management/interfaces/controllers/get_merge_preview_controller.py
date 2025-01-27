@@ -1,4 +1,4 @@
-"""Contains the repository for getting the merge preview"""
+"""Contains the controller for getting the merge preview"""
 from rest_framework.decorators import api_view
 
 from common.exceptions.exceptions import BadRequestException
