@@ -1,6 +1,7 @@
+import dataclasses
 from abc import ABC, abstractmethod
-from dataclasses import asdict, fields, dataclass
-from typing import Dict, TypeVar, Type
+from dataclasses import asdict, fields
+from typing import Dict, TypeVar, Type, List, Any, get_args, get_origin, Union
 
 T = TypeVar("T", bound="BaseTO")
 
@@ -11,23 +12,22 @@ class BaseTO(ABC):
         pass
 
     @classmethod
-    def from_models(self, models):
+    def from_models(cls: Type[T], models: List[Any]) -> List[T]:
         """
-        Transform a list of  model instances into a list of instances.
+        Transform a list of model instances into a list of TO instances.
         """
-        if models is None or len(models) <= 0:
-            return None
-        return [self.from_model(model) for model in models]
+        if not models:
+            return []
+        return [cls.from_model(model) for model in models]
 
     def to_dict(self) -> Dict:
-        """Return a dict of the object"""
+        """Return a dict representation of the object."""
         return asdict(self)
 
     @classmethod
     def from_dict(cls: Type[T], data: Dict) -> T:
         """
-        Creates a TO instance from a dictionary.
-        Ignores any extra fields that are not part of the TO.
+        Creates a TO instance from a dictionary, including nested TO mappings.
 
         Args:
             data (Dict): Dictionary with the TO fields.
@@ -38,9 +38,47 @@ class BaseTO(ABC):
         if not data:
             return None
 
-        # Filter out keys that are not part of the TO fields
-        field_names = {f.name for f in fields(cls)}
-        filtered_data = {key: value for key, value in data.items() if key in field_names}
+        # Get the field names and types for the class
+        field_names = {f.name: f for f in fields(cls)}
 
-        # Use default values for missing fields
-        return cls(**filtered_data)
+        # Process data for the fields in the class
+        processed_data = {}
+        for key, value in data.items():
+            if key in field_names:
+                field = field_names[key]
+                field_type = field.type
+
+                # Handle UnionType (e.g., int | None)
+                origin = get_origin(field_type)
+                args = get_args(field_type)
+
+                try:
+                    # Check if the field type is a BaseTO or a list of BaseTOs
+                    if isinstance(value, dict) and (
+                            origin is None and issubclass(field_type, BaseTO)  # Normal BaseTO
+                            or origin is Union and any(issubclass(arg, BaseTO) for arg in args)  # UnionType with BaseTO
+                    ):
+                        # Map the nested object to the TO
+                        to_class = field_type if origin is None else next(
+                            arg for arg in args if issubclass(arg, BaseTO))
+                        processed_data[key] = to_class.from_dict(value)
+                    elif (
+                            isinstance(value, list) and
+                            hasattr(field_type, '__args__') and
+                            issubclass(field_type.__args__[0], BaseTO)
+                    ):
+                        # Map a list of nested TOs
+                        processed_data[key] = [field_type.__args__[0].from_dict(item) for item in value]
+                    else:
+                        # Handle non-dict and non-nested values directly
+                        processed_data[key] = value
+                except TypeError:
+                    # If the field is not a BaseTO, leave the value as-is
+                    processed_data[key] = value
+
+        # Fill missing fields with default values
+        for f in field_names.values():
+            if f.name not in processed_data:
+                processed_data[f.name] = f.default if f.default != dataclasses.MISSING else None
+
+        return cls(**processed_data)

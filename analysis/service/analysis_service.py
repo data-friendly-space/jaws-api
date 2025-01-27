@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 
-from analysis.contract.io.issue_in import IssueIn
+from analysis.contract.io.create_issue_in import CreateIssueIn
 from common.helpers.query_options import QueryOptions
 from common.service.base_service import BaseService
 
@@ -15,8 +15,9 @@ class AnalysisService(BaseService):
         """Get all issues by analysis id"""
 
     @abstractmethod
-    def create_issue(self, issue_data: IssueIn):
+    def create_issue(self, issue_data: CreateIssueIn):
         """Create new issue"""
+
 
     @abstractmethod
     def upload_analysis_framework(self, file):

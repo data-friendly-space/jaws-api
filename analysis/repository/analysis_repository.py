@@ -20,7 +20,7 @@ class AnalysisRepository(BaseRepository):
 
 
     @abstractmethod
-    def get_or_create_entry(self, issue_id:int) -> EntryTO:
+    def get_or_create_entry(self, entry_to: EntryTO) -> EntryTO:
         """Get or create entry"""
 
     @abstractmethod

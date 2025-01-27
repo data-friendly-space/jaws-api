@@ -18,5 +18,5 @@ class GetOrCreateEntryUC(BaseUseCase):
             GetOrCreateEntryUC()
         return GetOrCreateEntryUC._instance
 
-    def exec(self, repository: AnalysisRepository, entry_id: int) -> EntryTO:
-        return repository.get_or_create_entry(entry_id)
+    def exec(self, repository: AnalysisRepository, entry_to: EntryTO) -> EntryTO:
+        return repository.get_or_create_entry(entry_to)

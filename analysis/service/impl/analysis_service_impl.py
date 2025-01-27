@@ -6,6 +6,7 @@ import pandas as pd
 
 from analysis.contract.io.create_analysis_in import CreateAnalysisIn
 from analysis.contract.io.update_analysis_in import UpdateAnalysisIn
+from analysis.contract.to.entry_to import EntryTO
 from analysis.contract.to.issue_to import IssueTO
 from analysis.interfaces.serializers.administrative_division_serializer import (
     AdministrativeDivisionSerializer,
@@ -90,16 +91,20 @@ class AnalysisServiceImpl(AnalysisService):
         issue_validated_data = issue_data.validated_data
         entry_tos = []
         chart_tos = []
-        for entry_id in issue_validated_data['entries']:
-            entry_tos.append(self.get_or_create_entry_uc.exec(self.repository, entry_id))
+        for entry_to in issue_validated_data['entries']:
+            entry_tos.append(self.get_or_create_entry_uc.exec(self.repository, EntryTO.from_dict(entry_to)))
 
         for chart_id in issue_validated_data['charts']:
             chart_tos.append(self.get_chart_id_uc.exec(ChartRepositoryImpl(), chart_id))
         disaggregation = None
         if issue_validated_data['disaggregation']:
             disaggregation = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None, pk=issue_validated_data['disaggregation'])
-
-        issue_to = IssueTO.from_dict(issue_validated_data)
+        issue_to = IssueTO()
+        issue_to.name = issue_validated_data['name']
+        issue_to.description = issue_validated_data['description']
+        issue_to.informationGaps = issue_validated_data['informationGaps']
+        issue_to.assumptions = issue_validated_data['assumptions']
+        issue_to.analysisId = issue_validated_data['analysisId']
         issue_to.disaggregation = disaggregation[0] if disaggregation and disaggregation else None
         issue_to.entries = entry_tos
         issue_to.charts = chart_tos

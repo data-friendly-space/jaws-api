@@ -33,10 +33,9 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
 
-    def get_or_create_entry(self, entry_id: int):
-        entry, _ = Entry.objects.get_or_create(id=entry_id)
+    def get_or_create_entry(self, entry_to: EntryTO) -> EntryTO:
+        entry = Entry.from_to(entry_to)
         return EntryTO.from_model(entry)
-
     def create_issue(self, issue_to: IssueTO) -> IssueTO:
         issue = Issue.from_to(issue_to)
         return IssueTO.from_model(issue)
