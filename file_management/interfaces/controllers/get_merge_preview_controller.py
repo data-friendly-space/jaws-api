@@ -9,7 +9,7 @@ from file_management.service.impl.file_management_service_impl import FileManage
 
 @api_view(["POST"])
 def get_merge_preview_controller(request):
-    """Retrieve preview rows of the final dataset"""
+    """Merge the datasets and retrieve the new record"""
     merge_config = MergePreviewConfigurationIn(data=to_snake_case_data(request.data))
     if not merge_config.is_valid():
         raise BadRequestException("Check the payload", merge_config.errors)
