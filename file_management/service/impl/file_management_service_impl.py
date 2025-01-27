@@ -41,6 +41,7 @@ from file_management.use_cases.get_data_roles_uc import GetDataRolesUC
 from file_management.use_cases.get_or_create_column_configurations_uc import (
     GetOrCreateColumnConfigurationsTO,
 )
+from file_management.use_cases.store_dataset_uc import StoreDatasetUC
 from file_management.use_cases.update_columns_uc import UpdateColumnsUC
 from user_management.repository.impl.role_repository_impl import RoleRepositoryImpl
 from user_management.service.impl.users_service_impl import UsersServiceImpl
@@ -83,6 +84,7 @@ class FileManagementServiceImpl(FileManagementService):
         self.get_or_create_column_configurations = (
             GetOrCreateColumnConfigurationsTO.get_instance()
         )
+        self.store_dataset = StoreDatasetUC.get_instance()
         self.repository = FileManagementRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.analysis_service = AnalysisServiceImpl()
@@ -269,9 +271,8 @@ class FileManagementServiceImpl(FileManagementService):
         data_roles = self.get_data_roles_uc.exec(self.repository)
         return [data_role.to_dict() for data_role in data_roles]
 
-    @validate_analysis_exist
-    def get_merge_preview(self, user, merge_config):
-        # TODO: validate that the user can see the datasets and the analysis
+    def __create_merged_dataset(self, merge_config) -> pd.DataFrame:
+        """Create the merge dataset and return it"""
         data_frames = []
         merged_df = None
         join_column = merge_config["datasets"][0]["join_column"]
@@ -314,9 +315,55 @@ class FileManagementServiceImpl(FileManagementService):
         )
 
         merged_df.fillna("", inplace=True)
+        return merged_df
+
+    @validate_analysis_exist
+    def get_merge_preview(self, user, merge_config):
+        # TODO: validate that the user can see the datasets and the analysis
+        merged_df = self.__create_merged_dataset(merge_config)
 
         query_options = QueryOptions(
             page_number=1,
             page_size=10,
         )
         return query_options.paginate_and_filter_dataframe(merged_df)
+
+    @validate_analysis_exist
+    def merge_datasets(self, user, merge_config):
+        analysis_id = merge_config["analysis_id"]
+        merged_df = self.__create_merged_dataset(merge_config)
+        existing_datasets = self.get_dataset_by_filename_uc.exec(
+            self.repository, merge_config["output_name"]
+        )
+        if existing_datasets:
+            raise BadRequestException(
+                "A dataset with that name already exist, please choose other name and try again.")
+        size = merged_df.memory_usage(deep=True).sum()
+        if size > DATASET_MAX_SIZE:
+            raise BadRequestException(
+                f"The resulting dataset should be smaller than {DATASET_MAX_SIZE / MB}MB")
+
+        external_identifier = urllib.parse.quote(
+            f"datasets/{analysis_id}/{merge_config["output_name"]}"
+        )
+        self.store_dataset.exec(
+            self.repository, merged_df, external_identifier
+        )
+        dataset = self.create_dataset_uc.exec(
+            self.repository,
+            merge_config["output_name"],
+            size,
+            user.id,
+            len(merged_df),
+            len(merged_df.columns),
+            external_identifier
+        )
+
+        self.create_dataset_columns.exec(
+            self.repository, dataset.id, merged_df
+        )
+
+        self.attach_file_to_analysis_uc.exec(
+            self.repository, dataset.id, analysis_id
+        )
+        return dataset.to_dict()

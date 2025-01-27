@@ -3,6 +3,8 @@
 from abc import abstractmethod
 from typing import List
 
+import pandas as pd
+
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.contract.dto.data_role_to import DataRoleTO
 from file_management.contract.dto.data_type_to import DataTypeTO
@@ -183,4 +185,14 @@ class FileManagementRepository:
         
         Keyword arguments:
         Return: A list with data roles to 
+        """
+
+    @abstractmethod
+    def store_dataset(self, dataset: pd.DataFrame, external_identifier: str):
+        """Store a dataset in a file server
+        
+        Keyword arguments:
+        dataset -- the dataframe of the dataset
+        external_identifier -- the id to use to save the dataset in the provider (i.e. key in s3)
+        Return: None
         """

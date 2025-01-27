@@ -107,5 +107,16 @@ class FileManagementService(BaseService):
         * user -- The user who is trying to merge datasets
         * merge_config -- the merge configuration containing the join columns and datasets, 
                         the method and the output name
-        * Return: return_description
+        * Return: a preview of the merge
+        """
+
+    @abstractmethod
+    def merge_datasets(self, user, merge_config: dict) -> dict:
+        """Merge datasets and retrieve the preview
+        
+        Keyword arguments:
+        * user -- the user who is making the merge
+        * merge_config -- the merge configuration containing the join columns and datasets, 
+                        the method and the output name
+        * Return: Metadata of the new dataset
         """

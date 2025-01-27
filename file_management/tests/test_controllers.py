@@ -614,7 +614,7 @@ class TestGetMergePreview(TestCase):
             dict_data["city"],
             {0: "Boston", 1: "New York", 2: "Colorado"},
         )
-    
+
     def test_right_join(self):
         """Test that using the 'inner' method works"""
         right_join_body = self.valid_body
