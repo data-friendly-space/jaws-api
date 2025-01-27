@@ -3,12 +3,12 @@ from django.db import models, transaction
 
 
 class Analysis(models.Model):
+    """Analysis model"""
 
     class Meta:
         """Table metadata"""
         db_table = 'analysis'
 
-    """Analysis model"""
     workspace = models.ForeignKey(
         "user_management.Workspace",
         on_delete=models.CASCADE,

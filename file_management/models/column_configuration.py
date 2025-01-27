@@ -1,8 +1,6 @@
 """Contains the column configuration model"""
 from django.db import models
 
-from analysis.models.analysis import Analysis
-
 
 class ColumnConfiguration(models.Model):
     """Dataset Column configuration model"""
@@ -13,7 +11,7 @@ class ColumnConfiguration(models.Model):
     data_role = models.ForeignKey('file_management.DataRole', null=True, on_delete=models.SET_NULL)
     last_change = models.DateTimeField(auto_now=True)
     subpillar = models.ForeignKey('analysis.SubPillar', null=True, on_delete=models.SET_NULL)
-    analysis = models.ForeignKey(Analysis, on_delete=models.CASCADE)
+    analysis = models.ForeignKey('analysis.Analysis', on_delete=models.CASCADE)
 
     class Meta:
         """Table's metadata"""
