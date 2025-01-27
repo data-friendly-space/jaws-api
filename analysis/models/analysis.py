@@ -1,10 +1,13 @@
 """This module contains the analysis model"""
 from django.db import models, transaction
 
-from common.models.base_model import BaseModel
 
+class Analysis(models.Model):
 
-class Analysis(BaseModel):
+    class Meta:
+        """Table metadata"""
+        db_table = 'analysis'
+
     """Analysis model"""
     workspace = models.ForeignKey(
         "user_management.Workspace",
@@ -41,9 +44,6 @@ class Analysis(BaseModel):
                     models.Q(step_parent__mandatory=True, mandatory=True))
                 self.analysis_steps.set(mandatory_steps)
 
-    class Meta:
-        """Table metadata"""
-        db_table = 'analysis'
 
     def get_all_locations_with_hierarchy(self):
         """Get all related locations with their hierarchies"""
@@ -89,6 +89,15 @@ class Analysis(BaseModel):
         )
 
         return analysis_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]
 
     def set_many_to_many_relations(self, analysis_to):
         """

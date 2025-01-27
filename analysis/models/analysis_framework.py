@@ -3,10 +3,9 @@ from django.db import models
 
 
 from analysis.models.pillar import Pillar
-from common.models.base_model import BaseModel
 
 
-class AnalysisFramework(BaseModel):
+class AnalysisFramework(models.Model):
     """Analysis Framework"""
 
     name = models.CharField(max_length=100)
@@ -39,3 +38,12 @@ class AnalysisFramework(BaseModel):
         )
 
         return analysis_framework_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

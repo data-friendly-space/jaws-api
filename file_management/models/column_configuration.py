@@ -1,10 +1,10 @@
 """Contains the column configuration model"""
 from django.db import models
 
-from common.models.base_model import BaseModel
+from analysis.models.analysis import Analysis
 
 
-class ColumnConfiguration(BaseModel, models.Model):
+class ColumnConfiguration(models.Model):
     """Dataset Column configuration model"""
     column = models.ForeignKey('file_management.DatasetColumn', on_delete=models.CASCADE)
     include = models.BooleanField(default=True)
@@ -13,7 +13,7 @@ class ColumnConfiguration(BaseModel, models.Model):
     data_role = models.ForeignKey('file_management.DataRole', null=True, on_delete=models.SET_NULL)
     last_change = models.DateTimeField(auto_now=True)
     subpillar = models.ForeignKey('analysis.SubPillar', null=True, on_delete=models.SET_NULL)
-    analysis = models.ForeignKey('analysis.Analysis', on_delete=models.CASCADE)
+    analysis = models.ForeignKey(Analysis, on_delete=models.CASCADE)
 
     class Meta:
         """Table's metadata"""
@@ -57,3 +57,12 @@ class ColumnConfiguration(BaseModel, models.Model):
         )
         column_config_instance.save()
         return column_config_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

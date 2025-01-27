@@ -4,8 +4,6 @@ import uuid
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
-from common.models.base_model import BaseModel
-
 
 class CustomUserManager(BaseUserManager):
     """Handles the user management"""
@@ -21,7 +19,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-class User(BaseModel, AbstractBaseUser):
+class User(AbstractBaseUser):
     """User model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -56,6 +54,9 @@ class User(BaseModel, AbstractBaseUser):
             User: An instance of the User model.
         """
         from user_management.contract.to.user_to import UserTO
+        from user_management.models.position import Position
+        from user_management.models.affiliation import Affiliation
+        from user_management.models.ui_configuration import UiConfiguration
         if user_to is None:
             return None
 
@@ -84,3 +85,12 @@ class User(BaseModel, AbstractBaseUser):
         )
 
         return user_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

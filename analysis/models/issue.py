@@ -2,10 +2,8 @@
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField
 
-from common.models.base_model import BaseModel
 
-
-class Issue(BaseModel):
+class Issue(models.Model):
     """Issue model"""
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=600)
@@ -64,3 +62,12 @@ class Issue(BaseModel):
             issue_instance.charts.set(Chart.from_tos(issue_to.charts))
 
         return issue_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

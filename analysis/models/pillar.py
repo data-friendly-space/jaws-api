@@ -2,10 +2,9 @@
 from django.db import models
 
 from analysis.models.sub_pillar import SubPillar
-from common.models.base_model import BaseModel
 
 
-class Pillar(BaseModel):
+class Pillar(models.Model):
     """Sector model"""
     name = models.CharField(max_length=100)
     alias = models.CharField(max_length=200, null=True)
@@ -38,3 +37,12 @@ class Pillar(BaseModel):
         )
 
         return pillar_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

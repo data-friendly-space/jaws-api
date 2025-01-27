@@ -3,10 +3,8 @@ import uuid
 
 from django.db import models
 
-from common.models.base_model import BaseModel
 
-
-class Workspace(BaseModel):
+class Workspace(models.Model):
     """Model for the workspace"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200, unique=True)
@@ -62,6 +60,15 @@ class Workspace(BaseModel):
         )
 
         return workspace_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]
 
     def set_analyses(self, workspace_to):
         """

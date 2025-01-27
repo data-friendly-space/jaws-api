@@ -1,10 +1,9 @@
 """Contains the data role model"""
 from django.db import models
 
-from common.models.base_model import BaseModel
 
 
-class DataRole(BaseModel,models.Model):
+class DataRole(models.Model):
     """Dataset Data Role model"""
     name = models.CharField(max_length=255)
 
@@ -38,3 +37,12 @@ class DataRole(BaseModel,models.Model):
         )
         data_role_instance.save()
         return data_role_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

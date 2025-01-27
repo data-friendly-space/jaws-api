@@ -1,14 +1,13 @@
+from dataclasses import dataclass
+
+from common.contract.to.base_to import BaseTO
 from user_management.models import Affiliation
 
 
-class AffiliationTO:
-    def __init__(
-            self,
-            id: int,
-            name: str
-    ):
-        self.id = id
-        self.name = name
+@dataclass
+class AffiliationTO(BaseTO):
+    id: int
+    name: str
 
     @classmethod
     def from_model(cls, instance: Affiliation):

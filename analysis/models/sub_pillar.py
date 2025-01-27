@@ -1,10 +1,9 @@
 """This module contains the sub_pillar model"""
 
 from django.db import models
-from common.models.base_model import BaseModel
 
 
-class SubPillar(BaseModel):
+class SubPillar(models.Model):
     """Sector model"""
     name = models.CharField(max_length=100)
     alias = models.CharField(max_length=200, null=True)
@@ -39,3 +38,12 @@ class SubPillar(BaseModel):
         )
         sub_pillar_instance.save()
         return sub_pillar_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

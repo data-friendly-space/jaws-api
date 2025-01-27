@@ -1,10 +1,9 @@
 """Contains the data type model"""
 from django.db import models
 
-from common.models.base_model import BaseModel
 
 
-class DataType(BaseModel, models.Model):
+class DataType(models.Model):
     """Dataset Data Type model"""
     name = models.CharField(max_length=255)
 
@@ -38,3 +37,12 @@ class DataType(BaseModel, models.Model):
         )
         data_type_instance.save()
         return data_type_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

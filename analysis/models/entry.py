@@ -1,11 +1,16 @@
 """This module contains the entry model"""
+from django.db import models
+from django.utils import timezone
 
 
-from common.models.base_model import BaseModel
-
-
-class Entry(BaseModel):
+class Entry(models.Model):
     """Entry model"""
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.CharField(max_length=255)
+    fragment = models.CharField(max_length=600)
+    source = models.CharField(max_length=255)
+    tag = models.ForeignKey('analysis.SubPillar', related_name='entries', on_delete=models.CASCADE)
 
     class Meta:
         """Table's metadata"""
@@ -34,3 +39,12 @@ class Entry(BaseModel):
         entry_instance.save()
 
         return entry_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

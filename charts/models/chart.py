@@ -2,11 +2,8 @@
 
 from django.db import models
 
-from analysis.models.sub_pillar import SubPillar
-from common.models.base_model import BaseModel
 
-
-class Chart(BaseModel, models.Model):
+class Chart(models.Model):
     """Model for charts"""
     dataset = models.ForeignKey('file_management.Dataset', on_delete=models.CASCADE)
     created_by = models.ForeignKey('user_management.User', null=True, on_delete=models.SET_NULL)
@@ -65,3 +62,21 @@ class Chart(BaseModel, models.Model):
         chart_instance.save()
 
         return chart_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

@@ -1,10 +1,8 @@
 """Contains the disaggregation model"""
 from django.db import models
 
-from common.models.base_model import BaseModel
 
-
-class Disaggregation(BaseModel):
+class Disaggregation(models.Model):
     """Disaggregation model"""
     name = models.CharField(max_length=100)
 
@@ -38,3 +36,12 @@ class Disaggregation(BaseModel):
         )
 
         return disaggregation_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]

@@ -3,10 +3,8 @@ import uuid
 
 from django.db import models
 
-from common.models.base_model import BaseModel
 
-
-class Dataset(BaseModel):
+class Dataset(models.Model):
     """Dataset model"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -57,8 +55,7 @@ class Dataset(BaseModel):
             Dataset: An instance of the Dataset model.
         """
         from file_management.contract.dto.dataset_to import DatasetTO
-        from common.test_utils import User
-
+        from user_management.models import User
         if dataset_to is None:
             return None
 
@@ -87,3 +84,12 @@ class Dataset(BaseModel):
         dataset_instance.save()
 
         return dataset_instance
+
+    @classmethod
+    def from_tos(cls, TOs):
+        """
+        Transform a list of TOs into a list of model instances.
+        """
+        if not TOs:
+            return None
+        return [cls.from_to(TO) for TO in TOs]
