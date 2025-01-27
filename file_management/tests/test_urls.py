@@ -28,6 +28,7 @@ from file_management.interfaces.controllers.get_dataset_rows_controller import (
     get_dataset_rows_controller,
 )
 from file_management.interfaces.controllers.get_merge_preview_controller import get_merge_preview_controller
+from file_management.interfaces.controllers.merge_datasets_controller import merge_datasets_controller
 from file_management.interfaces.controllers.update_columns_controller import (
     update_columns_controller,
 )
@@ -96,3 +97,8 @@ class TestUrls(SimpleTestCase):
         """Test that the url for getting a merge preview works"""
         url = reverse("get_merge_preview")
         self.assertEqual(resolve(url).func, get_merge_preview_controller)
+
+    def test_merge_datasets(self):
+        """Test that the url for merging datasets"""
+        url = reverse("merge_datasets")
+        self.assertEqual(resolve(url).func, merge_datasets_controller)

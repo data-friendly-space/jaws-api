@@ -635,3 +635,84 @@ class TestGetMergePreview(TestCase):
             dict_data["city"],
             {0: "Boston", 1: "New York", 2: "Colorado", 3: "Miami"},
         )
+
+@mock_aws
+@patch(
+    REPOSITORY_PATH, TEST_S3_BUCKET_NAME
+)
+class TestMergeDatasets(TestCase):
+    """Tests for the datasets merging endpoint"""
+    def setUp(self):
+        self.client, self.user = create_logged_in_client()
+        self.analysis = create_test_analysis(self.user)
+        self.dataset1, _ = create_test_dataset(
+            self.user,
+            self.analysis,
+            content="id,name\n1,John\n2,Alice\n3,Mathew\n4,Andrew")
+        self.dataset2, _ = create_test_dataset(
+            self.user,
+            self.analysis,
+            content="id,city\n1,Boston\n2,New York\n3,Colorado\n5,Miami",
+            filename="test2.csv",
+        )
+        self.url = reverse("merge_datasets")
+
+        self.valid_body = {
+            "analysis_id": self.analysis.id,
+            "datasets": [
+                {
+                    "id": self.dataset1.id,
+                    "join_column": "id"
+                },
+                {
+                    "id": self.dataset2.id,
+                    "join_column": "id"
+                }
+            ],
+            "method": "left",
+            "output_name": "merged.csv"
+        }
+
+    def test_invalid_body(self):
+        """Test that if the request body is invalid the endpoint returns a BadRequest"""
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_analysis_id_fails(self):
+        """Test that if the analysis id doesn't exist it raises a NotFound"""
+        invalid_analysis_id_body = self.valid_body
+        invalid_analysis_id_body["analysis_id"] = 1234
+        response = self.client.post(
+            self.url,
+            invalid_analysis_id_body,
+            content_type="application/json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_valid_data_success(self):
+        """
+        Test that if the analysis id exist and the datasets can be merged
+        the new dataset is stored, attached to the analysis and 
+        the columns and column configurations are created as well
+        """
+        response = self.client.post(self.url, self.valid_body, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("payload", response.data)
+        payload = response.data["payload"]
+        self.assertEqual(payload["filename"], self.valid_body["output_name"])
+        self.assertEqual(
+            payload["externalIdentifier"],
+            f"datasets/{self.analysis.id}/{self.valid_body["output_name"]}")
+
+        columns_count = DatasetColumn.objects.count()
+        self.assertEqual(columns_count, 7)
+        self.assertEqual(self.analysis.datasets.count(), 3)
+
+    def test_existing_dataset_filename_fails(self):
+        """Test that if the filename already exists it raises a Bad Request"""
+        existing_filename_body = self.valid_body
+        existing_filename_body["output_name"] = "test.csv"
+        response = self.client.post(
+            self.url,
+            existing_filename_body,
+            content_type="application/json")
+        self.assertEqual(response.status_code, 400)
