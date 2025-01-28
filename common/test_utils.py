@@ -32,10 +32,12 @@ def create_logged_in_client():
     client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {str(refresh.access_token)}"
     return client, user
 
+
 def create_test_organization():
     """Create a test organization"""
     organization = Organization.objects.create(name="TestOrganization2")
     return organization
+
 
 def create_test_workspace(facilitator: User, organization: Organization = None):
     """Create a test workspace with the required organization"""
@@ -48,7 +50,6 @@ def create_test_workspace(facilitator: User, organization: Organization = None):
         creator_id=facilitator.id,
     )
     return workspace
-
 
 
 def create_test_analysis(
@@ -67,15 +68,16 @@ def create_test_analysis(
     )
     return test_analysis
 
+
 @mock_aws
 def create_test_dataset(
-    user: User,
-    analysis: Analysis,
-    bucket_name = "testbucket",
-    filename = "test.csv",
-    content = "column1,column2\nvalue1,value2\nvalue3,value4",
-    total_rows = 2,
-    total_cols = 2) -> tuple[Dataset, str]:
+        user: User,
+        analysis: Analysis,
+        bucket_name="testbucket",
+        filename="test.csv",
+        content="column1,column2\nvalue1,value2\nvalue3,value4",
+        total_rows=2,
+        total_cols=2) -> tuple[Dataset, str]:
     """Create a test dataset with columns. 
     Attach it to an analysis and create the column configurations
     Assign the given user as the owner"""

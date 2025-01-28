@@ -1,8 +1,10 @@
 """Contains the column configuration model"""
-from django.db import models
+from django.db import models, transaction
+
+from common.models import BaseModel
 
 
-class ColumnConfiguration(models.Model):
+class ColumnConfiguration(models.Model, BaseModel):
     """Dataset Column configuration model"""
     column = models.ForeignKey('file_management.DatasetColumn', on_delete=models.CASCADE)
     include = models.BooleanField(default=True)
@@ -20,7 +22,7 @@ class ColumnConfiguration(models.Model):
     @classmethod
     def from_to(cls, column_config_to):
         """
-        Creates a ColumnConfiguration instance from a ColumnConfigurationTO instance without saving it.
+        Creates or updates a ColumnConfiguration instance from a ColumnConfigurationTO instance.
 
         Args:
             column_config_to (ColumnConfigurationTO): Transfer Object containing the ColumnConfiguration data.
@@ -41,26 +43,31 @@ class ColumnConfiguration(models.Model):
             raise ValueError("The argument must be an instance of ColumnConfigurationTO")
 
         # Resolve ForeignKey relationships
-        column_instance = DatasetColumn.objects.get(
-            original_name=column_config_to.originalName) if column_config_to.originalName else None
-
-        # Create the ColumnConfiguration instance without saving
-        column_config_instance = cls(
-            alias=column_config_to.alias,
-            include=column_config_to.include,
-            data_type=DataType.from_to(column_config_to.dataType),
-            data_role=DataRole.from_to(column_config_to.dataRole),
-            subpillar=SubPillar.from_to(column_config_to.subpillar),
-            column=column_instance,
+        column_instance = (
+            DatasetColumn.objects.get(original_name=column_config_to.originalName)
+            if column_config_to.originalName else None
         )
-        column_config_instance.save()
+
+        # Build the defaults dictionary
+        defaults = {
+            "alias": column_config_to.alias,
+            "include": column_config_to.include,
+            "data_type": DataType.from_to(column_config_to.dataType) if column_config_to.dataType else None,
+            "data_role": DataRole.from_to(column_config_to.dataRole) if column_config_to.dataRole else None,
+            "subpillar": SubPillar.from_to(column_config_to.subpillar) if column_config_to.subpillar else None,
+            "column": column_instance,
+        }
+
+        # Filter out None values to avoid overwriting existing data
+        defaults = {key: value for key, value in defaults.items() if value is not None}
+
+        with transaction.atomic():
+            # Update or create the ColumnConfiguration instance
+            column_config_instance, created = cls.objects.update_or_create(
+                id=column_config_to.id if column_config_to.id else None,  # Match by ID if provided
+                defaults=defaults,
+            )
+
         return column_config_instance
 
-    @classmethod
-    def from_tos(cls, TOs):
-        """
-        Transform a list of TOs into a list of model instances.
-        """
-        if not TOs:
-            return None
-        return [cls.from_to(TO) for TO in TOs]
+

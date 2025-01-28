@@ -1,10 +1,12 @@
 """Contains the dataset model"""
 import uuid
 
-from django.db import models
+from django.db import models, transaction
+
+from common.models import BaseModel
 
 
-class Dataset(models.Model):
+class Dataset(models.Model, BaseModel):
     """Dataset model"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -46,7 +48,7 @@ class Dataset(models.Model):
     @classmethod
     def from_to(cls, dataset_to):
         """
-        Creates a Dataset instance from a DatasetTO instance without saving it.
+        Creates or updates a Dataset instance from a DatasetTO instance.
 
         Args:
             dataset_to (DatasetTO): Transfer Object containing the Dataset data.
@@ -56,6 +58,7 @@ class Dataset(models.Model):
         """
         from file_management.contract.dto.dataset_to import DatasetTO
         from user_management.models import User
+
         if dataset_to is None:
             return None
 
@@ -69,27 +72,27 @@ class Dataset(models.Model):
             else None
         )
 
-        # Create the Dataset instance without saving
-        dataset_instance = cls(
-            id=uuid.UUID(dataset_to.id) if dataset_to.id else None,
-            filename=dataset_to.filename,
-            url=dataset_to.url,
-            mime_type=dataset_to.mimeType,
-            size_bytes=dataset_to.sizeBytes,
-            total_rows=dataset_to.totalRows,
-            total_columns=dataset_to.totalColumns,
-            external_identifier=dataset_to.externalIdentifier,
-            uploaded_by=uploaded_by_instance,
-        )
-        dataset_instance.save()
+        # Build the defaults dictionary
+        defaults = {
+            "filename": dataset_to.filename,
+            "url": dataset_to.url,
+            "mime_type": dataset_to.mimeType,
+            "size_bytes": dataset_to.sizeBytes,
+            "total_rows": dataset_to.totalRows,
+            "total_columns": dataset_to.totalColumns,
+            "external_identifier": dataset_to.externalIdentifier,
+            "uploaded_by": uploaded_by_instance,
+        }
+
+        # Filter out None values to avoid overwriting
+        defaults = {key: value for key, value in defaults.items() if value is not None}
+
+        with transaction.atomic():
+            # Update or create the Dataset instance
+            dataset_instance, created = cls.objects.update_or_create(
+                id=dataset_to.id,  # Match by ID if provided
+                defaults=defaults,
+            )
 
         return dataset_instance
 
-    @classmethod
-    def from_tos(cls, TOs):
-        """
-        Transform a list of TOs into a list of model instances.
-        """
-        if not TOs:
-            return None
-        return [cls.from_to(TO) for TO in TOs]

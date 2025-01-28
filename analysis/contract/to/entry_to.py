@@ -1,6 +1,6 @@
 """This module contains the disaggregation Transfer Object"""
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 from typing import Optional
 
 from analysis.contract.to.sub_pillar_to import SubPillarTO

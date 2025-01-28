@@ -11,6 +11,7 @@ from analysis.interfaces.controllers.assign_or_update_analysis_framework_control
 from analysis.interfaces.controllers.create_analysis_controller import (
     create_analysis_controller,
 )
+from analysis.interfaces.controllers.create_issue_controller import create_issue_controller
 from analysis.interfaces.controllers.create_or_update_analysis_question_controller import \
     create_or_update_analysis_question_controller
 from analysis.interfaces.controllers.get_administrative_division_controller import (
@@ -19,18 +20,37 @@ from analysis.interfaces.controllers.get_administrative_division_controller impo
 from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
+from analysis.interfaces.controllers.get_issues_controller import get_issues_controller
 from analysis.interfaces.controllers.get_sectors_controller import get_all_sectors_controller
 from analysis.interfaces.controllers.get_steps_controller import get_steps_controller
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
     put_analysis_scope_controller,
 )
 from analysis.interfaces.controllers.remove_location_controller import remove_location_controller
+from analysis.interfaces.controllers.update_issue_controller import update_issue_controller
 from analysis.interfaces.controllers.update_steps_controller import update_steps_controller
 from analysis.interfaces.controllers.upload_analysis_framework_controller import upload_analysis_framework_controller
 
 
 class TestUrls(SimpleTestCase):
     """Contains the tests of each url's controller"""
+
+    def test_create_issue_controller_resolves(self):
+        """Test that create analysis url works"""
+        url = reverse("create_issue_controller")
+        self.assertEqual(resolve(url).func, create_issue_controller)
+
+    def test_update_issue_controller_resolves(self):
+        """Test that update issue url works"""
+        url = reverse("update_issue_controller", args=[1])
+        self.assertEqual(resolve(url).func, update_issue_controller)
+
+    def test_get_issues_by_analysis_id_controller_resolves(self):
+        """Test that get issues url works"""
+        url = reverse("get_issues_controller", args=["any-id"])
+        self.assertEqual(resolve(url).func, get_issues_controller)
+
+
 
     def test_upload_analysis_framework_controller_resolves(self):
         """Test that create analysis url works"""

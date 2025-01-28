@@ -1,9 +1,10 @@
 """Contains the data role model"""
-from django.db import models
+from django.db import models, transaction
+
+from common.models import BaseModel
 
 
-
-class DataRole(models.Model):
+class DataRole(models.Model, BaseModel):
     """Dataset Data Role model"""
     name = models.CharField(max_length=255)
 
@@ -29,20 +30,11 @@ class DataRole(models.Model):
 
         if not isinstance(data_role_to, DataRoleTO):
             raise ValueError("The argument must be an instance of DataRoleTO")
-
-        # Create the DataRole instance without saving
-        data_role_instance = cls(
-            id=data_role_to.id,  # Include only if IDs are passed in the TO
-            name=data_role_to.name,
-        )
-        data_role_instance.save()
+        with transaction.atomic():
+            # Create the DataRole instance without saving
+            data_role_instance = cls(
+                id=data_role_to.id,  # Include only if IDs are passed in the TO
+                name=data_role_to.name,
+            )
+            data_role_instance.save()
         return data_role_instance
-
-    @classmethod
-    def from_tos(cls, TOs):
-        """
-        Transform a list of TOs into a list of model instances.
-        """
-        if not TOs:
-            return None
-        return [cls.from_to(TO) for TO in TOs]

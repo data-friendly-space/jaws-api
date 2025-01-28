@@ -1,5 +1,5 @@
 """Contains the data type model"""
-from django.db import models
+from django.db import models, transaction
 
 
 class DataType(models.Model):
@@ -28,20 +28,11 @@ class DataType(models.Model):
 
         if not isinstance(data_type_to, DataTypeTO):
             raise ValueError("The argument must be an instance of DataTypeTO")
-
-        # Create the DataType instance without saving
-        data_type_instance = cls(
-            id=data_type_to.id,  # Include only if IDs are passed in the TO
-            name=data_type_to.name,
-        )
-        data_type_instance.save()
+        with transaction.atomic():
+            # Create the DataType instance without saving
+            data_type_instance = cls(
+                id=data_type_to.id,  # Include only if IDs are passed in the TO
+                name=data_type_to.name,
+            )
+            data_type_instance.save()
         return data_type_instance
-
-    @classmethod
-    def from_tos(cls, TOs):
-        """
-        Transform a list of TOs into a list of model instances.
-        """
-        if not TOs:
-            return None
-        return [cls.from_to(TO) for TO in TOs]

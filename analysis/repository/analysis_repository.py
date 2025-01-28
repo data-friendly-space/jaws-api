@@ -24,12 +24,16 @@ class AnalysisRepository(BaseRepository):
         """Get or create entry"""
 
     @abstractmethod
-    def create_issue(self, issue_to: IssueTO) -> IssueTO:
+    def create_or_update_issue(self, issue_to: IssueTO) -> IssueTO:
         """Create Issue"""
 
     @abstractmethod
     def get_issues(self, analysis_id: int) -> list[IssueTO]:
         """Get Issues"""
+
+    @abstractmethod
+    def get_issue_by_id(self, issue_id: int) -> IssueTO:
+        """Get Issue Id"""
 
     @abstractmethod
     def create(self, data, disaggregations, sectors):

@@ -19,7 +19,7 @@ from analysis.use_cases.add_pillar_analysis_framework_uc import AddPillarToAnaly
 from analysis.use_cases.add_sub_pillar_to_pillar_uc import AddSubPillarToPillarUC
 from analysis.use_cases.assign_or_update_analysis_framework_uc import AssignOrUpdateAnalysisFrameworkUC
 from analysis.use_cases.create_analysis_uc import CreateAnalysisUC
-from analysis.use_cases.create_issue_uc import CreateIssueUC
+from analysis.use_cases.create_or_update_issue_uc import CreateOrUpdateIssueUC
 from analysis.use_cases.create_or_update_analysis_question_uc import CreateOrUpdateAnalysisQuestionUC
 from analysis.use_cases.get_administrative_division_by_pcode_uc import GetAdministrativeDivisionByPCodeUC
 from analysis.use_cases.get_administrative_divisions_uc import GetAdministrativeDivisionsUC, \
@@ -29,6 +29,7 @@ from analysis.use_cases.get_all_sectors_uc import GetAllSectorsUC
 from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from analysis.use_cases.get_analysis_by_id_uc import GetAnalysisByIdUC
 from analysis.use_cases.get_analysis_frameworks_uc import GetAnalysisFrameworkUC
+from analysis.use_cases.get_issue_by_id_uc import GetIssueByIdUC
 from analysis.use_cases.get_issues_by_analysis_id_uc import GetIssuesByAnalysisIdUC
 from analysis.use_cases.get_or_create_analysis_uc import GetOrCreateAnalysisFrameworkUC
 from analysis.use_cases.get_or_create_entry_uc import GetOrCreateEntryUC
@@ -80,7 +81,43 @@ class AnalysisServiceImpl(AnalysisService):
         self.get_issues_by_analysis_id_uc = GetIssuesByAnalysisIdUC.get_instance()
         self.get_or_create_entry_uc = GetOrCreateEntryUC.get_instance()
         self.get_chart_id_uc = GetChartByIdUC.get_instance()
-        self.create_issue_uc = CreateIssueUC.get_instance()
+        self.create_or_update_issue_uc = CreateOrUpdateIssueUC.get_instance()
+        self.get_issue_by_id_uc = GetIssueByIdUC.get_instance()
+
+    def update_issue(self, issue_id: int, issue_data):
+
+        if not issue_data.is_valid():
+            raise BadRequestException(
+                "Update issue request is not valid: ",
+                issue_data.errors)
+
+        issue_to = self.get_issue_by_id_uc.exec(self.repository, issue_id)
+        if issue_to is None:
+            raise NotFoundException("Issue not found")
+
+        issue_validated_data = issue_data.validated_data
+        entry_tos = []
+        chart_tos = []
+        for entry_to in issue_validated_data['entries']:
+            entry_tos.append(self.get_or_create_entry_uc.exec(self.repository, EntryTO.from_dict(entry_to)))
+
+        for chart_id in issue_validated_data['charts']:
+            chart_tos.append(self.get_chart_id_uc.exec(ChartRepositoryImpl(), chart_id))
+        disaggregation = None
+        if issue_validated_data['disaggregation']:
+            disaggregation = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None,
+                                                                  pk=issue_validated_data['disaggregation'])
+
+        issue_to.name = issue_validated_data['name']
+        issue_to.description = issue_validated_data['description']
+        issue_to.informationGaps = issue_validated_data['informationGaps']
+        issue_to.assumptions = issue_validated_data['assumptions']
+        issue_to.analysisId = issue_validated_data['analysisId']
+        issue_to.disaggregation = disaggregation[0] if disaggregation and disaggregation else None
+        issue_to.entries = entry_tos
+        issue_to.charts = chart_tos
+        issue_to = self.create_or_update_issue_uc.exec(self.repository, issue_to)
+        return issue_to.to_dict()
 
     def create_issue(self, issue_data):
         if not issue_data.is_valid():
@@ -98,7 +135,8 @@ class AnalysisServiceImpl(AnalysisService):
             chart_tos.append(self.get_chart_id_uc.exec(ChartRepositoryImpl(), chart_id))
         disaggregation = None
         if issue_validated_data['disaggregation']:
-            disaggregation = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None, pk=issue_validated_data['disaggregation'])
+            disaggregation = self.get_all_disaggregations_uc.exec(AnalysisRepositoryImpl(), None,
+                                                                  pk=issue_validated_data['disaggregation'])
         issue_to = IssueTO()
         issue_to.name = issue_validated_data['name']
         issue_to.description = issue_validated_data['description']
@@ -108,7 +146,7 @@ class AnalysisServiceImpl(AnalysisService):
         issue_to.disaggregation = disaggregation[0] if disaggregation and disaggregation else None
         issue_to.entries = entry_tos
         issue_to.charts = chart_tos
-        issue_to = self.create_issue_uc.exec(self.repository, issue_to)
+        issue_to = self.create_or_update_issue_uc.exec(self.repository, issue_to)
         return issue_to.to_dict()
 
     def get_issues_by_analysis_id(self, analysis_id: int):

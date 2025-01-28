@@ -2,7 +2,9 @@
 import uuid
 
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-from django.db import models
+from django.db import models, transaction
+
+from common.models import BaseModel
 
 
 class CustomUserManager(BaseUserManager):
@@ -19,7 +21,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, BaseModel):
     """User model"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -45,7 +47,7 @@ class User(AbstractBaseUser):
     @classmethod
     def from_to(cls, user_to):
         """
-        Creates a User instance from a UserTO instance without saving it.
+        Creates or updates a User instance from a UserTO instance.
 
         Args:
             user_to (UserTO): Transfer Object containing the User data.
@@ -57,6 +59,7 @@ class User(AbstractBaseUser):
         from user_management.models.position import Position
         from user_management.models.affiliation import Affiliation
         from user_management.models.ui_configuration import UiConfiguration
+
         if user_to is None:
             return None
 
@@ -70,27 +73,26 @@ class User(AbstractBaseUser):
             UiConfiguration.from_to(user_to.uiConfiguration) if user_to.uiConfiguration else None
         )
 
-        # Create the User instance without saving
-        user_instance = cls(
-            id=uuid.UUID(user_to.id) if user_to.id else None,
-            name=user_to.name,
-            lastname=user_to.lastname,
-            email=user_to.email,
-            country=user_to.country,
-            profile_image=user_to.profileImage,
-            position=position_instance,
-            affiliation=affiliation_instance,
-            ui_configuration=ui_configuration_instance,
-            is_active=True,  # Default value; adjust if provided in UserTO
-        )
+        # Build the defaults dictionary
+        defaults = {
+            "name": user_to.name,
+            "lastname": user_to.lastname,
+            "email": user_to.email,
+            "country": user_to.country,
+            "profile_image": user_to.profileImage,
+            "position": position_instance,
+            "affiliation": affiliation_instance,
+            "ui_configuration": ui_configuration_instance,
+        }
+
+        # Filter out None values to avoid overwriting existing data
+        defaults = {key: value for key, value in defaults.items() if value is not None}
+
+        with transaction.atomic():
+            # Update or create the User instance
+            user_instance, created = cls.objects.update_or_create(
+                id=user_to.id,  # Match by ID if provided
+                defaults=defaults,
+            )
 
         return user_instance
-
-    @classmethod
-    def from_tos(cls, TOs):
-        """
-        Transform a list of TOs into a list of model instances.
-        """
-        if not TOs:
-            return None
-        return [cls.from_to(TO) for TO in TOs]

@@ -1,9 +1,11 @@
 """This module contains the sub_pillar model"""
 
-from django.db import models
+from django.db import models, transaction
+
+from common.models import BaseModel
 
 
-class SubPillar(models.Model):
+class SubPillar(models.Model, BaseModel):
     """Sector model"""
     name = models.CharField(max_length=100)
     alias = models.CharField(max_length=200, null=True)
@@ -15,7 +17,7 @@ class SubPillar(models.Model):
     @classmethod
     def from_to(cls, sub_pillar_to):
         """
-        Creates a SubPillar instance from a SubPillarTO instance without saving it.
+        Creates or updates a SubPillar instance from a SubPillarTO instance.
 
         Args:
             sub_pillar_to (SubPillarTO): Transfer Object containing the SubPillar data.
@@ -31,19 +33,19 @@ class SubPillar(models.Model):
         if not isinstance(sub_pillar_to, SubPillarTO):
             raise ValueError("The argument must be an instance of SubPillarTO")
 
-        # Create the SubPillar instance without saving
-        sub_pillar_instance = cls(
-            id=sub_pillar_to.id,  # Include only if IDs are passed in the TO
-            name=sub_pillar_to.name,
-        )
-        sub_pillar_instance.save()
-        return sub_pillar_instance
+        # Build the defaults dictionary
+        defaults = {
+            "name": sub_pillar_to.name,
+        }
 
-    @classmethod
-    def from_tos(cls, TOs):
-        """
-        Transform a list of TOs into a list of model instances.
-        """
-        if not TOs:
-            return None
-        return [cls.from_to(TO) for TO in TOs]
+        # Filter out None values to avoid overwriting existing data
+        defaults = {key: value for key, value in defaults.items() if value is not None}
+
+        with transaction.atomic():
+            # Update or create the SubPillar instance
+            sub_pillar_instance, created = cls.objects.update_or_create(
+                id=sub_pillar_to.id,  # Match by ID if provided
+                defaults=defaults,
+            )
+
+        return sub_pillar_instance

@@ -33,16 +33,25 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
 
+    def get_issue_by_id(self,issue_id: int) -> IssueTO:
+        try:
+            issue = Issue.objects.get(pk=issue_id)
+            return IssueTO.from_model(issue)
+        except Issue.DoesNotExist:
+            return None
+
     def get_or_create_entry(self, entry_to: EntryTO) -> EntryTO:
         entry = Entry.from_to(entry_to)
         return EntryTO.from_model(entry)
-    def create_issue(self, issue_to: IssueTO) -> IssueTO:
+
+    def create_or_update_issue(self, issue_to: IssueTO) -> IssueTO:
         issue = Issue.from_to(issue_to)
         return IssueTO.from_model(issue)
 
     def get_issues(self, analysis_id: int) -> list[IssueTO]:
 
-        issues = Issue.objects.get(analysis_id=analysis_id)
+        issues = Issue.objects.filter(analysis_id=analysis_id)
+
         return IssueTO.from_models(issues)
 
     def get_or_create_sub_pillar(self, name):

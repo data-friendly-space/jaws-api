@@ -9,7 +9,10 @@ from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
-from common.test_utils import create_logged_in_client, create_test_analysis
+from analysis.models.sub_pillar import SubPillar
+from charts.models import Chart
+from common.test_utils import create_logged_in_client, create_test_analysis, create_test_dataset
+from file_management.models import ColumnConfiguration
 from user_management.models import Organization, Workspace
 
 
@@ -130,6 +133,97 @@ class TestCreateOrUpdateAnalysisQuestions(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data["payload"])
         self.assertEqual(response.data['message'], "Analysis question create or updated successfully.")
+
+
+class TestCreateIssueController(TestCase):
+    """Test controller create issue"""
+
+    def setUp(self):
+        """set up analysis frameworks"""
+        self.client, self.user = create_logged_in_client()
+        self.org = Organization.objects.create(name="TestOrganization1")
+        self.workspace = Workspace.objects.create(
+            title="TestWorkspace1",
+            organization=self.org,
+            facilitator_id=self.user.id,
+            creator_id=self.user.id,
+        )
+        self.defaul_step = AnalysisStep.objects.create(
+            order=1, name="Test step", mandatory=True
+        )
+        self.default_analysis = Analysis.objects.create(
+            title="test analysis",
+            objectives="test",
+            end_date="2024-11-20",
+            creator_id=self.user.id,
+            workspace_id=self.workspace.id,
+        )
+        #self.dataset, _ = create_test_dataset(self.user, self.default_analysis)
+        #column_config = ColumnConfiguration.objects.first()
+        #self.test_subpillar = SubPillar.objects.create(name="test")
+        #self.chart = Chart.objects.create(
+        #    analysis=self.default_analysis,
+        #    name="test",
+        #    x_col=column_config,
+        #    dataset=None,
+        #    subpillar=self.test_subpillar
+        #)
+        self.data = {
+            "name": "testName",
+            "description": "testDescription",
+            "informationGaps": "testInformationGaps",
+            "assumptions": "testAssumptions",
+            "disaggregation": 1,
+            "entries": [{
+                "id": 11,
+                "createdAt": "2025-01-17T20:19:00Z",
+                "updatedAt": "2025-01-28T00:04:31.754626Z",
+                "createdBy": "nayid@dfs.com",
+                "fragment": "This Emergency Appeal was launched on 7 June 2012 for CHF 2,537,138 to assist 142,740 beneficiaries (21,960 households) for 9 months.",
+                "source": "MDRML009f...",
+                "tag": {
+                    "id": 40,
+                    "name": "1.1. Alignment with population Needs",
+                    "alias": None
+                }
+            }],
+            "charts": [],
+            "analysisId": 1
+        }
+
+
+        self.url = reverse("create_issue_controller")
+
+    def test_create_issue_controller(self):
+        """Test endpoint that creates a new issue"""
+        response = self.client.post(self.url, self.data, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_issue_controller_400(self):
+        """Test endpoint that creates a new issue - Bad Request"""
+        self.data["analysisId"] = None
+        response = self.client.post(self.url, self.data, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_issue_controller(self):
+        """Test endpoint that creates a new issue"""
+        response = self.client.post(self.url, self.data, content_type="application/json")
+        self.data['name'] = "testUpdatedName"
+        self.data['entries'] = []
+        response = self.client.put(reverse("update_issue_controller",args=[response.data['payload']['id']]), self.data, content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_issue_controller_404(self):
+        """Test endpoint that update an issue - Not Found"""
+        self.data['entries'] = []
+        response = self.client.put(reverse("update_issue_controller", args=[413]), self.data, content_type="application/json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_issue_controller(self):
+        """Test issue controller retrieves the issues"""
+        response = self.client.post(self.url, self.data, content_type="application/json")
+        response = self.client.get(reverse("get_issues_controller", args=[self.default_analysis.id]))
+        self.assertEqual(response.status_code, 200)
 
 
 class TestUpdateAnalysisSteps(TestCase):
@@ -263,7 +357,8 @@ class TestUploadAnalysisFrameworkCsv(TestCase):
         self.client, self.user = create_logged_in_client()
         self.default_analysis = create_test_analysis(self.user)
         self.csv_filepath = os.path.join(settings.BASE_DIR, 'analysis', 'tests', "ifrc_test.csv")
-        self.wrong_format_csv_filepath = os.path.join(settings.BASE_DIR, 'analysis', 'tests', "ifrc_wrong_format_test.csv")
+        self.wrong_format_csv_filepath = os.path.join(settings.BASE_DIR, 'analysis', 'tests',
+                                                      "ifrc_wrong_format_test.csv")
 
     def test_analysis_framework_csv(self):
         """
@@ -286,4 +381,3 @@ class TestUploadAnalysisFrameworkCsv(TestCase):
 
         self.assertEqual(response.data['status'], 400)
         self.assertIn('Missing required column: Sub pillar', response.data['message'])
-

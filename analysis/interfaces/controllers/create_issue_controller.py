@@ -13,4 +13,4 @@ def create_issue_controller(request):
     """
     issue_data = CreateIssueIn(data=request.data)
     service = AnalysisServiceImpl()
-    return api_response_success("Success", service.create_issue(issue_data), status.HTTP_200_OK)
+    return api_response_success("Issue successfully created", service.create_issue(issue_data), status.HTTP_200_OK)
