@@ -1,7 +1,7 @@
 """Contains the users service"""
+
 from tokenize import TokenError
 
-from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
@@ -10,9 +10,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from analysis.repository.impl.analysis_repository_impl import AnalysisRepositoryImpl
 from analysis.use_cases.get_analyses_uc import GetAnalysesUC
 from common.exceptions.exceptions import (
+    BadRequestException,
     NotFoundException,
     UnauthorizedException,
-    BadRequestException,
 )
 from common.helpers.api_responses import api_response_success
 from common.helpers.query_options import QueryOptions
@@ -21,8 +21,8 @@ from interac_not_manager.repository.notification_repository_impl import (
     NotificationRepositoryImpl,
 )
 from interac_not_manager.service.utils.messages import (
-    ORGANIZATION_INVITE_MESSAGE,
     ANALYSIS_INVITE_MESSAGE,
+    ORGANIZATION_INVITE_MESSAGE,
 )
 from interac_not_manager.usecases.send_notification_to_user_uc import (
     SendNotificationToUserUC,
@@ -32,14 +32,16 @@ from user_management.contract.io.invite_user_in import InviteUserIn
 from user_management.contract.io.sign_in_in import SignInIn
 from user_management.contract.io.sign_up_in import SignUpIn
 from user_management.interfaces.serializers.token_serializer import UserTokenSerializer
-from user_management.interfaces.serializers.user_serializer import UserSerializer
 from user_management.repository.impl.organization_repository_impl import (
     OrganizationRepositoryImpl,
 )
 from user_management.repository.impl.user_repository_impl import UserRepositoryImpl
-from user_management.repository.impl.workspace_repository_impl import WorkspaceRepositoryImpl
+from user_management.repository.impl.workspace_repository_impl import (
+    WorkspaceRepositoryImpl,
+)
 from user_management.service.users_service import UsersService
 from user_management.usecases.add_user_to_workspace_uc import AddUserToWorkspaceUC
+from user_management.usecases.check_password_uc import CheckPasswordUC
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 from user_management.usecases.invite_user_to_analysis_uc import InviteUserToAnalysisUC
 from user_management.usecases.invite_user_to_organization_uc import (
@@ -52,6 +54,7 @@ from user_management.usecases.sign_up_uc import SignUpUC
 
 class UsersServiceImpl(UsersService):
     """Business logic for user management"""
+
     def __init__(self):
         self.get_users_uc = GetUsersUC.get_instance()
         self.sign_in_uc = SignInUC.get_instance()
@@ -64,6 +67,7 @@ class UsersServiceImpl(UsersService):
         self.add_user_to_workspace_uc = AddUserToWorkspaceUC.get_instance()
         self.sign_in_uc = SignInUC.get_instance()
         self.is_user_in_analysis_uc = IsUserInAnalysisUC.get_instance()
+        self.check_password_uc = CheckPasswordUC.get_instance()
         self.repository = UserRepositoryImpl()
 
     def invite_user_to_org(self, invite_user_in: InviteUserIn):
@@ -104,13 +108,16 @@ class UsersServiceImpl(UsersService):
             AnalysisRepositoryImpl(), user.id, data["id"], data["role_id"]
         )
         self.add_user_to_workspace_uc.exec(
-            WorkspaceRepositoryImpl(), user.id, analysis.results[0]['workspaceId'], None
+            WorkspaceRepositoryImpl(),
+            user.id,
+            analysis.results[0]["workspace"]["id"],
+            None,
         )
         self.notify_user_uc.exec(
             NotificationRepositoryImpl(),
             {
                 "user_id": user.id,
-                "message": ANALYSIS_INVITE_MESSAGE + " " + analysis.results[0]['title'],
+                "message": ANALYSIS_INVITE_MESSAGE + " " + analysis.results[0]["title"],
             },
         )
 
@@ -138,10 +145,10 @@ class UsersServiceImpl(UsersService):
         if not sign_in_in.is_valid():
             raise BadRequestException("All fields are mandatory", sign_in_in.errors)
         data = sign_in_in.validated_data
-        user_to = self.get_user_by_filters.exec(
-            self.repository, email=data["email"]
-        )
-        if not user_to or not check_password(data["password"], user_to.password):
+        user_to = self.get_user_by_filters.exec(self.repository, email=data["email"])
+        if not user_to or not self.check_password_uc.exec(
+            self.repository, user_to.id, data["password"]
+        ):
             raise BadRequestException("Incorrect email or password")
         try:
             return UserTokenSerializer(user_to).data
@@ -177,7 +184,9 @@ class UsersServiceImpl(UsersService):
             return str(token.access_token)
         except TokenError as e:
             # Handle cases where the refresh token is invalid or expired
-            raise UnauthorizedException("Invalid or expired refresh token.", None) from e
+            raise UnauthorizedException(
+                "Invalid or expired refresh token.", None
+            ) from e
 
     def verify_token(self, auth_header):
         """Business logic to verify token"""
@@ -197,7 +206,9 @@ class UsersServiceImpl(UsersService):
                 "Is authenticated", {"isAuthenticated": True}, status.HTTP_200_OK
             )
         except (InvalidToken, TokenError) as e:
-            raise UnauthorizedException("Session expired", {"is_authenticated": False}) from e
+            raise UnauthorizedException(
+                "Session expired", {"is_authenticated": False}
+            ) from e
 
     def is_user_in_analysis(self, user_id: str, analysis_id: int) -> bool:
         """Verify if the user is in the analysis"""

@@ -12,6 +12,7 @@ import boto3.s3
 from botocore.exceptions import ClientError
 
 from analysis.models.analysis import Analysis
+from analysis.models.sub_pillar import SubPillar
 from common.helpers.get_mime_type_from_extension import get_mimetype_from_extension
 from file_management.contract.dto.column_configuration_to import ColumnConfigurationTO
 from file_management.contract.dto.data_role_to import DataRoleTO
@@ -161,8 +162,10 @@ class FileManagementRepositoryImpl(FileManagementRepository):
             column_configuration.include = column["include"]
             data_type = DataType.objects.filter(id=column["data_type_id"]).first()
             data_role = DataRole.objects.filter(id=column["data_role_id"]).first()
+            subpillar = SubPillar.objects.filter(id=column["subpillar_id"]).first()
             column_configuration.data_type = data_type
             column_configuration.data_role = data_role
+            column_configuration.subpillar = subpillar
             column_configuration.save()
 
     def create_dataset_file_copy(self, external_identifier, csv) -> S3PutObjectTO:
@@ -184,3 +187,11 @@ class FileManagementRepositoryImpl(FileManagementRepository):
     def get_data_roles(self):
         data_roles = DataRole.objects.all()
         return DataRoleTO.from_models(data_roles)
+
+    def get_data_type(self, data_type_id):
+        data_type = DataType.objects.get(id=data_type_id)
+        return DataTypeTO.from_model(data_type)
+
+    def get_data_role(self, data_role_id):
+        data_role = DataRole.objects.get(id=data_role_id)
+        return DataRoleTO.from_model(data_role)

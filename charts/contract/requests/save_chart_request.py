@@ -7,6 +7,7 @@ class SaveChartRequest(serializers.Serializer):
     """The request structure"""
 
     name = serializers.CharField(max_length=255)
+    subpillar_id = serializers.IntegerField()
     x_col = serializers.CharField()
     type = serializers.ChoiceField(choices=["pie", "bar", "line"])
     y_cols = serializers.ListField(child=serializers.CharField())

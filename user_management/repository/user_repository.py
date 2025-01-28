@@ -35,3 +35,12 @@ class UserRepository(BaseRepository, ABC):
         analysis_id -- the id of the analysis
         Return: True if the user belongs and False if not
         """
+
+    @abstractmethod
+    def check_password(self, user_id: str, password: str) -> bool:
+        """Verify if the password is correct comparing it with the real password
+        
+        Keyword arguments:
+        user_id -- the id of the user
+        password -- the raw password
+        """

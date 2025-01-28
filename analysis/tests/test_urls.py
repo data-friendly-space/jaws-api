@@ -2,23 +2,23 @@
 
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
+
 from analysis.interfaces.controllers.add_location_controller import (
     add_location_controller,
 )
 from analysis.interfaces.controllers.assign_or_update_analysis_framework_controller import \
     assign_or_update_analysis_framework_controller
+from analysis.interfaces.controllers.create_analysis_controller import (
+    create_analysis_controller,
+)
 from analysis.interfaces.controllers.create_or_update_analysis_question_controller import \
     create_or_update_analysis_question_controller
 from analysis.interfaces.controllers.get_administrative_division_controller import (
     get_administrative_division_controller,
 )
-from analysis.interfaces.controllers.create_analysis_controller import (
-    create_analysis_controller,
-)
 from analysis.interfaces.controllers.get_analysis_by_id_controller import (
     get_analysis_by_id_controller,
 )
-from analysis.interfaces.controllers.get_analysis_frameworks_controller import get_analysis_frameworks_controller
 from analysis.interfaces.controllers.get_sectors_controller import get_all_sectors_controller
 from analysis.interfaces.controllers.get_steps_controller import get_steps_controller
 from analysis.interfaces.controllers.put_analysis_scope_controller import (
@@ -26,10 +26,18 @@ from analysis.interfaces.controllers.put_analysis_scope_controller import (
 )
 from analysis.interfaces.controllers.remove_location_controller import remove_location_controller
 from analysis.interfaces.controllers.update_steps_controller import update_steps_controller
+from analysis.interfaces.controllers.upload_analysis_framework_controller import upload_analysis_framework_controller
 
 
 class TestUrls(SimpleTestCase):
     """Contains the tests of each url's controller"""
+
+    def test_upload_analysis_framework_controller_resolves(self):
+        """Test that create analysis url works"""
+        url = reverse("upload_analysis_framework_controller")
+        self.assertEqual(resolve(url).func, upload_analysis_framework_controller)
+
+
 
     def test_create_analyses_url_resolves(self):
         """Test that create analysis url works"""

@@ -2,17 +2,23 @@
 from typing import List
 
 from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from analysis.contract.to.analysis_question_to import AnalysisQuestionTO
 from analysis.contract.to.analysis_step_to import AnalysisStepTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.pillar_to import PillarTO
 from analysis.contract.to.sector_to import SectorTO
+from analysis.contract.to.sub_pillar_to import SubPillarTO
 from analysis.models.administrative_division import AdministrativeDivision
 from analysis.models.analysis import Analysis
+from analysis.models.analysis_framework import AnalysisFramework
 from analysis.models.analysis_question import AnalysisQuestion
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
+from analysis.models.pillar import Pillar
 from analysis.models.sector import Sector
+from analysis.models.sub_pillar import SubPillar
 from analysis.repository.analysis_repository import AnalysisRepository
 from common.contract.to.paginated_to import PaginatedResultTO
 from common.helpers.query_options import QueryOptions
@@ -22,6 +28,38 @@ from user_management.models.user_analysis_role import UserAnalysisRole
 
 class AnalysisRepositoryImpl(AnalysisRepository):
     """Implementation of analysis repository"""
+
+    def get_or_create_sub_pillar(self, name):
+        """Get or Create Sub pillar"""
+        sub_pillar, _ = SubPillar.objects.get_or_create(name=name)
+
+        return SubPillarTO.from_model(sub_pillar)
+
+    def add_sub_pillar_to_pillar(self, pillar_id, sub_pillar_to: SubPillarTO):
+        """add pillar to sub pillar"""
+        pillar = Pillar.objects.get(pk=pillar_id)
+        sub_pillar = SubPillar.objects.get(pk=sub_pillar_to.id)
+        pillar.sub_pillars.add(sub_pillar)
+        return PillarTO.from_model(pillar)
+
+    def add_pillar_to_analysis_framework(self, analysis_framework_id: int,
+                                         pillar_to: PillarTO) -> AnalysisFrameworkTO:
+        """add pillars to analysis_framework"""
+        analysis_framework = AnalysisFramework.objects.get(pk=analysis_framework_id)
+        pillar,_ = Pillar.objects.get_or_create(id=pillar_to.id)
+        analysis_framework.pillars.add(pillar)
+        return AnalysisFrameworkTO.from_model(analysis_framework)
+
+    def get_or_create_pillar(self, name):
+        """Get or Create Pillar"""
+        pillar, _ = Pillar.objects.get_or_create(name=name)
+
+        return PillarTO.from_model(pillar)
+
+    def get_or_create_analysis_framework(self, name):
+        """Get or Create Analysis Framework"""
+        analysis_framework, _ = AnalysisFramework.objects.get_or_create(name=name)
+        return AnalysisFrameworkTO.from_model(analysis_framework)
 
     def update_analysis_questions(self, analysis_id: int, content: str) -> AnalysisQuestionTO:
         """Assign or update analysis questions"""
@@ -74,7 +112,6 @@ class AnalysisRepositoryImpl(AnalysisRepository):
             analyses['total']  # Total count with DISTINCT
         )
 
-
     def get_by_id(self, obj_id) -> AnalysisTO | None:
         """
         Retrieve a single user by ID.
@@ -98,18 +135,15 @@ class AnalysisRepositoryImpl(AnalysisRepository):
 
     def update(self, obj_id, data, sectors, disaggregations):
         """
-        Update a user by ID.
+        Update analysis id.
         """
         try:
             analysis = Analysis.objects.get(id=obj_id)
-            for field, value in data.items():
-                if field == "sectors":
-                    analysis.sectors.set(sectors)
-                elif field == "disaggregations":
-                    analysis.disaggregations.set(disaggregations)
-                else:
-                    setattr(analysis, field, value)
-            analysis.save()
+            disaggregation_ids = [d['id'] for d in disaggregations]  # Extract IDs from disaggregations
+            sector_ids = [s['id'] for s in sectors]  # Extract IDs from sectors
+            # Set the relationships using the IDs
+            analysis.disaggregations.set(disaggregation_ids)  # Assign disaggregations using IDs
+            analysis.sectors.set(sector_ids)  # Assign sectors using IDs
             return AnalysisTO.from_model(analysis)
         except Analysis.DoesNotExist:
             return None
@@ -121,8 +155,8 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         # Create the analysis instance
 
         # Extract only the IDs from disaggregations and sectors
-        disaggregation_ids = [d.id for d in disaggregations]  # Extract IDs from disaggregations
-        sector_ids = [s.id for s in sectors]  # Extract IDs from sectors
+        disaggregation_ids = [d['id'] for d in disaggregations]  # Extract IDs from disaggregations
+        sector_ids = [s['id'] for s in sectors]  # Extract IDs from sectors
         analysis = Analysis.objects.create(**data)
 
         # Set the relationships using the IDs
@@ -200,7 +234,13 @@ class AnalysisRepositoryImpl(AnalysisRepository):
         filters = {key: value for key, value in kwargs.items() if value is not None}
         disaggregations = Disaggregation.objects.filter(**filters)
         if query_options:
-            disaggregations = query_options.filter_and_exec_queryset(disaggregations, model=Analysis)
+            disaggregations = query_options.filter_and_exec_queryset(
+                disaggregations,
+                model=Analysis)
         if not disaggregations or len(disaggregations) == 0:
             return []
         return DisaggregationTO.from_models(disaggregations)
+
+    def get_subpillar(self, subpillar_id):
+        subpillar = SubPillar.objects.get(id=subpillar_id)
+        return SubPillarTO.from_model(subpillar)

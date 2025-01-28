@@ -1,10 +1,14 @@
 """This module contains the tests for the views"""
+import os
 
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
 from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
+from analysis.models.disaggregation import Disaggregation
+from analysis.models.sector import Sector
 from common.test_utils import create_logged_in_client, create_test_analysis
 from user_management.models import Organization, Workspace
 
@@ -164,15 +168,23 @@ class TestUpdateAnalysisSteps(TestCase):
 
     def test_create_analysis_successfully(self):
         """Test that creating an analysis with correct data works"""
+        disaggregations = Disaggregation.objects.all()
+        sectors = Sector.objects.all()
         response = self.client.post(
             reverse("create_analysis"),
             {
                 "title": "Testing creation",
                 "disaggregations": [
-                    "1", "2"
+                    {
+                        "id": disaggregations[0].id,
+                        "name": disaggregations[0].name
+                    }
                 ],
                 "sectors": [
-                    "1"
+                    {
+                        "id": sectors[0].id,
+                        "name": sectors[0].name
+                    }
                 ],
                 "objetives": "This is a test",
                 "startDate": "2024-11-25",
@@ -241,3 +253,37 @@ class TestUpdateAnalysisSteps(TestCase):
     #     )
 
     #     self.assertEqual(response.status_code, 400)
+
+
+class TestUploadAnalysisFrameworkCsv(TestCase):
+    """Test the controller update analysis framework"""
+
+    def setUp(self):
+        self.url = reverse("upload_analysis_framework_controller")
+        self.client, self.user = create_logged_in_client()
+        self.default_analysis = create_test_analysis(self.user)
+        self.csv_filepath = os.path.join(settings.BASE_DIR, 'analysis', 'tests', "ifrc_test.csv")
+        self.wrong_format_csv_filepath = os.path.join(settings.BASE_DIR, 'analysis', 'tests', "ifrc_wrong_format_test.csv")
+
+    def test_analysis_framework_csv(self):
+        """
+        Test that uploading a valid CSV file works successfully.
+        """
+        # Lee el archivo CSV de prueba
+        with open(self.csv_filepath, 'rb') as csv_file:
+            response = self.client.post(self.url, {'file': csv_file})
+
+        self.assertEqual(response.data['status'], 201)
+        self.assertIn("File processed and analysis framework created successfully.", response.data['message'])
+        self.assertEqual("ifrc", response.data['payload']['name'])
+
+    def test_analysis_framework_csv_400(self):
+        """
+        Test that uploading a valid CSV file with wrong format.
+        """
+        with open(self.wrong_format_csv_filepath, 'rb') as csv_file:
+            response = self.client.post(self.url, {'file': csv_file})
+
+        self.assertEqual(response.data['status'], 400)
+        self.assertIn('Missing required column: Sub pillar', response.data['message'])
+

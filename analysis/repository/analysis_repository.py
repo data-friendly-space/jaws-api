@@ -2,8 +2,11 @@
 from abc import abstractmethod
 
 from analysis.contract.to.administrative_division_to import AdministrativeDivisionTO
+from analysis.contract.to.analysis_framework_to import AnalysisFrameworkTO
 from analysis.contract.to.analysis_to import AnalysisTO
 from analysis.contract.to.disaggregation_to import DisaggregationTO
+from analysis.contract.to.pillar_to import PillarTO
+from analysis.contract.to.sub_pillar_to import SubPillarTO
 from analysis.models import AdministrativeDivision
 from analysis.models.analysis import Analysis
 from common.helpers.query_options import QueryOptions
@@ -12,6 +15,31 @@ from common.repository.base_repository import BaseRepository
 
 class AnalysisRepository(BaseRepository):
     """Analysis repository"""
+
+    @abstractmethod
+    def create(self, data, disaggregations, sectors):
+        """Create Analysis"""
+
+    @abstractmethod
+    def get_or_create_analysis_framework(self, name):
+        """Get or Create Analysis Framework"""
+
+    @abstractmethod
+    def get_or_create_pillar(self, name) -> PillarTO:
+        """Get or Create Pillar"""
+
+    @abstractmethod
+    def get_or_create_sub_pillar(self, name) -> SubPillarTO:
+        """Get or Create Sub pillar"""
+
+    @abstractmethod
+    def add_sub_pillar_to_pillar(self, pillar_id: int, sub_pillar_to: SubPillarTO) -> PillarTO:
+        """add pillar to sub pillar"""
+
+    @abstractmethod
+    def add_pillar_to_analysis_framework(self, analysis_framework_id: int,
+                                          pillar_to:PillarTO) -> AnalysisFrameworkTO:
+        """add pillars to analysis_framework"""
 
     @abstractmethod
     def invite_user_to_analysis(self, user_id: str, analysis_id: str, role_id: str):
@@ -64,3 +92,16 @@ class AnalysisRepository(BaseRepository):
     @abstractmethod
     def get_all_disaggregations(self, query_options: QueryOptions, **kwargs) -> list[DisaggregationTO]:
         """Return all disaggregations"""
+
+    @abstractmethod
+    def get_subpillar(self, subpillar_id: int) -> SubPillarTO:
+        """Retrieve a subpillar by id
+        
+        Keyword arguments:
+        subpillar_id -- the id of the subpillar
+        Return: The subpillar as dto
+        """
+
+    @abstractmethod
+    def update(self, obj_id, data, sectors, disaggregations):
+        """update analysis"""
