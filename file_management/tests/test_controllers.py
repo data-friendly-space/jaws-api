@@ -347,7 +347,7 @@ class TestUpdateColumns(TestCase):
         self.assertEqual(some_col.include, False)
         self.assertEqual(some_col.alias, "a")
 
-@mock_aws()
+@mock_aws
 @patch(
     REPOSITORY_PATH, TEST_S3_BUCKET_NAME
 )

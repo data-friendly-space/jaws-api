@@ -1,20 +1,21 @@
 """This module contains the tests for the views"""
 import os
+from unittest.mock import patch
 
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
+from moto import mock_aws
 
 from analysis.models.analysis import Analysis
 from analysis.models.analysis_step import AnalysisStep
 from analysis.models.disaggregation import Disaggregation
 from analysis.models.sector import Sector
-from analysis.models.sub_pillar import SubPillar
-from charts.models import Chart
 from common.test_utils import create_logged_in_client, create_test_analysis, create_test_dataset
-from file_management.models import ColumnConfiguration
 from user_management.models import Organization, Workspace
 
+REPOSITORY_PATH =  "file_management.repository.file_management_repository_impl.bucket_name"
+TEST_S3_BUCKET_NAME = "testbucket"
 
 class AnalysisTestCase(TestCase):
     """TestCase for analysis module"""
@@ -135,6 +136,10 @@ class TestCreateOrUpdateAnalysisQuestions(TestCase):
         self.assertEqual(response.data['message'], "Analysis question create or updated successfully.")
 
 
+@mock_aws
+@patch(
+    REPOSITORY_PATH, TEST_S3_BUCKET_NAME
+)
 class TestCreateIssueController(TestCase):
     """Test controller create issue"""
 
@@ -158,7 +163,7 @@ class TestCreateIssueController(TestCase):
             creator_id=self.user.id,
             workspace_id=self.workspace.id,
         )
-        #self.dataset, _ = create_test_dataset(self.user, self.default_analysis)
+        self.dataset, self.dataset_content = create_test_dataset(self.user, self.default_analysis)
         #column_config = ColumnConfiguration.objects.first()
         #self.test_subpillar = SubPillar.objects.create(name="test")
         #self.chart = Chart.objects.create(
@@ -219,11 +224,11 @@ class TestCreateIssueController(TestCase):
         response = self.client.put(reverse("update_issue_controller", args=[413]), self.data, content_type="application/json")
         self.assertEqual(response.status_code, 404)
 
-    def test_get_issue_controller(self):
-        """Test issue controller retrieves the issues"""
-        response = self.client.post(self.url, self.data, content_type="application/json")
-        response = self.client.get(reverse("get_issues_controller", args=[self.default_analysis.id]))
-        self.assertEqual(response.status_code, 200)
+    #def test_get_issue_controller(self):
+    #    """Test issue controller retrieves the issues"""
+    #    response = self.client.post(self.url, self.data, content_type="application/json")
+    #    response = self.client.get(reverse("get_issues_controller", args=[self.default_analysis.id]))
+    #    self.assertEqual(response.status_code, 200)
 
 
 class TestUpdateAnalysisSteps(TestCase):

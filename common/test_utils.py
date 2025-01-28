@@ -81,9 +81,15 @@ def create_test_dataset(
     """Create a test dataset with columns. 
     Attach it to an analysis and create the column configurations
     Assign the given user as the owner"""
-    s3 = boto3.client("s3")
-    s3.create_bucket(Bucket=bucket_name)
-    s3.put_object(Bucket="testbucket", Key=f"datasets/{filename}", Body=content)
+    # Specify region explicitly
+    s3 = boto3.client("s3", region_name="us-east-1")
+
+    # Include LocationConstraint if needed
+    s3.create_bucket(
+        Bucket=bucket_name,
+        CreateBucketConfiguration={"LocationConstraint": "us-east-1"}
+    )
+    s3.put_object(Bucket=bucket_name, Key=f"datasets/{filename}", Body=content)
     dataset = Dataset.objects.create(
         filename=filename,
         url=f"http://testurl/{filename}",
