@@ -9,26 +9,10 @@
                 "containerPort": ${container_port},
                 "hostPort": ${container_port},
                 "protocol": "tcp"
-            },
-            {
-                "hostPort": 8080,
-                "protocol": "tcp",
-                "containerPort": 8080
             }
         ],
         "essential": true,
-        "environment": [
-            {
-            "name": "API_PORT",
-            "value": "80"
-            },{
-            "name": "API_PREFIX",
-            "value": "/search"
-            },{
-            "name": "NODE_ENV",
-            "value": "development"
-            }
-        ],
+        "environment": [],
         "mountPoints": [],
         "volumesFrom": [],
         "secrets": [],
