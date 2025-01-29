@@ -18,7 +18,12 @@ variable "comment" {
   type        = string
 }
 
-variable "company_asset_zone_name" {
-  description = "Hosted zone name"
+variable "app_name" {
+  description = "Application name"
+  type        = string
+}
+
+variable "frontend_bucket_id" {
+  description = "The bucket id of the frontend"
   type        = string
 }
