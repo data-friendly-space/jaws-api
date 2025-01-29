@@ -27,7 +27,7 @@ resource "aws_alb_target_group" "alb" {
 
 resource "aws_alb_listener" "alb" {
   load_balancer_arn = var.load_balancer_alb_arn
-  port              = 80
+  port              = 8000
   protocol          = "HTTP"
 
   default_action {

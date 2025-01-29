@@ -2,6 +2,7 @@ data "template_file" "container_definition_env" {
   template = file("./environments/${var.environment}/${var.ecs_app_name}/container_definition.tftpl")
 
   vars = {
+    ecr_url                  = var.ecr_url
     container_name           = var.container_name
     container_image          = var.container_image
     container_memory         = var.container_memory
@@ -14,8 +15,8 @@ data "template_file" "container_definition_env" {
 
 resource "aws_ecs_task_definition" "task_definition" {
   family                   = var.task_family
-  execution_role_arn       = var.ecs_execution_role_arn #aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = var.ecs_execution_role_arn #aws_iam_role.ecs_execution_role.arn
+  execution_role_arn       = var.ecs_execution_role_arn
+  task_role_arn            = var.ecs_execution_role_arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = var.container_cpu
@@ -31,7 +32,7 @@ resource "aws_ecs_task_definition" "task_definition" {
 
 resource "aws_ecs_service" "service" {
   name                               = var.ecs_app_name
-  cluster                            = var.cluster_id #aws_ecs_cluster.cluster.id
+  cluster                            = var.cluster_id
   task_definition                    = aws_ecs_task_definition.task_definition.arn
   health_check_grace_period_seconds  = var.ecs_health_check_grace_period
   deployment_minimum_healthy_percent = 100

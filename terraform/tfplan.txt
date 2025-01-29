@@ -1,0 +1,745 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+ <= read (data resources)
+
+Terraform will perform the following actions:
+
+  # module.ecs_cluster_jaws_api.aws_ecs_cluster.cluster will be created
+  + resource "aws_ecs_cluster" "cluster" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + name     = "jaws"
+      + tags     = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws"
+          + "Project"     = "jaws"
+        }
+      + tags_all = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws"
+          + "Project"     = "jaws"
+        }
+
+      + setting (known after apply)
+    }
+
+  # module.ecs_jaws_api.data.template_file.container_definition_env will be read during apply
+  # (config refers to values not yet known)
+ <= data "template_file" "container_definition_env" {
+      + id       = (known after apply)
+      + rendered = (known after apply)
+      + template = <<-EOT
+            [
+                {
+                    "name": "${container_name}",
+                    "image": "${ecr_url}/${container_image}",
+                    "cpu": ${container_cpu},
+                    "memory": ${container_memory},
+                    "portMappings": [
+                        {
+                            "containerPort": ${container_port},
+                            "hostPort": ${container_port},
+                            "protocol": "tcp"
+                        },
+                        {
+                            "hostPort": 8080,
+                            "protocol": "tcp",
+                            "containerPort": 8080
+                        }
+                    ],
+                    "essential": true,
+                    "environment": [
+                        {
+                        "name": "API_PORT",
+                        "value": "80"
+                        },{
+                        "name": "API_PREFIX",
+                        "value": "/search"
+                        },{
+                        "name": "NODE_ENV",
+                        "value": "development"
+                        }
+                    ],
+                    "mountPoints": [],
+                    "volumesFrom": [],
+                    "secrets": [],
+                    "logConfiguration": {
+                        "logDriver": "awslogs",
+                        "options": {
+                            "awslogs-create-group": "true",
+                            "awslogs-group": "${aws_cloudwatch_log_group}",
+                            "awslogs-region": "${region}",
+                            "awslogs-stream-prefix": "ecs"
+                        }
+                    },
+                    "systemControls": []
+                }    
+            ]
+        EOT
+      + vars     = {
+          + "aws_cloudwatch_log_group" = "/ecs/jaws-api"
+          + "container_cpu"            = "512"
+          + "container_image"          = "jaws-api:latest"
+          + "container_memory"         = "1024"
+          + "container_name"           = "jaws-api"
+          + "container_port"           = "80"
+          + "ecr_url"                  = (known after apply)
+          + "region"                   = "us-east-1"
+        }
+    }
+
+  # module.ecs_jaws_api.aws_appautoscaling_policy.ecs_policy_cpu will be created
+  + resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
+      + alarm_arns         = (known after apply)
+      + arn                = (known after apply)
+      + id                 = (known after apply)
+      + name               = "jaws-api-cpu-autoscaling"
+      + policy_type        = "TargetTrackingScaling"
+      + resource_id        = "service/jaws/jaws-api"
+      + scalable_dimension = "ecs:service:DesiredCount"
+      + service_namespace  = "ecs"
+
+      + target_tracking_scaling_policy_configuration {
+          + disable_scale_in   = false
+          + scale_in_cooldown  = 300
+          + scale_out_cooldown = 300
+          + target_value       = 60
+
+          + predefined_metric_specification {
+              + predefined_metric_type = "ECSServiceAverageCPUUtilization"
+            }
+        }
+    }
+
+  # module.ecs_jaws_api.aws_appautoscaling_policy.ecs_policy_memory will be created
+  + resource "aws_appautoscaling_policy" "ecs_policy_memory" {
+      + alarm_arns         = (known after apply)
+      + arn                = (known after apply)
+      + id                 = (known after apply)
+      + name               = "jaws-api-memory-autoscaling"
+      + policy_type        = "TargetTrackingScaling"
+      + resource_id        = "service/jaws/jaws-api"
+      + scalable_dimension = "ecs:service:DesiredCount"
+      + service_namespace  = "ecs"
+
+      + target_tracking_scaling_policy_configuration {
+          + disable_scale_in   = false
+          + scale_in_cooldown  = 300
+          + scale_out_cooldown = 300
+          + target_value       = 80
+
+          + predefined_metric_specification {
+              + predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+            }
+        }
+    }
+
+  # module.ecs_jaws_api.aws_appautoscaling_target.ecs_target will be created
+  + resource "aws_appautoscaling_target" "ecs_target" {
+      + arn                = (known after apply)
+      + id                 = (known after apply)
+      + max_capacity       = 5
+      + min_capacity       = 1
+      + resource_id        = "service/jaws/jaws-api"
+      + role_arn           = (known after apply)
+      + scalable_dimension = "ecs:service:DesiredCount"
+      + service_namespace  = "ecs"
+      + tags_all           = (known after apply)
+
+      + suspended_state (known after apply)
+    }
+
+  # module.ecs_jaws_api.aws_cloudwatch_log_group.main will be created
+  + resource "aws_cloudwatch_log_group" "main" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/ecs/jaws-api"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 7
+      + skip_destroy      = false
+      + tags              = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "cloudwatch-log-task-jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tags_all          = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "cloudwatch-log-task-jaws-api"
+          + "Project"     = "jaws"
+        }
+    }
+
+  # module.ecs_jaws_api.aws_ecs_service.service will be created
+  + resource "aws_ecs_service" "service" {
+      + availability_zone_rebalancing      = "DISABLED"
+      + cluster                            = (known after apply)
+      + deployment_maximum_percent         = 200
+      + deployment_minimum_healthy_percent = 100
+      + desired_count                      = 1
+      + enable_ecs_managed_tags            = false
+      + enable_execute_command             = false
+      + health_check_grace_period_seconds  = 120
+      + iam_role                           = (known after apply)
+      + id                                 = (known after apply)
+      + launch_type                        = "FARGATE"
+      + name                               = "jaws-api"
+      + platform_version                   = (known after apply)
+      + scheduling_strategy                = "REPLICA"
+      + tags                               = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tags_all                           = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api"
+          + "Project"     = "jaws"
+        }
+      + task_definition                    = (known after apply)
+      + triggers                           = (known after apply)
+      + wait_for_steady_state              = false
+
+      + deployment_circuit_breaker {
+          + enable   = false
+          + rollback = false
+        }
+
+      + deployment_controller {
+          + type = "ECS"
+        }
+
+      + load_balancer {
+          + container_name   = "jaws-api"
+          + container_port   = 80
+          + target_group_arn = (known after apply)
+            # (1 unchanged attribute hidden)
+        }
+
+      + network_configuration {
+          + assign_public_ip = true
+          + security_groups  = (known after apply)
+          + subnets          = [
+              + "subnet-017b0144f753b8028",
+              + "subnet-01dd0044f6a1c4bad",
+              + "subnet-0a1fa7026dc5ba396",
+            ]
+        }
+    }
+
+  # module.ecs_jaws_api.aws_ecs_task_definition.task_definition will be created
+  + resource "aws_ecs_task_definition" "task_definition" {
+      + arn                      = (known after apply)
+      + arn_without_revision     = (known after apply)
+      + container_definitions    = (known after apply)
+      + cpu                      = "512"
+      + execution_role_arn       = (known after apply)
+      + family                   = "jaws-api-ecs-app"
+      + id                       = (known after apply)
+      + memory                   = "1024"
+      + network_mode             = "awsvpc"
+      + requires_compatibilities = [
+          + "FARGATE",
+        ]
+      + revision                 = (known after apply)
+      + skip_destroy             = false
+      + tags                     = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tags_all                 = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api"
+          + "Project"     = "jaws"
+        }
+      + task_role_arn            = (known after apply)
+      + track_latest             = false
+    }
+
+  # module.jaws_api_load_balancer.aws_lb.alb will be created
+  + resource "aws_lb" "alb" {
+      + arn                                                          = (known after apply)
+      + arn_suffix                                                   = (known after apply)
+      + client_keep_alive                                            = 3600
+      + desync_mitigation_mode                                       = "defensive"
+      + dns_name                                                     = (known after apply)
+      + drop_invalid_header_fields                                   = false
+      + enable_deletion_protection                                   = false
+      + enable_http2                                                 = true
+      + enable_tls_version_and_cipher_suite_headers                  = false
+      + enable_waf_fail_open                                         = false
+      + enable_xff_client_port                                       = false
+      + enforce_security_group_inbound_rules_on_private_link_traffic = (known after apply)
+      + id                                                           = (known after apply)
+      + idle_timeout                                                 = 30
+      + internal                                                     = true
+      + ip_address_type                                              = (known after apply)
+      + load_balancer_type                                           = "application"
+      + name                                                         = "jaws-api-private-alb"
+      + name_prefix                                                  = (known after apply)
+      + preserve_host_header                                         = false
+      + security_groups                                              = (known after apply)
+      + subnets                                                      = [
+          + "subnet-017b0144f753b8028",
+          + "subnet-01dd0044f6a1c4bad",
+          + "subnet-0a1fa7026dc5ba396",
+        ]
+      + tags                                                         = {
+          + "Name" = "jaws-api-private-alb"
+        }
+      + tags_all                                                     = {
+          + "Name" = "jaws-api-private-alb"
+        }
+      + vpc_id                                                       = (known after apply)
+      + xff_header_processing_mode                                   = "append"
+      + zone_id                                                      = (known after apply)
+
+      + subnet_mapping (known after apply)
+    }
+
+  # module.jaws_api_resource_group.aws_resourcegroups_group.resource_group will be created
+  + resource "aws_resourcegroups_group" "resource_group" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + name     = "jaws-api"
+      + tags_all = (known after apply)
+
+      + resource_query {
+          + query = jsonencode(
+                {
+                  + ResourceTypeFilters = [
+                      + "AWS::AllSupported",
+                    ]
+                  + TagFilters          = [
+                      + {
+                          + Key    = "Environment"
+                          + Values = [
+                              + "development",
+                            ]
+                        },
+                      + {
+                          + Key    = "App"
+                          + Values = [
+                              + "jaws-api",
+                            ]
+                        },
+                    ]
+                }
+            )
+          + type  = "TAG_FILTERS_1_0"
+        }
+    }
+
+  # module.jaws_api_security_group.aws_security_group.alb will be created
+  + resource "aws_security_group" "alb" {
+      + arn                    = (known after apply)
+      + description            = "Security group for loadbalancer to services on ECS"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = [
+                  + "::/0",
+                ]
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "172.31.0.0/16",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + name                   = "jaws-api-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api-sg"
+          + "Project"     = "jaws"
+        }
+      + tags_all               = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api-sg"
+          + "Project"     = "jaws"
+        }
+      + vpc_id                 = "vpc-07dd783259aae3728"
+    }
+
+  # module.jaws_api_target_group.aws_alb_listener.alb will be created
+  + resource "aws_alb_listener" "alb" {
+      + arn                      = (known after apply)
+      + id                       = (known after apply)
+      + load_balancer_arn        = (known after apply)
+      + port                     = 80
+      + protocol                 = "HTTP"
+      + ssl_policy               = (known after apply)
+      + tags                     = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "alb-http-listener-jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tags_all                 = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "alb-http-listener-jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tcp_idle_timeout_seconds = (known after apply)
+
+      + default_action {
+          + order = (known after apply)
+          + type  = "forward"
+
+          + forward {
+              + target_group {
+                  + arn    = (known after apply)
+                  + weight = 1
+                }
+            }
+        }
+
+      + mutual_authentication (known after apply)
+    }
+
+  # module.jaws_api_target_group.aws_alb_listener_rule.rule will be created
+  + resource "aws_alb_listener_rule" "rule" {
+      + arn          = (known after apply)
+      + id           = (known after apply)
+      + listener_arn = (known after apply)
+      + priority     = 1
+      + tags         = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "alb-listener-rule-jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tags_all     = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "alb-listener-rule-jaws-api"
+          + "Project"     = "jaws"
+        }
+
+      + action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + condition {
+          + path_pattern {
+              + values = [
+                  + "/*",
+                ]
+            }
+        }
+    }
+
+  # module.jaws_api_target_group.aws_alb_target_group.alb will be created
+  + resource "aws_alb_target_group" "alb" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "jaws-api-tg"
+      + name_prefix                        = (known after apply)
+      + port                               = 80
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 0
+      + tags                               = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api-tg"
+          + "Project"     = "jaws"
+        }
+      + tags_all                           = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api-tg"
+          + "Project"     = "jaws"
+        }
+      + target_type                        = "ip"
+      + vpc_id                             = "vpc-07dd783259aae3728"
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 3
+          + interval            = 15
+          + matcher             = "200"
+          + path                = "/api/health"
+          + port                = "traffic-port"
+          + protocol            = "HTTP"
+          + timeout             = 10
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # module.jaws_ecr.aws_ecr_repository.jaws_ecr will be created
+  + resource "aws_ecr_repository" "jaws_ecr" {
+      + arn                  = (known after apply)
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "jaws-ecr"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags                 = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-ecr"
+          + "Project"     = "jaws"
+        }
+      + tags_all             = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-ecr"
+          + "Project"     = "jaws"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # module.jaws_s3_datasets.aws_s3_bucket.jaws-datasets-s3 will be created
+  + resource "aws_s3_bucket" "jaws-datasets-s3" {
+      + acceleration_status         = (known after apply)
+      + acl                         = (known after apply)
+      + arn                         = (known after apply)
+      + bucket                      = "jaws-datasets"
+      + bucket_domain_name          = (known after apply)
+      + bucket_prefix               = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + object_lock_enabled         = (known after apply)
+      + policy                      = (known after apply)
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + tags                        = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api"
+          + "Project"     = "jaws"
+        }
+      + tags_all                    = {
+          + "Environment" = "development"
+          + "Managedby"   = "Terraform"
+          + "Name"        = "jaws-api"
+          + "Project"     = "jaws"
+        }
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + cors_rule (known after apply)
+
+      + grant (known after apply)
+
+      + lifecycle_rule (known after apply)
+
+      + logging (known after apply)
+
+      + object_lock_configuration (known after apply)
+
+      + replication_configuration (known after apply)
+
+      + server_side_encryption_configuration (known after apply)
+
+      + versioning (known after apply)
+
+      + website (known after apply)
+    }
+
+  # module.jaws_s3_datasets.aws_s3_bucket_acl.jaws-datasets-s3-acl will be created
+  + resource "aws_s3_bucket_acl" "jaws-datasets-s3-acl" {
+      + acl    = "public-read"
+      + bucket = (known after apply)
+      + id     = (known after apply)
+
+      + access_control_policy (known after apply)
+    }
+
+  # module.policy.aws_iam_policy.CloudwatchLogCreation will be created
+  + resource "aws_iam_policy" "CloudwatchLogCreation" {
+      + arn              = (known after apply)
+      + attachment_count = (known after apply)
+      + id               = (known after apply)
+      + name             = "CloudwatchLogCreation"
+      + name_prefix      = (known after apply)
+      + path             = "/"
+      + policy           = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action   = [
+                          + "logs:GetDataProtectionPolicy",
+                          + "logs:GetLogRecord",
+                          + "logs:DeleteSubscriptionFilter",
+                          + "secretsmanager:DescribeSecret",
+                          + "logs:DescribeSubscriptionFilters",
+                          + "logs:StartQuery",
+                          + "logs:DescribeMetricFilters",
+                          + "logs:ListLogDeliveries",
+                          + "secretsmanager:GetRandomPassword",
+                          + "logs:CreateLogStream",
+                          + "logs:CancelExportTask",
+                          + "logs:DeleteRetentionPolicy",
+                          + "logs:GetLogEvents",
+                          + "logs:FilterLogEvents",
+                          + "logs:DescribeDestinations",
+                          + "logs:PutDataProtectionPolicy",
+                          + "logs:Unmask",
+                          + "logs:StopQuery",
+                          + "logs:DeleteQueryDefinition",
+                          + "logs:CreateLogGroup",
+                          + "logs:ListTagsForResource",
+                          + "logs:Link",
+                          + "logs:CreateLogDelivery",
+                          + "logs:PutMetricFilter",
+                          + "logs:DescribeExportTasks",
+                          + "logs:GetQueryResults",
+                          + "logs:UpdateLogDelivery",
+                          + "logs:PutSubscriptionFilter",
+                          + "logs:ListTagsLogGroup",
+                          + "logs:DeleteDataProtectionPolicy",
+                          + "logs:DescribeLogStreams",
+                          + "logs:GetLogDelivery",
+                          + "logs:DeleteLogStream",
+                          + "secretsmanager:ListSecretVersionIds",
+                          + "logs:CreateExportTask",
+                          + "logs:DeleteMetricFilter",
+                          + "secretsmanager:GetSecretValue",
+                          + "logs:AssociateKmsKey",
+                          + "logs:DeleteLogDelivery",
+                          + "logs:DescribeQueryDefinitions",
+                          + "logs:DescribeResourcePolicies",
+                          + "logs:PutDestination",
+                          + "logs:DescribeQueries",
+                          + "logs:DisassociateKmsKey",
+                          + "logs:DescribeLogGroups",
+                          + "logs:DeleteLogGroup",
+                          + "logs:PutDestinationPolicy",
+                          + "logs:TestMetricFilter",
+                          + "logs:PutQueryDefinition",
+                          + "logs:DeleteDestination",
+                          + "logs:PutLogEvents",
+                          + "secretsmanager:GetResourcePolicy",
+                          + "logs:PutRetentionPolicy",
+                          + "logs:GetLogGroupFields",
+                        ]
+                      + Effect   = "Allow"
+                      + Resource = "*"
+                      + Sid      = "VisualEditor0"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + policy_id        = (known after apply)
+      + tags_all         = (known after apply)
+    }
+
+  # module.policy.aws_iam_role.ecs_execution_role will be created
+  + resource "aws_iam_role" "ecs_execution_role" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ecs-tasks.amazonaws.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "ecsTaskExecutionRole"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+
+      + inline_policy (known after apply)
+    }
+
+  # module.policy.aws_iam_role_policy_attachment.cloudwatchlogcreation_policy_attach will be created
+  + resource "aws_iam_role_policy_attachment" "cloudwatchlogcreation_policy_attach" {
+      + id         = (known after apply)
+      + policy_arn = (known after apply)
+      + role       = "ecsTaskExecutionRole"
+    }
+
+  # module.policy.aws_iam_role_policy_attachment.policy_list_attachment["arn:aws:iam::aws:policy/SecretsManagerReadWrite"] will be created
+  + resource "aws_iam_role_policy_attachment" "policy_list_attachment" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+      + role       = "ecsTaskExecutionRole"
+    }
+
+  # module.policy.aws_iam_role_policy_attachment.policy_list_attachment["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"] will be created
+  + resource "aws_iam_role_policy_attachment" "policy_list_attachment" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      + role       = "ecsTaskExecutionRole"
+    }
+
+Plan: 21 to add, 0 to change, 0 to destroy.
