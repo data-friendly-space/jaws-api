@@ -195,3 +195,12 @@ class FileManagementRepositoryImpl(FileManagementRepository):
     def get_data_role(self, data_role_id):
         data_role = DataRole.objects.get(id=data_role_id)
         return DataRoleTO.from_model(data_role)
+
+    def store_dataset(self, dataset, external_identifier):
+        s3_client = boto3.client("s3")
+
+        s3_client.put_object(
+            Bucket=bucket_name,
+            Key=external_identifier,
+            Body=dataset.to_csv(index=False)
+        )

@@ -68,6 +68,15 @@ def create_test_analysis(
     return test_analysis
 
 @mock_aws
+def create_bucket_if_not_exists(bucket_name: str):
+    """Create a s3 bucket only if it doesn't exist"""
+    s3 = boto3.client("s3")
+    existing_buckets = s3.list_buckets()
+    bucket_names = [bucket['Name'] for bucket in existing_buckets['Buckets']]
+    if bucket_name not in bucket_names:
+        s3.create_bucket(Bucket=bucket_name)
+
+@mock_aws
 def create_test_dataset(
     user: User,
     analysis: Analysis,
@@ -80,7 +89,7 @@ def create_test_dataset(
     Attach it to an analysis and create the column configurations
     Assign the given user as the owner"""
     s3 = boto3.client("s3")
-    s3.create_bucket(Bucket=bucket_name)
+    create_bucket_if_not_exists(bucket_name)
     s3.put_object(Bucket="testbucket", Key=f"datasets/{filename}", Body=content)
     dataset = Dataset.objects.create(
         filename=filename,
