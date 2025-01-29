@@ -51,7 +51,12 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'https://localhost', 'http://localhost:3000']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'https://localhost',
+    'http://localhost:3000',
+    'https://frontend.jawsdev.thedeep.io'
+]
 # Application definition
 CUSTOM_APPS = [
     'common',
@@ -225,4 +230,7 @@ SOCIAL_AUTH_PIPELINE = (
     'user_management.social_auth.pipeline.redirect_to_next_with_token'
 )
 
-SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['localhost:3000']
+if os.getenv("ENVIRONMENT", "DEVELOPMENT").upper() == "DEVELOPMENT":
+    SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['localhost:3000']
+else:
+    SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['frontend.jawsdev.thedeep.io']

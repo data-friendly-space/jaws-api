@@ -9,6 +9,16 @@ class WorkspaceService(ABC):
     '''Workspace service'''
 
     @abstractmethod
+    def get_workspace_by_id(self, user, workspace_id: str) -> dict:
+        """Retrieve a workspace by id
+        
+        Keyword arguments:
+         * user -- the user trying to get the workspace
+         * id -- the id of the workspace
+        Return: the workspace dto as dict
+        """
+
+    @abstractmethod
     def get_workspaces(self):
         '''Retrieves the workspaces'''
         pass

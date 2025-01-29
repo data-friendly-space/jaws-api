@@ -41,7 +41,8 @@ class WorkspaceRepositoryImpl(WorkspaceRepository):
 
     def get_by_id(self, obj_id):
         """Retrieve workspace by ID"""
-        return Workspace.objects.filter(id=obj_id).first()
+        workspace = Workspace.objects.get(id=obj_id)
+        return WorkspaceTO.from_model(workspace)
 
     def create(self, data):
         """Creates and retrieve new workspace"""
