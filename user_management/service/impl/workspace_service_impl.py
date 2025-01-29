@@ -13,6 +13,7 @@ from user_management.usecases.create_workspace_uc import CreateWorkspaceUC
 from user_management.usecases.get_role_by_role_uc import GetRoleByRoleUC
 from user_management.usecases.get_user_uc_by_filters_uc import GetUserByFiltersUC
 from user_management.usecases.get_user_workspaces_by_filters_uc import GetUserWorkspacesByFiltersUC
+from user_management.usecases.get_workspace_by_id_uc import GetWorkspaceByIdUC
 
 
 class WorkspaceServiceImpl(WorkspaceService):
@@ -24,10 +25,16 @@ class WorkspaceServiceImpl(WorkspaceService):
         self.get_user_by_filter_uc = GetUserByFiltersUC.get_instance()
         self.get_role_by_role_uc = GetRoleByRoleUC.get_instance()
         self.get_user_workspaces_by_filter_uc = GetUserWorkspacesByFiltersUC.get_instance()
+        self.get_workspace_by_id_uc = GetWorkspaceByIdUC.get_instance()
         self.workspace_repository = WorkspaceRepositoryImpl()
         self.user_repository = UserRepositoryImpl()
         self.role_repository = RoleRepositoryImpl()
         self.add_user_to_workspace_uc = AddUserToWorkspaceUC.get_instance()
+
+    def get_workspace_by_id(self, user, workspace_id):
+        # TODO: validate if the user can see the workspace
+        workspace = self.get_workspace_by_id_uc.exec(self.workspace_repository, workspace_id)
+        return workspace.to_dict()
 
     def get_workspaces(self):
         """Retrieves the workspaces"""
