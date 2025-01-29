@@ -13,15 +13,15 @@ from user_management.interfaces.controllers.get_workspace_by_id import (
 )
 
 urlpatterns = [
-    path(
-        "<str:workspace_id>",
-        get_workspaces_by_id_controller,
-        name="workspace_by_id",
-    ),
     path("create", create_workspace_controller, name="create_workspace"),
     path(
         "<str:workspace_id>/analyses",
         get_analysis_controller,
         name="get_analysis_controller",
+    ),
+    path(
+        "<str:workspace_id>",
+        get_workspaces_by_id_controller,
+        name="workspace_by_id",
     ),
 ]
