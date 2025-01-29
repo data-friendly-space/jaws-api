@@ -13,6 +13,7 @@ class JWTMiddleware:
 
     def __call__(self, request):
         excluded_paths = [
+            '/',
             '/auth/complete/google-oauth2/',
             '/auth/login/google-oauth2/',
             '/jaws-api/health',
