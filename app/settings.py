@@ -32,7 +32,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=a#w2hz%r2bw+4-6ben(5ds-2*ycf#ac$)l(jh!2^ojp++%z3g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+if os.getenv("ENVIRONMENT", "DEVELOPMENT").upper() == "DEVELOPMENT":
+    DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
@@ -55,8 +57,13 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
     'https://localhost',
     'http://localhost:3000',
-    'https://frontend.jawsdev.thedeep.io'
+    'https://frontend.jawsdev.thedeep.io',
+    "https://prod-api.thedeep.io",
 ]
+CSRF_COOKIE_SAMESITE = None
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = os.getenv("CSRF_COOKIE_DOMAIN", None)
 # Application definition
 CUSTOM_APPS = [
     'common',
@@ -90,6 +97,7 @@ CUSTOM_MIDDLEWARES = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -97,7 +105,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
@@ -230,7 +237,7 @@ SOCIAL_AUTH_PIPELINE = (
     'user_management.social_auth.pipeline.redirect_to_next_with_token'
 )
 
-if os.getenv("ENVIRONMENT", "DEVELOPMENT").upper() == "DEVELOPMENT":
+if DEBUG:
     SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['localhost:3000']
 else:
     SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ['frontend.jawsdev.thedeep.io']
