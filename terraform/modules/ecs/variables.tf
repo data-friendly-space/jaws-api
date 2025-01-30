@@ -32,7 +32,7 @@ variable "container_port" {
 variable "host_port" {
   description = "The port to expose in the host"
   type        = number
-  default     = 80
+  default     = 8000
 }
 
 variable "container_memory" {
@@ -113,5 +113,10 @@ variable "deployment_circuit_breaker_value" {
 
 variable "ecs_execution_role_arn" {
   description = "Gets outputs from ecs_role in policy module"
+  type        = string
+}
+
+variable "ecr_url" {
+  description = "The ECR's URL"
   type        = string
 }

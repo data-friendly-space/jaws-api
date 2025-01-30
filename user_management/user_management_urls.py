@@ -28,7 +28,7 @@ urlpatterns = [
     path("sign-up", sign_up_controller, name="sign_up"),
     path("token-refresh", refresh_token_controller, name="token_refresh"),
     path("session-verify", verify_token_controller, name="session_verify"),
-    path("users/", include("user_management.urls.user-urls")),
-    path("workspaces/", include("user_management.workspace-urls")),
-    path("organizations/", include("user_management.urls.organization-urls")),
+    path("users/", include("user_management.urls.user_urls")),
+    path("workspaces/", include("user_management.workspace_urls")),
+    path("organizations/", include("user_management.urls.organization_urls")),
 ]

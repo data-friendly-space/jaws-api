@@ -14,13 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from rest_framework.decorators import api_view
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
 
 from user_management.interfaces.controllers.csrf_token_controller import csrf_token_controller
 
-
+@api_view(["GET"])
 def redirect_to_health(request):
     return redirect('/jaws-api/health')
 

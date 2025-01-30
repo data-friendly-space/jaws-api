@@ -30,5 +30,6 @@ class GetDatasetRowsUC(BaseUseCase):
             query_options: QueryOptions
         ) -> List[dict]:
         dataset_df = pd.read_csv(dataset.Body)
+        dataset_df.fillna("", inplace=True)
         rows = query_options.paginate_and_filter_dataframe(dataset_df)
         return rows

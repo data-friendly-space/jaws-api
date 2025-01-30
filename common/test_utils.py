@@ -52,6 +52,7 @@ def create_test_workspace(facilitator: User, organization: Organization = None):
     return workspace
 
 
+
 def create_test_analysis(
         user: User,
         workspace: Workspace = None,
@@ -68,6 +69,14 @@ def create_test_analysis(
     )
     return test_analysis
 
+@mock_aws
+def create_bucket_if_not_exists(bucket_name: str):
+    """Create a s3 bucket only if it doesn't exist"""
+    s3 = boto3.client("s3")
+    existing_buckets = s3.list_buckets()
+    bucket_names = [bucket['Name'] for bucket in existing_buckets['Buckets']]
+    if bucket_name not in bucket_names:
+        s3.create_bucket(Bucket=bucket_name)
 
 @mock_aws
 def create_test_dataset(
@@ -81,13 +90,9 @@ def create_test_dataset(
     """Create a test dataset with columns. 
     Attach it to an analysis and create the column configurations
     Assign the given user as the owner"""
-    # Specify region explicitly
-    s3_region = "us-east-1"  # Change this to your desired region
-
-    s3 = boto3.client("s3", region_name=s3_region)
-
-    s3.create_bucket(Bucket=bucket_name)
-    s3.put_object(Bucket=bucket_name, Key=f"datasets/{filename}", Body=content)
+    s3 = boto3.client("s3")
+    create_bucket_if_not_exists(bucket_name)
+    s3.put_object(Bucket="testbucket", Key=f"datasets/{filename}", Body=content)
     dataset = Dataset.objects.create(
         filename=filename,
         url=f"http://testurl/{filename}",

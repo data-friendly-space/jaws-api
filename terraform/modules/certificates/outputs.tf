@@ -4,11 +4,7 @@ output "certificate_arn" {
 }
 
 output "zone_id" {
-  value = data.aws_route53_zone.existing.zone_id
-}
-
-output "fqdn" {
-  value = aws_route53_record.cert_validation.fqdn
+  value = data.aws_route53_zone.main.zone_id
 }
 
 output "domain_name" {
