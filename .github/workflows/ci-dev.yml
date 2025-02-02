@@ -52,14 +52,13 @@ jobs:
         id: build_image_step
         env:
           ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
-          ECR_REPOSITORY: ${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_VERSION: ${{ github.sha }}
         run: |
-          docker build --file ./Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_VERSION .
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_VERSION $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker build --file ./Dockerfile -t $ECR_REGISTRY:$IMAGE_VERSION .
+          docker tag $ECR_REGISTRY:$IMAGE_VERSION $ECR_REGISTRY:latest
           
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_VERSION
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY:$IMAGE_VERSION
+          docker push $ECR_REGISTRY:latest
 
   deploy-api:
     needs: build-api
@@ -81,7 +80,7 @@ jobs:
         with:
           task-definition: .aws/task-definition-dev.json
           container-name: ${{ env.API_BUILD_NAME }}
-          image: ${{ env.ECR_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          image: ${{ env.ECR_REGISTRY }}:${{ github.sha }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
